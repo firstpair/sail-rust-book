@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="535" viewBox="0 0 420 535">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="420" height="535" fill="white"/>
+
+<line x1="70" y1="95.5" x2="70" y2="141" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="209" x2="70" y2="246" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="314" x2="70" y2="351" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Scan orders</tspan></text>
+<rect x="-22" y="141" width="184" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="167" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Partial aggregate by</tspan><tspan x="70" dy="17">customer_id</tspan></text>
+<rect x="-5" y="246" width="150" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="272" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Hash shuffle on</tspan><tspan x="70" dy="17">customer_id</tspan></text>
+<rect x="-14.5" y="351" width="169" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Final aggregate by</tspan><tspan x="70" dy="17">customer_id</tspan></text>
+</svg>

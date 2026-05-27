@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="571" viewBox="0 0 1015 644">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1015" height="644" fill="white"/>
+<rect x="8" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="70" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">PySpark</text>
+<line x1="70" y1="55" x2="70" y2="589" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="8" y="589" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="70" y="608" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">PySpark</text>
+<rect x="183" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="245" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Spark Connect</text>
+<line x1="245" y1="55" x2="245" y2="589" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="183" y="589" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="245" y="608" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Spark Connect</text>
+<rect x="358" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="420" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Sail planner</text>
+<line x1="420" y1="55" x2="420" y2="589" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="358" y="589" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="420" y="608" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Sail planner</text>
+<rect x="533" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="595" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">DataFusion</text>
+<line x1="595" y1="55" x2="595" y2="589" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="533" y="589" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="595" y="608" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">DataFusion</text>
+<rect x="708" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="770" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Arrow RecordBatch</text>
+<line x1="770" y1="55" x2="770" y2="589" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="708" y="589" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="770" y="608" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Arrow RecordBatch</text>
+<rect x="883" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="945" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Arrow IPC</text>
+<line x1="945" y1="55" x2="945" y2="589" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="883" y="589" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="945" y="608" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Arrow IPC</text>
+<line x1="82" y1="90" x2="233" y2="90" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="157.5" y="83" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">unresolved plan</text>
+<line x1="257" y1="148" x2="408" y2="148" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="332.5" y="141" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">ExecutePlan</text>
+<line x1="432" y1="206" x2="583" y2="206" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="507.5" y="199" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">physical execution</text>
+<line x1="607" y1="264" x2="758" y2="264" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="682.5" y="257" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">arrays + schema</text>
+<line x1="758" y1="322" x2="607" y2="322" stroke="#5f6f85" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="682.5" y="315" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">RecordBatch stream</text>
+<line x1="583" y1="380" x2="257" y2="380" stroke="#5f6f85" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="420" y="373" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">SendableRecordBatchStream</text>
+<line x1="257" y1="438" x2="933" y2="438" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="595" y="431" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">StreamWriter</text>
+<line x1="933" y1="496" x2="82" y2="496" stroke="#5f6f85" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="507.5" y="489" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">ArrowBatch bytes</text>
+</svg>

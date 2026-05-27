@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="535" viewBox="0 0 540 535">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="540" height="535" fill="white"/>
+
+<line x1="70" y1="95.5" x2="70" y2="141" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="209" x2="70" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="209" x2="300" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="300" y1="305.5" x2="70" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="305.5" x2="300" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="410.5" x2="300" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="-29.5" y="44.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Arc&lt;dyn ExecutionPlan&gt;</tspan></text>
+<rect x="-14.5" y="141" width="169" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="167" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">JobService session</tspan><tspan x="70" dy="17">extension</tspan></text>
+<rect x="-5" y="254.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">LocalJobRunner</tspan></text>
+<rect x="223" y="254.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">ClusterJobRunner</tspan></text>
+<rect x="-10.75" y="359.5" width="161.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Workers and tasks</tspan></text>
+<rect x="189.25" y="359.5" width="221.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">SendableRecordBatchStream</tspan></text>
+</svg>

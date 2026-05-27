@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="770" height="430" viewBox="0 0 770 430">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="770" height="430" fill="white"/>
+
+<line x1="169.5" y1="70" x2="200.5" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="169.5" y1="70" x2="200.5" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="169.5" y1="70" x2="204.25" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="399.5" y1="175" x2="455" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="395.75" y1="280" x2="455" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="-29.5" y="36" width="199" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Original ExecutionPlan</tspan><tspan x="70" dy="17">tree</tspan></text>
+<rect x="200.5" y="36" width="199" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Stage 0: ExecutionPlan</tspan><tspan x="300" dy="17">subtree</tspan></text>
+<rect x="200.5" y="141" width="199" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="167" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Stage 1: ExecutionPlan</tspan><tspan x="300" dy="17">subtree</tspan></text>
+<rect x="204.25" y="246" width="191.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="272" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Stage 2: final</tspan><tspan x="300" dy="17">ExecutionPlan subtree</tspan></text>
+<rect x="455" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">StageInputExec</tspan></text>
+<rect x="455" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="530" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">StageInputExec</tspan></text>
+</svg>

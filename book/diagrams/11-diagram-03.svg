@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="289" viewBox="0 0 1230 395">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1230" height="395" fill="white"/>
+
+<line x1="177" y1="70" x2="225" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="375" y1="70" x2="455" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="605" y1="70" x2="685" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="835" y1="70" x2="915" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1065" y1="70" x2="-5" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="145" y1="245" x2="211.75" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="388.25" y1="245" x2="438" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="-37" y="44.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">DataFusion ColumnarValue</tspan></text>
+<rect x="225" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Arrow ArrayRef</tspan></text>
+<rect x="455" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">PyArrow object</tspan></text>
+<rect x="685" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="760" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">PySpark wrapper</tspan></text>
+<rect x="915" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="990" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="990" dy="0">Python result</tspan></text>
+<rect x="-5" y="219.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="245" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Arrow ArrayData</tspan></text>
+<rect x="211.75" y="219.5" width="176.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="245" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">cast to output type</tspan></text>
+<rect x="438" y="219.5" width="184" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="530" y="245" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">ColumnarValue::Array</tspan></text>
+</svg>

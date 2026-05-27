@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="1060" viewBox="0 0 540 1060">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="540" height="1060" fill="white"/>
+
+<line x1="70" y1="95.5" x2="70" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="200.5" x2="70" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="305.5" x2="70" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="305.5" x2="300" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="300" y1="410.5" x2="70" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="515.5" x2="70" y2="569.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="620.5" x2="70" y2="674.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="620.5" x2="300" y2="666" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="410.5" x2="300" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="725.5" x2="300" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="300" y1="734" x2="70" y2="771" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="300" y1="515.5" x2="300" y2="569.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="839" x2="70" y2="884.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="300" y1="620.5" x2="70" y2="884.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="-22" y="44.5" width="184" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">INSERT / SAVE / CTAS</tspan></text>
+<rect x="-7" y="149.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">WritePlanBuilder</tspan></text>
+<rect x="-5" y="254.5" width="150" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="70" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">target</tspan></text>
+<rect x="-5" y="359.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">DataSource</tspan></text>
+<rect x="225" y="359.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Catalog Table</tspan></text>
+<rect x="-25.75" y="464.5" width="191.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">CatalogManager lookup</tspan></text>
+<rect x="-5" y="569.5" width="150" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="70" y="595" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">exists?</tspan></text>
+<rect x="-22" y="674.5" width="184" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="700" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">reuse table metadata</tspan></text>
+<rect x="219.25" y="666" width="161.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="692" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">build CreateTable</tspan><tspan x="300" dy="17">command</tspan></text>
+<rect x="223" y="464.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">FileWriteOptions</tspan></text>
+<rect x="-14.5" y="771" width="169" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="797" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">CatalogCommandNode</tspan><tspan x="70" dy="17">precondition</tspan></text>
+<rect x="225" y="569.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="595" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">FileWriteNode</tspan></text>
+<rect x="-5" y="884.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="910" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">BarrierNode</tspan></text>
+</svg>

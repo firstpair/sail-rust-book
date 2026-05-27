@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="289" viewBox="0 0 1230 395">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1230" height="395" fill="white"/>
+
+<line x1="154.5" y1="70" x2="219.25" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="380.75" y1="70" x2="423" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="637" y1="70" x2="656.75" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="863.25" y1="70" x2="915" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1065" y1="70" x2="-37" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="-14.5" y="36" width="169" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">PySpark serialized</tspan><tspan x="70" dy="17">command</tspan></text>
+<rect x="219.25" y="44.5" width="161.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">PySparkUdfPayload</tspan></text>
+<rect x="423" y="44.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">pyspark.worker.read_udfs</tspan></text>
+<rect x="656.75" y="44.5" width="206.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="760" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">Python callable wrapper</tspan></text>
+<rect x="915" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="990" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="990" dy="0">PySparkUDF</tspan></text>
+<rect x="-37" y="219.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="245" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">DataFusion UDF execution</tspan></text>
+</svg>

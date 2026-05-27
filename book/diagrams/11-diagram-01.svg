@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="776" viewBox="0 0 1230 1060">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1230" height="1060" fill="white"/>
+
+<line x1="70" y1="95.5" x2="70" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="200.5" x2="70" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="305.5" x2="70" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="410.5" x2="70" y2="456" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="410.5" x2="300" y2="456" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="410.5" x2="530" y2="456" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="410.5" x2="760" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="410.5" x2="990" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="524" x2="70" y2="569.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="300" y1="524" x2="70" y2="569.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="530" y1="524" x2="70" y2="569.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="760" y1="515.5" x2="70" y2="569.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="990" y1="515.5" x2="70" y2="569.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="620.5" x2="70" y2="674.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="725.5" x2="70" y2="779.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="70" y1="830.5" x2="70" y2="884.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="-22" y="44.5" width="184" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Spark Connect or SQL</tspan></text>
+<rect x="-5" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Sail spec</tspan></text>
+<rect x="-5" y="254.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">PlanResolver</tspan></text>
+<rect x="-5" y="359.5" width="150" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="70" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">function kind</tspan></text>
+<rect x="-5" y="456" width="150" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="482" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">built-in scalar</tspan><tspan x="70" dy="17">expression</tspan></text>
+<rect x="215.5" y="456" width="169" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="300" y="482" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">built-in aggregate</tspan><tspan x="300" dy="17">expression</tspan></text>
+<rect x="445.5" y="456" width="169" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="530" y="482" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">catalog registered</tspan><tspan x="530" dy="17">PySpark UDF</tspan></text>
+<rect x="675.5" y="464.5" width="169" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="760" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">inline PySpark UDF</tspan></text>
+<rect x="886.75" y="464.5" width="206.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="990" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="990" dy="0">PySpark UDTF stream UDF</tspan></text>
+<rect x="-29.5" y="569.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="595" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">DataFusion LogicalPlan</tspan></text>
+<rect x="-5" y="674.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="700" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">physical plan</tspan></text>
+<rect x="-22" y="779.5" width="184" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="805" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">RemoteExecutionCodec</tspan></text>
+<rect x="-14.5" y="884.5" width="169" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="70" y="910" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">worker TaskContext</tspan></text>
+</svg>
