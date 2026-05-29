@@ -25,7 +25,7 @@ flowchart LR
     Results -->|Spark Connect ArrowBatch| PySpark
 ```
 
-The rest of this book walks that diagram from left to right, then returns to the extension proposal in issue #1810 and asks: where should a third-party DataFusion integration plug in so it works in both local and distributed execution?
+The rest of this book walks that diagram from left to right, then returns to the extension proposal in discussion #2001 and asks: where should a third-party DataFusion integration plug in so it works in both local and distributed execution?
 
 ## The Big Pieces
 
@@ -57,7 +57,7 @@ PySpark API call
 
 This is also the extension story. If an integration only hooks one of these layers, it will work only until a query crosses into another layer. A scalar function registered at planning time still has to be recognized when a physical plan is decoded on a remote worker. A logical optimizer rule that creates a custom extension node still needs a physical extension planner. A session option used by that rule has to be present in the `SessionConfig` that the planner reads.
 
-That is exactly the problem described in issue #1810.
+That is exactly the problem described in discussion #2001.
 
 ## Spark Connect Is the Front Door
 
@@ -99,7 +99,7 @@ The Python package `pysail` is thin by design. The public Python class `python/p
 
 The Rust side lives in `crates/sail-python/src/spark/server.rs`. It loads `AppConfig`, grabs the global Tokio runtime, binds a TCP listener, and starts the Spark Connect server in a background thread. The implementation explicitly releases the Python GIL while waiting for the server so Python UDFs are not blocked by the server thread.
 
-This shape is important for the extension proposal. If third-party extensions are discovered from Python wheels, `pysail` startup is the natural discovery point. But the extension object has to cross from Python packaging into Rust planning and execution. Issue #1810 proposes Python entry points such as:
+This shape is important for the extension proposal. If third-party extensions are discovered from Python wheels, `pysail` startup is the natural discovery point. But the extension object has to cross from Python packaging into Rust planning and execution. Discussion #2001 proposes Python entry points such as:
 
 ```toml
 [project.entry-points."pysail.extensions"]
@@ -145,7 +145,7 @@ lakehouse extension planners
 
 `ExtensionPhysicalPlanner` recognizes Sail logical extension nodes such as range, show string, map partitions, monotonic IDs, Spark partition IDs, file writes, file deletes, streaming nodes, catalog commands, explicit repartition, and barriers. It turns them into physical `ExecutionPlan` implementations from `sail-physical-plan` and related crates.
 
-This is where issue #1810 finds one of its sharp edges. Today, if `ExtensionPhysicalPlanner` does not recognize a logical extension node, it returns an internal error. DataFusion's extension planner convention is to return `Ok(None)` when a planner does not own a node, allowing later planners in the chain to try. For third-party planners, that difference controls whether composition works.
+This is where discussion #2001 finds one of its sharp edges. Today, if `ExtensionPhysicalPlanner` does not recognize a logical extension node, it returns an internal error. DataFusion's extension planner convention is to return `Ok(None)` when a planner does not own a node, allowing later planners in the chain to try. For third-party planners, that difference controls whether composition works.
 
 ## Local Execution Is Direct DataFusion Execution
 
@@ -239,11 +239,11 @@ Planning-time registry is necessary.
 Distributed execution-time registry is also necessary.
 ```
 
-If an extension contributes `ST_Intersects`, it is not enough for the planner to know the function. A remote worker decoding a physical plan also has to know how to reconstruct the same `ScalarUDF` or `AggregateUDF`. Issue #1810 calls this out directly for Sedona-style extensions.
+If an extension contributes `ST_Intersects`, it is not enough for the planner to know the function. A remote worker decoding a physical plan also has to know how to reconstruct the same `ScalarUDF` or `AggregateUDF`. Discussion #2001 calls this out directly for Sedona-style extensions.
 
 ## Where Extensions Want to Plug In
 
-Issue #1810 proposes a unified `SailExtension` trait. Its motivation is that real DataFusion integrations usually need several hooks at once:
+Discussion #2001 proposes a unified `SailExtension` trait. Its motivation is that real DataFusion integrations usually need several hooks at once:
 
 - Scalar UDFs.
 - Aggregate UDAFs.
@@ -329,6 +329,6 @@ Once those two paths feel familiar, the rest of the book can zoom into each laye
 
 Sail's architecture is a layered translation pipeline. PySpark speaks Spark Connect. Spark Connect becomes Sail's internal spec. The spec resolves into DataFusion logical plans. DataFusion optimizes and physical-plans the query, with Sail adding Spark semantics through custom functions, logical nodes, physical nodes, optimizer rules, and session extensions. Local mode executes the physical plan directly. Cluster mode decomposes it into stages and tasks, moving Arrow record batches through shuffle streams.
 
-The extension proposal in issue #1810 matters because it turns this architecture inside out. A third-party integration must be able to contribute to every layer where its semantics appear. If Sail exposes only one hook, extensions will work in toy examples and fail when optimization, physical planning, or distributed execution enters the picture.
+The extension proposal in discussion #2001 matters because it turns this architecture inside out. A third-party integration must be able to contribute to every layer where its semantics appear. If Sail exposes only one hook, extensions will work in toy examples and fail when optimization, physical planning, or distributed execution enters the picture.
 
 The next chapter should slow down and teach the Rust patterns that make this architecture possible: trait objects, `Arc`, async services, actor handles, DataFusion extension traits, and typed session extensions.

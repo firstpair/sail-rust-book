@@ -583,7 +583,7 @@ That is a concrete example of why "Spark compatible" is not a single target. Spa
 
 ## What pysail Means for Extensions
 
-Issue #1810 proposes Python entry points such as:
+Discussion #2001 proposes Python entry points such as:
 
 ```toml
 [project.entry-points."pysail.extensions"]

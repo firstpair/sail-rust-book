@@ -13,7 +13,7 @@ distributed and extension stories become more demanding.
 | Columnar runtime | [5. Apache Arrow](05-apache-arrow.md), [6. Apache DataFusion](06-apache-datafusion.md) | The data model and query engine Sail builds on. |
 | Distribution | [7. Physical Plan to Job Graph](07-physical-plan-to-job-graph.md), [8. Drivers, Workers, Tasks, and Streams](08-drivers-workers-tasks-and-streams.md), [9. Shuffle and Data Movement](09-shuffle-and-data-movement.md) | How one DataFusion plan becomes distributed task execution and Arrow stream movement. |
 | Spark semantics | [10. Sail Spec and Plan Resolver](10-sail-spec-and-plan-resolver.md), [11. Functions, UDFs, and Codecs](11-functions-udfs-and-codecs.md), [12. Catalogs, Lakehouse Tables, and File Formats](12-catalogs-lakehouse-tables-and-file-formats.md) | How Spark-compatible names, expressions, functions, commands, tables, and writes become executable DataFusion objects. |
-| Extension design | [13. Extension Architecture](13-extension-architecture-from-proposal-to-design.md) | How the previous patterns become a proposed extension architecture for issue #1810. |
+| Extension design | [13. Extension Architecture](13-extension-architecture-from-proposal-to-design.md) | How the previous patterns become a proposed extension architecture for discussion #2001. |
 
 ## Concept Progression
 

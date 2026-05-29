@@ -3,7 +3,7 @@
 The first twelve chapters treated Sail as a system to read. This final chapter treats
 it as a system to extend.
 
-The extension proposal in issue #1810 is titled "Extension API for third-party
+The extension proposal in discussion #2001 is titled "Extension API for third-party
 DataFusion integrations (UDFs, optimizer rules, planner extensions)." It starts from
 a practical problem: integrating a real DataFusion extension, such as Apache
 SedonaDB, currently requires editing Sail internals across multiple crates. A useful
@@ -59,7 +59,7 @@ The main files for this chapter are:
 
 ## What The Proposal Is Really Asking For
 
-Issue #1810 describes a third-party extension that needs all of these dimensions:
+Discussion #2001 describes a third-party extension that needs all of these dimensions:
 
 - scalar UDFs at plan time,
 - aggregate UDAFs at plan time,
@@ -127,7 +127,7 @@ DataFusion `ExecutionPlan` integration, and native function dispatch. It cannot
 afford a protobuf round trip per record batch, and it has no realistic way to remain
 ABI-stable across major DataFusion upgrades without recompilation.
 
-Issue #1810 implicitly conflates these. A unified `SailExtension` trait is one way
+Discussion #2001 implicitly conflates these. A unified `SailExtension` trait is one way
 to register both, but the mechanism for *crossing* each boundary can be different.
 The recommended architecture in this chapter uses:
 
@@ -824,7 +824,7 @@ Relation.extension("apache.sedona/SpatialJoin")
   -> Sedona codec
 ```
 
-Pattern B is what issue #1810 implicitly assumed for everything. Pattern A is
+Pattern B is what discussion #2001 implicitly assumed for everything. Pattern A is
 what makes Spark Connect dispatch worth its own ABI.
 
 ### A Sketch In Python
@@ -1439,7 +1439,7 @@ table format registry, Python data source discovery, session extensions,
 lakehouse planner chain, and physical codec all show pieces of the
 execution-time answer. `Relation.extension`, `Command.extension`, and
 `Expression.extension` provide the plan-time answer once Sail adds a
-dispatcher. Issue #1810 asks Sail to make those pieces first-class and
+dispatcher. Discussion #2001 asks Sail to make those pieces first-class and
 composable.
 
 The final design principle is simple:

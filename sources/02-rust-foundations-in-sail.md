@@ -184,7 +184,7 @@ These are not noise.
 
 Sail is full of async tasks, actor messages, gRPC handlers, and worker processes. If a service may be stored in a session, used by a task, or held across an `.await`, Rust needs to know it is safe to move and share.
 
-The proposed extension API in issue #1810 uses the same idea:
+The proposed extension API in discussion #2001 uses the same idea:
 
 ```rust
 pub trait SailExtension: Send + Sync {
@@ -325,7 +325,7 @@ SessionConfig::new()
     .with_extension(Arc::new(DeltaTableCache::default()))
 ```
 
-This matters for extensions because many third-party integrations need session state. Sedona-style spatial planning, for example, may need options that optimizer rules can read. The current `ServerSessionMutator` can mutate `SessionConfig`, `SessionStateBuilder`, and `RuntimeEnvBuilder`, but issue #1810 argues that this is not enough because functions, codec re-resolution, and extension planner registration live elsewhere.
+This matters for extensions because many third-party integrations need session state. Sedona-style spatial planning, for example, may need options that optimizer rules can read. The current `ServerSessionMutator` can mutate `SessionConfig`, `SessionStateBuilder`, and `RuntimeEnvBuilder`, but discussion #2001 argues that this is not enough because functions, codec re-resolution, and extension planner registration live elsewhere.
 
 ## Builders and Mutators
 
@@ -360,7 +360,7 @@ pub trait ServerSessionMutator: Send {
 }
 ```
 
-This is already an extension-like boundary. But it is embedder-oriented, not package/plugin-oriented. It does not solve plan-time function registries or worker-side UDF decoding. That is why issue #1810 proposes a higher-level `SailExtension`.
+This is already an extension-like boundary. But it is embedder-oriented, not package/plugin-oriented. It does not solve plan-time function registries or worker-side UDF decoding. That is why discussion #2001 proposes a higher-level `SailExtension`.
 
 ## Downcasting Extension Nodes
 
@@ -463,7 +463,7 @@ This is why `Arc<dyn ExecutionPlan>` is not just a pointer. It is the main curre
 
 ## How Rust Shapes the Extension Proposal
 
-Issue #1810 proposes a `SailExtension` trait that can contribute functions, optimizer rules, config extensions, physical planners, and distributed UDF re-resolution. Rust affects that proposal in several ways.
+Discussion #2001 proposes a `SailExtension` trait that can contribute functions, optimizer rules, config extensions, physical planners, and distributed UDF re-resolution. Rust affects that proposal in several ways.
 
 First, extensions will likely be trait objects:
 
@@ -490,7 +490,7 @@ Vec<Arc<dyn OptimizerRule + Send + Sync>>
 Vec<Arc<dyn ExtensionPlanner + Send + Sync>>
 ```
 
-Fourth, Python-discovered extensions create an ABI and packaging problem. Python entry points can discover a `pysail-sedona` package, but the object handed back into Rust must still match the exact Rust crate versions expected by `pysail`. Rust trait objects do not have a stable cross-version ABI. This is why issue #1810 calls out version coupling between `pysail`, `datafusion`, `arrow`, `pyo3`, and the plugin wheel.
+Fourth, Python-discovered extensions create an ABI and packaging problem. Python entry points can discover a `pysail-sedona` package, but the object handed back into Rust must still match the exact Rust crate versions expected by `pysail`. Rust trait objects do not have a stable cross-version ABI. This is why discussion #2001 calls out version coupling between `pysail`, `datafusion`, `arrow`, `pyo3`, and the plugin wheel.
 
 The Rust design question is therefore not "can we make a plugin trait?" That part is straightforward. The deeper question is "where does the trait object live, who owns it, how is it shared, and how do workers reconstruct the same extension-provided behavior?"
 

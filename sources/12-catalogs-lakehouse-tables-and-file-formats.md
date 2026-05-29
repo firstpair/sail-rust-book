@@ -271,7 +271,7 @@ iceberg
 discovered Python data sources
 ```
 
-This matters for issue #1810. Sail already has a working registry pattern for one
+This matters for discussion #2001. Sail already has a working registry pattern for one
 important category of extension. The last chapter will generalize that lesson: a
 third-party extension should be able to contribute functions, optimizer rules,
 physical planners, codecs, table formats, and perhaps catalog providers through a
@@ -827,7 +827,7 @@ df.write.format("my_source").mode("overwrite").save()
 ```
 
 The extension challenge is that Python data sources currently plug into one registry.
-Issue #1810 asks for a broader version of that idea across DataFusion integrations.
+Discussion #2001 asks for a broader version of that idea across DataFusion integrations.
 
 ## Example: Parquet Read
 
@@ -943,7 +943,7 @@ that matter for the final chapter:
 | Carry distributed requirements explicitly | row-level columns and `RowLevelWriteInfo` encode what workers need. |
 | Return DataFusion objects | sources and writers integrate with DataFusion rather than bypassing it. |
 
-For issue #1810, this suggests a useful design direction:
+For discussion #2001, this suggests a useful design direction:
 
 ```rust
 pub trait SailExtension {

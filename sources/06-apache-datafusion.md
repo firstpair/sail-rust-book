@@ -322,7 +322,7 @@ flowchart TB
     Default --> Physical
 ```
 
-The extension proposal in issue #1810 wants to generalize this seam. Today the
+The extension proposal in discussion #2001 wants to generalize this seam. Today the
 list is hard-coded. A third-party extension API would let packages add their
 own extension planners without editing Sail core.
 
@@ -824,7 +824,7 @@ compatibility at well-defined seams.
 
 ## Extension Implications
 
-The extensions proposal in issue #1810 is largely about opening the seams this
+The extensions proposal in discussion #2001 is largely about opening the seams this
 chapter has exposed.
 
 Today, Sail has internal extension points:

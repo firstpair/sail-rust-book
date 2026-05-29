@@ -13,7 +13,7 @@ distributed and extension stories become more demanding.
 | Columnar runtime | [5. Apache Arrow](05-apache-arrow.md), [6. Apache DataFusion](06-apache-datafusion.md) | The data model and query engine Sail builds on. |
 | Distribution | [7. Physical Plan to Job Graph](07-physical-plan-to-job-graph.md), [8. Drivers, Workers, Tasks, and Streams](08-drivers-workers-tasks-and-streams.md), [9. Shuffle and Data Movement](09-shuffle-and-data-movement.md) | How one DataFusion plan becomes distributed task execution and Arrow stream movement. |
 | Spark semantics | [10. Sail Spec and Plan Resolver](10-sail-spec-and-plan-resolver.md), [11. Functions, UDFs, and Codecs](11-functions-udfs-and-codecs.md), [12. Catalogs, Lakehouse Tables, and File Formats](12-catalogs-lakehouse-tables-and-file-formats.md) | How Spark-compatible names, expressions, functions, commands, tables, and writes become executable DataFusion objects. |
-| Extension design | [13. Extension Architecture](13-extension-architecture-from-proposal-to-design.md) | How the previous patterns become a proposed extension architecture for issue #1810. |
+| Extension design | [13. Extension Architecture](13-extension-architecture-from-proposal-to-design.md) | How the previous patterns become a proposed extension architecture for discussion #2001. |
 
 ## Concept Progression
 
@@ -80,7 +80,7 @@ That means Sail is not "Spark implemented in Rust" in the narrow sense. It is a 
 
 ![Flowchart 01.1](diagrams/01-diagram-01.svg)
 
-The rest of this book walks that diagram from left to right, then returns to the extension proposal in issue #1810 and asks: where should a third-party DataFusion integration plug in so it works in both local and distributed execution?
+The rest of this book walks that diagram from left to right, then returns to the extension proposal in discussion #2001 and asks: where should a third-party DataFusion integration plug in so it works in both local and distributed execution?
 
 ## The Big Pieces
 
@@ -112,7 +112,7 @@ PySpark API call
 
 This is also the extension story. If an integration only hooks one of these layers, it will work only until a query crosses into another layer. A scalar function registered at planning time still has to be recognized when a physical plan is decoded on a remote worker. A logical optimizer rule that creates a custom extension node still needs a physical extension planner. A session option used by that rule has to be present in the `SessionConfig` that the planner reads.
 
-That is exactly the problem described in issue #1810.
+That is exactly the problem described in discussion #2001.
 
 ## Spark Connect Is the Front Door
 
@@ -137,7 +137,7 @@ The Python package `pysail` is thin by design. The public Python class `python/p
 
 The Rust side lives in `crates/sail-python/src/spark/server.rs`. It loads `AppConfig`, grabs the global Tokio runtime, binds a TCP listener, and starts the Spark Connect server in a background thread. The implementation explicitly releases the Python GIL while waiting for the server so Python UDFs are not blocked by the server thread.
 
-This shape is important for the extension proposal. If third-party extensions are discovered from Python wheels, `pysail` startup is the natural discovery point. But the extension object has to cross from Python packaging into Rust planning and execution. Issue #1810 proposes Python entry points such as:
+This shape is important for the extension proposal. If third-party extensions are discovered from Python wheels, `pysail` startup is the natural discovery point. But the extension object has to cross from Python packaging into Rust planning and execution. Discussion #2001 proposes Python entry points such as:
 
 ```toml
 [project.entry-points."pysail.extensions"]
@@ -183,7 +183,7 @@ lakehouse extension planners
 
 `ExtensionPhysicalPlanner` recognizes Sail logical extension nodes such as range, show string, map partitions, monotonic IDs, Spark partition IDs, file writes, file deletes, streaming nodes, catalog commands, explicit repartition, and barriers. It turns them into physical `ExecutionPlan` implementations from `sail-physical-plan` and related crates.
 
-This is where issue #1810 finds one of its sharp edges. Today, if `ExtensionPhysicalPlanner` does not recognize a logical extension node, it returns an internal error. DataFusion's extension planner convention is to return `Ok(None)` when a planner does not own a node, allowing later planners in the chain to try. For third-party planners, that difference controls whether composition works.
+This is where discussion #2001 finds one of its sharp edges. Today, if `ExtensionPhysicalPlanner` does not recognize a logical extension node, it returns an internal error. DataFusion's extension planner convention is to return `Ok(None)` when a planner does not own a node, allowing later planners in the chain to try. For third-party planners, that difference controls whether composition works.
 
 ## Local Execution Is Direct DataFusion Execution
 
@@ -258,11 +258,11 @@ Planning-time registry is necessary.
 Distributed execution-time registry is also necessary.
 ```
 
-If an extension contributes `ST_Intersects`, it is not enough for the planner to know the function. A remote worker decoding a physical plan also has to know how to reconstruct the same `ScalarUDF` or `AggregateUDF`. Issue #1810 calls this out directly for Sedona-style extensions.
+If an extension contributes `ST_Intersects`, it is not enough for the planner to know the function. A remote worker decoding a physical plan also has to know how to reconstruct the same `ScalarUDF` or `AggregateUDF`. Discussion #2001 calls this out directly for Sedona-style extensions.
 
 ## Where Extensions Want to Plug In
 
-Issue #1810 proposes a unified `SailExtension` trait. Its motivation is that real DataFusion integrations usually need several hooks at once:
+Discussion #2001 proposes a unified `SailExtension` trait. Its motivation is that real DataFusion integrations usually need several hooks at once:
 
 - Scalar UDFs.
 - Aggregate UDAFs.
@@ -333,7 +333,7 @@ Once those two paths feel familiar, the rest of the book can zoom into each laye
 
 Sail's architecture is a layered translation pipeline. PySpark speaks Spark Connect. Spark Connect becomes Sail's internal spec. The spec resolves into DataFusion logical plans. DataFusion optimizes and physical-plans the query, with Sail adding Spark semantics through custom functions, logical nodes, physical nodes, optimizer rules, and session extensions. Local mode executes the physical plan directly. Cluster mode decomposes it into stages and tasks, moving Arrow record batches through shuffle streams.
 
-The extension proposal in issue #1810 matters because it turns this architecture inside out. A third-party integration must be able to contribute to every layer where its semantics appear. If Sail exposes only one hook, extensions will work in toy examples and fail when optimization, physical planning, or distributed execution enters the picture.
+The extension proposal in discussion #2001 matters because it turns this architecture inside out. A third-party integration must be able to contribute to every layer where its semantics appear. If Sail exposes only one hook, extensions will work in toy examples and fail when optimization, physical planning, or distributed execution enters the picture.
 
 The next chapter should slow down and teach the Rust patterns that make this architecture possible: trait objects, `Arc`, async services, actor handles, DataFusion extension traits, and typed session extensions.
 
@@ -508,7 +508,7 @@ These are not noise.
 
 Sail is full of async tasks, actor messages, gRPC handlers, and worker processes. If a service may be stored in a session, used by a task, or held across an `.await`, Rust needs to know it is safe to move and share.
 
-The proposed extension API in issue #1810 uses the same idea:
+The proposed extension API in discussion #2001 uses the same idea:
 
 ```rust
 pub trait SailExtension: Send + Sync {
@@ -637,7 +637,7 @@ SessionConfig::new()
     .with_extension(Arc::new(DeltaTableCache::default()))
 ```
 
-This matters for extensions because many third-party integrations need session state. Sedona-style spatial planning, for example, may need options that optimizer rules can read. The current `ServerSessionMutator` can mutate `SessionConfig`, `SessionStateBuilder`, and `RuntimeEnvBuilder`, but issue #1810 argues that this is not enough because functions, codec re-resolution, and extension planner registration live elsewhere.
+This matters for extensions because many third-party integrations need session state. Sedona-style spatial planning, for example, may need options that optimizer rules can read. The current `ServerSessionMutator` can mutate `SessionConfig`, `SessionStateBuilder`, and `RuntimeEnvBuilder`, but discussion #2001 argues that this is not enough because functions, codec re-resolution, and extension planner registration live elsewhere.
 
 ## Builders and Mutators
 
@@ -672,7 +672,7 @@ pub trait ServerSessionMutator: Send {
 }
 ```
 
-This is already an extension-like boundary. But it is embedder-oriented, not package/plugin-oriented. It does not solve plan-time function registries or worker-side UDF decoding. That is why issue #1810 proposes a higher-level `SailExtension`.
+This is already an extension-like boundary. But it is embedder-oriented, not package/plugin-oriented. It does not solve plan-time function registries or worker-side UDF decoding. That is why discussion #2001 proposes a higher-level `SailExtension`.
 
 ## Downcasting Extension Nodes
 
@@ -775,7 +775,7 @@ This is why `Arc<dyn ExecutionPlan>` is not just a pointer. It is the main curre
 
 ## How Rust Shapes the Extension Proposal
 
-Issue #1810 proposes a `SailExtension` trait that can contribute functions, optimizer rules, config extensions, physical planners, and distributed UDF re-resolution. Rust affects that proposal in several ways.
+Discussion #2001 proposes a `SailExtension` trait that can contribute functions, optimizer rules, config extensions, physical planners, and distributed UDF re-resolution. Rust affects that proposal in several ways.
 
 First, extensions will likely be trait objects:
 
@@ -802,7 +802,7 @@ Vec<Arc<dyn OptimizerRule + Send + Sync>>
 Vec<Arc<dyn ExtensionPlanner + Send + Sync>>
 ```
 
-Fourth, Python-discovered extensions create an ABI and packaging problem. Python entry points can discover a `pysail-sedona` package, but the object handed back into Rust must still match the exact Rust crate versions expected by `pysail`. Rust trait objects do not have a stable cross-version ABI. This is why issue #1810 calls out version coupling between `pysail`, `datafusion`, `arrow`, `pyo3`, and the plugin wheel.
+Fourth, Python-discovered extensions create an ABI and packaging problem. Python entry points can discover a `pysail-sedona` package, but the object handed back into Rust must still match the exact Rust crate versions expected by `pysail`. Rust trait objects do not have a stable cross-version ABI. This is why discussion #2001 calls out version coupling between `pysail`, `datafusion`, `arrow`, `pyo3`, and the plugin wheel.
 
 The Rust design question is therefore not "can we make a plugin trait?" That part is straightforward. The deeper question is "where does the trait object live, who owns it, how is it shared, and how do workers reconstruct the same extension-provided behavior?"
 
@@ -1396,7 +1396,7 @@ It also truncates long gRPC messages to stay below metadata limits. That sounds 
 
 Spark Connect includes artifact upload and status endpoints. In Sail, `artifact_manager.rs` currently returns TODO errors for add/status handling. The user-facing artifact APIs are listed in the official [Spark Session API reference](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/spark_session.html) as `addArtifact` and `addArtifacts`.
 
-This matters for the extension story. Spark's artifact mechanism is one way clients distribute files, Python dependencies, or resources. Issue #1810, however, focuses more directly on Python entry-point based extension discovery:
+This matters for the extension story. Spark's artifact mechanism is one way clients distribute files, Python dependencies, or resources. Discussion #2001, however, focuses more directly on Python entry-point based extension discovery:
 
 ```toml
 [project.entry-points."pysail.extensions"]
@@ -1438,7 +1438,7 @@ This is a small preview of extension behavior. A client can contribute behavior 
 
 ## What Spark Connect Means for Extensions
 
-Issue #1810 is not only about Rust-side plugin ergonomics. Spark Connect adds several extra requirements.
+Discussion #2001 is not only about Rust-side plugin ergonomics. Spark Connect adds several extra requirements.
 
 First, extensions must be visible during analysis as well as execution.
 
@@ -2057,7 +2057,7 @@ That is a concrete example of why "Spark compatible" is not a single target. Spa
 
 ## What pysail Means for Extensions
 
-Issue #1810 proposes Python entry points such as:
+Discussion #2001 proposes Python entry points such as:
 
 ```toml
 [project.entry-points."pysail.extensions"]
@@ -3212,7 +3212,7 @@ extension nodes that DataFusion does not know how to plan.
 
 ![Flowchart 06.3](diagrams/06-diagram-03.svg)
 
-The extension proposal in issue #1810 wants to generalize this seam. Today the
+The extension proposal in discussion #2001 wants to generalize this seam. Today the
 list is hard-coded. A third-party extension API would let packages add their
 own extension planners without editing Sail core.
 
@@ -3687,7 +3687,7 @@ compatibility at well-defined seams.
 
 ## Extension Implications
 
-The extensions proposal in issue #1810 is largely about opening the seams this
+The extensions proposal in discussion #2001 is largely about opening the seams this
 chapter has exposed.
 
 Today, Sail has internal extension points:
@@ -4655,7 +4655,7 @@ This has several benefits:
 
 ## Extension Implications
 
-For issue #1810, this chapter is the warning label on the box.
+For discussion #2001, this chapter is the warning label on the box.
 
 It is not enough for an extension to register a DataFusion function or physical
 planner. If the extension participates in distributed execution, it must also
@@ -7106,7 +7106,7 @@ uses DataFusion's extension hooks.
 
 ![Flowchart 10.7](diagrams/10-diagram-07.svg)
 
-For issue #1810, this pattern is already half of the answer. Third-party integrations
+For discussion #2001, this pattern is already half of the answer. Third-party integrations
 need a disciplined way to register logical and physical extension behavior without
 hard-coding every integration into `sail-session/src/planner.rs`.
 
@@ -7340,7 +7340,7 @@ and enough metadata to run the UDF in the right execution context.
 
 ## Extension Implications
 
-Issue #1810 asks for an extension API for third-party DataFusion integrations:
+Discussion #2001 asks for an extension API for third-party DataFusion integrations:
 
 - UDFs,
 - optimizer rules,
@@ -7496,7 +7496,7 @@ The Sail spec and resolver form the semantic center of the engine:
 - Sail uses DataFusion logical extension nodes for Spark-specific behavior.
 - The session physical planner turns those extension nodes into Sail physical
   execution plans.
-- Extension proposal #1810 should build on these existing boundaries rather than
+- Extension proposal #2001 should build on these existing boundaries rather than
   bypassing them.
 
 The next chapter turns from plans to callable behavior: functions, UDFs, UDAFs, UDTFs,
@@ -7533,7 +7533,7 @@ spec::Expr / spec::CommandNode
 ```
 
 That makes functions one of the best places to understand why extension proposal
-#1810 is not just about registering names. Distributed extensions must be resolvable,
+#2001 is not just about registering names. Distributed extensions must be resolvable,
 plannable, serializable, decodable, and executable everywhere the query can run.
 
 ## Code Map
@@ -8165,7 +8165,7 @@ That distinction is a bit manual today. The code even has a TODO:
 Implement custom registry to avoid codec for built-in functions
 ```
 
-This is another bright signpost for issue #1810. A third-party extension should not
+This is another bright signpost for discussion #2001. A third-party extension should not
 need to patch a giant match statement in `RemoteExecutionCodec` just to make a custom
 function work on workers.
 
@@ -8405,7 +8405,7 @@ custom behavior, but Sail needs a registry around them to avoid central matches.
 
 ## Extension Implications
 
-For issue #1810, functions and codecs expose the sharpest edge of the design.
+For discussion #2001, functions and codecs expose the sharpest edge of the design.
 
 A third-party extension may want to add:
 
@@ -8566,7 +8566,7 @@ Functions in Sail are distributed execution contracts:
 - Python UDTFs use Sail's `StreamUDF` abstraction and `MapPartitionsExec`.
 - Arrow arrays and record batches are the runtime boundary between Rust and Python.
 - `RemoteExecutionCodec` makes custom plans and functions executable on workers.
-- Extension proposal #1810 must include codec, registration, and worker compatibility
+- Extension proposal #2001 must include codec, registration, and worker compatibility
   stories, not only a way to add names to a function map.
 
 The next chapter moves from callable behavior to tables: catalogs, table formats,
@@ -8833,7 +8833,7 @@ iceberg
 discovered Python data sources
 ```
 
-This matters for issue #1810. Sail already has a working registry pattern for one
+This matters for discussion #2001. Sail already has a working registry pattern for one
 important category of extension. The last chapter will generalize that lesson: a
 third-party extension should be able to contribute functions, optimizer rules,
 physical planners, codecs, table formats, and perhaps catalog providers through a
@@ -9339,7 +9339,7 @@ df.write.format("my_source").mode("overwrite").save()
 ```
 
 The extension challenge is that Python data sources currently plug into one registry.
-Issue #1810 asks for a broader version of that idea across DataFusion integrations.
+Discussion #2001 asks for a broader version of that idea across DataFusion integrations.
 
 ## Example: Parquet Read
 
@@ -9455,7 +9455,7 @@ that matter for the final chapter:
 | Carry distributed requirements explicitly | row-level columns and `RowLevelWriteInfo` encode what workers need. |
 | Return DataFusion objects | sources and writers integrate with DataFusion rather than bypassing it. |
 
-For issue #1810, this suggests a useful design direction:
+For discussion #2001, this suggests a useful design direction:
 
 ```rust
 pub trait SailExtension {
@@ -9504,7 +9504,7 @@ turn these local patterns into a coherent extension architecture for Sail.
 The first twelve chapters treated Sail as a system to read. This final chapter treats
 it as a system to extend.
 
-The extension proposal in issue #1810 is titled "Extension API for third-party
+The extension proposal in discussion #2001 is titled "Extension API for third-party
 DataFusion integrations (UDFs, optimizer rules, planner extensions)." It starts from
 a practical problem: integrating a real DataFusion extension, such as Apache
 SedonaDB, currently requires editing Sail internals across multiple crates. A useful
@@ -9560,7 +9560,7 @@ The main files for this chapter are:
 
 ## What The Proposal Is Really Asking For
 
-Issue #1810 describes a third-party extension that needs all of these dimensions:
+Discussion #2001 describes a third-party extension that needs all of these dimensions:
 
 - scalar UDFs at plan time,
 - aggregate UDAFs at plan time,
@@ -9628,7 +9628,7 @@ DataFusion `ExecutionPlan` integration, and native function dispatch. It cannot
 afford a protobuf round trip per record batch, and it has no realistic way to remain
 ABI-stable across major DataFusion upgrades without recompilation.
 
-Issue #1810 implicitly conflates these. A unified `SailExtension` trait is one way
+Discussion #2001 implicitly conflates these. A unified `SailExtension` trait is one way
 to register both, but the mechanism for *crossing* each boundary can be different.
 The recommended architecture in this chapter uses:
 
@@ -10310,7 +10310,7 @@ Relation.extension("apache.sedona/SpatialJoin")
   -> Sedona codec
 ```
 
-Pattern B is what issue #1810 implicitly assumed for everything. Pattern A is
+Pattern B is what discussion #2001 implicitly assumed for everything. Pattern A is
 what makes Spark Connect dispatch worth its own ABI.
 
 ### A Sketch In Python
@@ -10880,7 +10880,7 @@ table format registry, Python data source discovery, session extensions,
 lakehouse planner chain, and physical codec all show pieces of the
 execution-time answer. `Relation.extension`, `Command.extension`, and
 `Expression.extension` provide the plan-time answer once Sail adds a
-dispatcher. Issue #1810 asks Sail to make those pieces first-class and
+dispatcher. Discussion #2001 asks Sail to make those pieces first-class and
 composable.
 
 The final design principle is simple:

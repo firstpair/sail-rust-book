@@ -997,7 +997,7 @@ This has several benefits:
 
 ## Extension Implications
 
-For issue #1810, this chapter is the warning label on the box.
+For discussion #2001, this chapter is the warning label on the box.
 
 It is not enough for an extension to register a DataFusion function or physical
 planner. If the extension participates in distributed execution, it must also

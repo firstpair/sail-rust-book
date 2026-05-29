@@ -27,7 +27,7 @@ spec::Expr / spec::CommandNode
 ```
 
 That makes functions one of the best places to understand why extension proposal
-#1810 is not just about registering names. Distributed extensions must be resolvable,
+#2001 is not just about registering names. Distributed extensions must be resolvable,
 plannable, serializable, decodable, and executable everywhere the query can run.
 
 ## Code Map
@@ -704,7 +704,7 @@ That distinction is a bit manual today. The code even has a TODO:
 Implement custom registry to avoid codec for built-in functions
 ```
 
-This is another bright signpost for issue #1810. A third-party extension should not
+This is another bright signpost for discussion #2001. A third-party extension should not
 need to patch a giant match statement in `RemoteExecutionCodec` just to make a custom
 function work on workers.
 
@@ -965,7 +965,7 @@ custom behavior, but Sail needs a registry around them to avoid central matches.
 
 ## Extension Implications
 
-For issue #1810, functions and codecs expose the sharpest edge of the design.
+For discussion #2001, functions and codecs expose the sharpest edge of the design.
 
 A third-party extension may want to add:
 
@@ -1126,7 +1126,7 @@ Functions in Sail are distributed execution contracts:
 - Python UDTFs use Sail's `StreamUDF` abstraction and `MapPartitionsExec`.
 - Arrow arrays and record batches are the runtime boundary between Rust and Python.
 - `RemoteExecutionCodec` makes custom plans and functions executable on workers.
-- Extension proposal #1810 must include codec, registration, and worker compatibility
+- Extension proposal #2001 must include codec, registration, and worker compatibility
   stories, not only a way to add names to a function map.
 
 The next chapter moves from callable behavior to tables: catalogs, table formats,

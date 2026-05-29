@@ -706,7 +706,7 @@ flowchart TB
     E --> F["Sail physical exec"]
 ```
 
-For issue #1810, this pattern is already half of the answer. Third-party integrations
+For discussion #2001, this pattern is already half of the answer. Third-party integrations
 need a disciplined way to register logical and physical extension behavior without
 hard-coding every integration into `sail-session/src/planner.rs`.
 
@@ -953,7 +953,7 @@ and enough metadata to run the UDF in the right execution context.
 
 ## Extension Implications
 
-Issue #1810 asks for an extension API for third-party DataFusion integrations:
+Discussion #2001 asks for an extension API for third-party DataFusion integrations:
 
 - UDFs,
 - optimizer rules,
@@ -1109,7 +1109,7 @@ The Sail spec and resolver form the semantic center of the engine:
 - Sail uses DataFusion logical extension nodes for Spark-specific behavior.
 - The session physical planner turns those extension nodes into Sail physical
   execution plans.
-- Extension proposal #1810 should build on these existing boundaries rather than
+- Extension proposal #2001 should build on these existing boundaries rather than
   bypassing them.
 
 The next chapter turns from plans to callable behavior: functions, UDFs, UDAFs, UDTFs,

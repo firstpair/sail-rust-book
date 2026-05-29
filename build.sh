@@ -39,7 +39,7 @@ stage_sources() {
   rm -rf "$ART"
   mkdir -p "$ART/diagrams"
   cp "$SRC"/0?-*.md "$SRC"/1?-*.md "$ART"/
-  cp "$SRC"/book-metadata.yaml "$SRC"/template.typ "$ART"/
+  cp "$SRC"/book-metadata.yaml "$SRC"/template.typ "$SRC"/epub.css "$ART"/
 }
 
 render_diagrams() {
@@ -85,6 +85,7 @@ generate_epub() {
   # cd into $ART so pandoc finds diagrams/*.svg and embeds them in the EPUB.
   ( cd "$ART" && pandoc \
     --metadata-file=book-metadata.yaml \
+    --css=epub.css \
     --standalone \
     --toc \
     --toc-depth=2 \

@@ -1,6 +1,6 @@
 ---
 title: "Sail Extensions: Technical Plan and Community Facilitation Brief"
-subtitle: "Review of lakehq/sail#1810 and proposed next steps"
+subtitle: "Review of lakehq/sail#2001 and proposed next steps"
 author: "Prepared for Sail community coordination"
 date: "May 22, 2026"
 geometry: margin=0.85in
@@ -11,7 +11,7 @@ urlcolor: "1A5FB4"
 
 # Executive Summary
 
-Issue [lakehq/sail#1810](https://github.com/lakehq/sail/issues/1810) should be treated as the start of a community design effort, not as a single implementation task. The opening proposal correctly identifies the extension dimensions Sail needs: function registration, session configuration, optimizer rules, physical planner extensions, and execution-time UDF/UDAF re-resolution. The thread then adds an important correction: the long-term plugin boundary should probably not be a Rust trait object ABI.
+Issue [lakehq/sail#2001](https://github.com/lakehq/sail/discussions/2001) should be treated as the start of a community design effort, not as a single implementation task. The opening proposal correctly identifies the extension dimensions Sail needs: function registration, session configuration, optimizer rules, physical planner extensions, and execution-time UDF/UDAF re-resolution. The thread then adds an important correction: the long-term plugin boundary should probably not be a Rust trait object ABI.
 
 This brief recommends framing extensions as **two boundaries rather than one**. A plan-time boundary captures user intent once per query; it wants forward and backward wire compatibility, language neutrality, and a format that survives DataFusion and Arrow upgrades. An execution-time boundary runs operators on Arrow batches; it wants zero-copy access, native dispatch, and is willing to accept version coupling in return. The community should pursue these in parallel. Spark Connect's existing `Relation.extension`, `Command.extension`, and `Expression.extension` messages are the natural plan-time channel. DataFusion FFI is the natural execution-time channel. The same `SailExtension` object can register contributions to both.
 

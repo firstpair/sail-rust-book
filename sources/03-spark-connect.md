@@ -601,7 +601,7 @@ It also truncates long gRPC messages to stay below metadata limits. That sounds 
 
 Spark Connect includes artifact upload and status endpoints. In Sail, `artifact_manager.rs` currently returns TODO errors for add/status handling. The user-facing artifact APIs are listed in the official [Spark Session API reference](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/spark_session.html) as `addArtifact` and `addArtifacts`.
 
-This matters for the extension story. Spark's artifact mechanism is one way clients distribute files, Python dependencies, or resources. Issue #1810, however, focuses more directly on Python entry-point based extension discovery:
+This matters for the extension story. Spark's artifact mechanism is one way clients distribute files, Python dependencies, or resources. Discussion #2001, however, focuses more directly on Python entry-point based extension discovery:
 
 ```toml
 [project.entry-points."pysail.extensions"]
@@ -643,7 +643,7 @@ This is a small preview of extension behavior. A client can contribute behavior 
 
 ## What Spark Connect Means for Extensions
 
-Issue #1810 is not only about Rust-side plugin ergonomics. Spark Connect adds several extra requirements.
+Discussion #2001 is not only about Rust-side plugin ergonomics. Spark Connect adds several extra requirements.
 
 First, extensions must be visible during analysis as well as execution.
 
