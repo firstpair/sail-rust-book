@@ -1,21 +1,24 @@
-# Sail Code Book
-
-\vspace{2em}
-
-**Alexy Khrabrov**  
-[chiefscientist.org](https://chiefscientist.org)
-
-**Claude Code**  
-Anthropic
-
-\vspace{4em}
-
----
+::: {style="text-align: center; margin-top: 6em;"}
+# Sail Code Book {.unnumbered .unlisted}
 
 *Understanding the Sail Query Engine at the Code Level*
 
----
+&nbsp;
 
-\vspace{4em}
+&nbsp;
 
-© 2025 Alexy Khrabrov and Anthropic. All rights reserved.
+**Alexy Khrabrov**  
+*[chiefscientist.org](https://chiefscientist.org)*
+
+&nbsp;
+
+**Claude Code**
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+© 2025 Alexy Khrabrov. All rights reserved.
+:::

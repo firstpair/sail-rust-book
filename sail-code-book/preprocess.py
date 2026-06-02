@@ -62,7 +62,7 @@ def render_diagram(mmd_source: str, slug: str) -> str:
         errors.append(name)
         # Fall back to raw mermaid (pandoc will leave it as a code block)
         return None
-    return os.path.relpath(png_path, PROCESSED_DIR)
+    return png_path  # absolute path — works for both pandoc and typst
 
 
 def process_file(chapter: str) -> str:

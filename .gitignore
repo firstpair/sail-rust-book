@@ -7,7 +7,7 @@ build/
 */diagrams/*.png
 
 # Intermediate generated files
-*.typ
+**/out/*.typ
 */processed/
 
 # Dependencies

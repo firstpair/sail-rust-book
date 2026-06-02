@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Build the Sail book as EPUB and a typst-compatible intermediate Markdown.
+# Build the Sail book as EPUB and PDF.
 # Requirements:
 #   - pandoc >= 3.x     (https://pandoc.org/installing.html)
-#   - typst             (https://github.com/typst/typst)  -- for PDF via typst path
+#   - mmdc              (npm install -g @mermaid-js/mermaid-cli)
+#   - typst             (https://github.com/typst/typst)
 #
 # Usage:
-#   cd book/
+#   cd sail-code-book/
 #   ./build.sh
 #
 # Output:
-#   out/sail-book.epub      -- EPUB for e-readers / Kindle
-#   out/sail-book.pdf       -- PDF via typst (requires typst installed)
-#   out/sail-book-merged.md -- Single merged Markdown (for other tools)
+#   out/sail-book.epub  -- EPUB for e-readers / Kindle
+#   out/sail-book.pdf   -- PDF via typst
 
 set -euo pipefail
 
@@ -19,19 +19,31 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUT_DIR="$SCRIPT_DIR/out"
 mkdir -p "$OUT_DIR"
 
+# Step 1: render Mermaid diagrams → PNG and write processed markdown to processed/
+echo "==> Pre-processing Mermaid diagrams..."
+python3 "$SCRIPT_DIR/preprocess.py"
+
+PROC="$SCRIPT_DIR/processed"
+
+# Core chapters using pre-processed files (Mermaid replaced with PNG refs)
 CHAPTERS=(
+    "$PROC/00-preface.md"
+    "$PROC/01-overview.md"
+    "$PROC/02-spark-connect.md"
+    "$PROC/02b-sql-pipeline.md"
+    "$PROC/03-arrow.md"
+    "$PROC/04-datafusion.md"
+    "$PROC/05-flight-sql.md"
+    "$PROC/06-execution.md"
+    "$PROC/07-catalogs.md"
+    "$PROC/08-rust-patterns.md"
+    "$PROC/09-conclusion.md"
+)
+
+# EPUB prepends the markdown cover; PDF uses cover.typ (prepended below)
+CHAPTERS_EPUB=(
     "$SCRIPT_DIR/00-title.md"
-    "$SCRIPT_DIR/00-preface.md"
-    "$SCRIPT_DIR/01-overview.md"
-    "$SCRIPT_DIR/02-spark-connect.md"
-    "$SCRIPT_DIR/02b-sql-pipeline.md"
-    "$SCRIPT_DIR/03-arrow.md"
-    "$SCRIPT_DIR/04-datafusion.md"
-    "$SCRIPT_DIR/05-flight-sql.md"
-    "$SCRIPT_DIR/06-execution.md"
-    "$SCRIPT_DIR/07-catalogs.md"
-    "$SCRIPT_DIR/08-rust-patterns.md"
-    "$SCRIPT_DIR/09-conclusion.md"
+    "${CHAPTERS[@]}"
 )
 
 METADATA=(
@@ -48,35 +60,29 @@ pandoc \
     --toc \
     --toc-depth=2 \
     --number-sections \
+    --epub-title-page=false \
     --from markdown+fenced_code_blocks+fenced_divs \
     --to epub3 \
     --output "$OUT_DIR/sail-book.epub" \
-    "${CHAPTERS[@]}"
+    "${CHAPTERS_EPUB[@]}"
 echo "    -> $OUT_DIR/sail-book.epub"
 
-echo "==> Merging Markdown for typst..."
-pandoc \
-    "${METADATA[@]}" \
-    --from markdown+fenced_code_blocks \
-    --to markdown \
-    --output "$OUT_DIR/sail-book-merged.md" \
-    "${CHAPTERS[@]}"
-echo "    -> $OUT_DIR/sail-book-merged.md"
-
 # PDF via typst. Requires typst and a typst template.
-# If typst is not installed, this step is skipped.
 if command -v typst &>/dev/null; then
     echo "==> Building PDF via typst..."
 
-    # Convert merged markdown to typst source using pandoc
+    # Convert processed chapters to typst (no --toc; cover.typ provides #outline())
     pandoc \
         "${METADATA[@]}" \
         --from markdown+fenced_code_blocks \
         --to typst \
-        --output "$OUT_DIR/sail-book.typ" \
+        --output "$OUT_DIR/sail-book-content.typ" \
         "${CHAPTERS[@]}"
 
-    typst compile "$OUT_DIR/sail-book.typ" "$OUT_DIR/sail-book.pdf"
+    # Prepend cover page (which also includes #outline() for the TOC)
+    cat "$SCRIPT_DIR/cover.typ" "$OUT_DIR/sail-book-content.typ" > "$OUT_DIR/sail-book.typ"
+
+    typst compile --root / "$OUT_DIR/sail-book.typ" "$OUT_DIR/sail-book.pdf"
     echo "    -> $OUT_DIR/sail-book.pdf"
 else
     echo "==> typst not found; skipping PDF build."
