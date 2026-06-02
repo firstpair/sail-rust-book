@@ -20,6 +20,7 @@ OUT_DIR="$SCRIPT_DIR/out"
 mkdir -p "$OUT_DIR"
 
 CHAPTERS=(
+    "$SCRIPT_DIR/00-title.md"
     "$SCRIPT_DIR/00-preface.md"
     "$SCRIPT_DIR/01-overview.md"
     "$SCRIPT_DIR/02-spark-connect.md"
@@ -34,8 +35,9 @@ CHAPTERS=(
 )
 
 METADATA=(
-    --metadata title="Sail: A Spark-Compatible Query Engine in Rust"
-    --metadata author="LakeSail Community"
+    --metadata title="Sail Code Book"
+    --metadata author="Alexy Khrabrov"
+    --metadata author="Claude Code"
     --metadata lang="en-US"
     --metadata date="$(date +%Y-%m-%d)"
 )
