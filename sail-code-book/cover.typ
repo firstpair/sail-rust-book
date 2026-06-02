@@ -1,35 +1,44 @@
-#set page(margin: (top: 6cm, bottom: 4cm, left: 4cm, right: 4cm))
+// PDF document metadata
+#set document(
+  title: "Sail Code Book",
+  author: ("Alexy Khrabrov", "Claude Code"),
+)
 
-#align(center + horizon)[
-  #text(size: 48pt, weight: "bold")[Sail Code Book]
+// Ensure all headings appear as PDF bookmarks (sidebar)
+#set heading(bookmarked: true)
 
-  #v(1.5cm)
+// Cover page — scoped margins via #page() so content pages use defaults
+#page(margin: (top: 6cm, bottom: 4cm, left: 4cm, right: 4cm))[
+  #align(center + horizon)[
+    #text(size: 48pt, weight: "bold")[Sail Code Book]
 
-  #text(size: 20pt, style: "italic")[
-    Understanding the Sail Query Engine\
-    at the Code Level
-  ]
+    #v(1.5cm)
 
-  #v(5cm)
+    #text(size: 20pt, style: "italic")[
+      Understanding the Sail Query Engine\
+      at the Code Level
+    ]
 
-  #text(size: 16pt)[
-    *Alexy Khrabrov*\
-    #text(size: 12pt, style: "italic")[chiefscientist.org]
-  ]
+    #v(5cm)
 
-  #v(0.8cm)
+    #text(size: 16pt)[
+      *Alexy Khrabrov*\
+      #text(size: 12pt, style: "italic")[chiefscientist.org]
+    ]
 
-  #text(size: 16pt)[*Claude Code*]
+    #v(0.8cm)
 
-  #v(4cm)
+    #text(size: 16pt)[*Claude Code*]
 
-  #text(size: 10pt, fill: luma(120))[
-    © 2025 Alexy Khrabrov. All rights reserved.
+    #v(4cm)
+
+    #text(size: 10pt, fill: luma(120))[
+      © 2025 Alexy Khrabrov. All rights reserved.
+    ]
   ]
 ]
 
-#pagebreak()
-
+// Table of contents
 #outline(
   title: "Contents",
   depth: 2,
