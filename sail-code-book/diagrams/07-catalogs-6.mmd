@@ -1,0 +1,7 @@
+flowchart LR
+    DF["DataFusion\nCatalogProvider"]
+    SB["SailCatalogBridge\n(adapter)"]
+    SC["sail_catalog::\nCatalogProvider"]
+
+    DF -->|trait impl| SB
+    SB -->|delegates to| SC

@@ -1,0 +1,9 @@
+flowchart LR
+    PB["protobuf Relation\n(DataFrame API)"]
+    SQL["SQL string\n(spark.sql / Flight SQL)"]
+    SPEC["spec::Plan"]
+    PLAN["PlanResolver\nto LogicalPlan"]
+
+    PB -->|proto to spec via sail-spark-connect| SPEC
+    SQL -->|parse + from_ast_statement via sail-sql-analyzer| SPEC
+    SPEC --> PLAN

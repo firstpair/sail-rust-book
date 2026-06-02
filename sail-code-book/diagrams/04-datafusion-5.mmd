@@ -1,0 +1,10 @@
+flowchart LR
+    SQL["SQL text or\nspec::Plan IR"]
+    A["Analyzer\n(type inference,\nresolution)"]
+    LO["LogicalPlan\n(unoptimized)"]
+    O["Optimizer\n(rule-based)"]
+    OLO["LogicalPlan\n(optimized)"]
+    PP["PhysicalPlanner\n(DataFusion default\n+ Sail extensions)"]
+    EP["ExecutionPlan\ntree"]
+
+    SQL --> A --> LO --> O --> OLO --> PP --> EP

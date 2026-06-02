@@ -1,0 +1,14 @@
+flowchart TD
+    PySpark["PySpark DataFrame API\n(Spark Connect protobuf)"]
+    SQL["spark.sql\n(SqlCommand in Spark Connect)"]
+    FSQL["Arrow Flight SQL\n(CommandStatementQuery)"]
+
+    SCA["sail-sql-analyzer\nfrom_ast_statement()"]
+    SCP["sail-spark-connect\nproto to spec conversion"]
+    SPEC["spec::Plan\n(internal IR)"]
+    PR["PlanResolver\nspec to LogicalPlan"]
+
+    PySpark -->|protobuf Relation| SCP --> SPEC
+    SQL -->|SQL string| SCA --> SPEC
+    FSQL -->|SQL string| SCA --> SPEC
+    SPEC --> PR

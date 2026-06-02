@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> Pending: new()
+    Pending --> Running: start()
+    Running --> Pausing: pause_if_running()
+    Pausing --> Pending: task returned Paused
+    Pausing --> Idle: task completed
+    Pausing --> Failed: task failed
+    Running --> Failed: run_internal error

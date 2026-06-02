@@ -1,0 +1,27 @@
+flowchart TD
+    PySpark["PySpark Client\n(pyspark-client)"]
+    SC["Spark Connect\ngRPC (port 50051)"]
+    SCS["sail-spark-connect\nSparkConnectServer"]
+    SM["SessionManager\n(sail-session)"]
+    CTX["DataFusion\nSessionContext"]
+    PR["PlanResolver\n(sail-plan)"]
+    LO["Logical Optimizer\n(sail-logical-optimizer)"]
+    PP["Physical Planner\n(DataFusion + extensions)"]
+    JR["JobRunner\n(sail-execution)"]
+    EP["ExecutionPlan\n(DataFusion)"]
+    AB["Arrow RecordBatch\nstream"]
+    EX["Executor\n(buffer + stream)"]
+    RESP["ExecutePlanResponse\n(Arrow IPC bytes)"]
+    PySpark -->|"ExecutePlanRequest\n(protobuf)"| SC
+    SC --> SCS
+    SCS -->|get or create| SM
+    SM --> CTX
+    SCS -->|"spec::Plan (IR)"| PR
+    PR -->|LogicalPlan| LO
+    LO -->|optimized LogicalPlan| PP
+    PP -->|Arc<dyn ExecutionPlan>| JR
+    JR -->|"SendableRecordBatchStream"| EP
+    EP -->|RecordBatch| AB
+    AB -->|IPC serialize| EX
+    EX -->|streaming gRPC| RESP
+    RESP -->|"ExecutePlanResponse\n(ArrowBatch)"| PySpark
