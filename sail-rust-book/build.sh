@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build pipeline for "Learning Rust, SparkConnect, Apache Arrow and DataFusion with Sail".
+# Build pipeline for "Sail: The Rust, Arrow, and DataFusion Guide".
 #
 # Sources (sources/) -> rendered build copy (build/) -> deliverables (book/)
 #
@@ -38,7 +38,7 @@ stage_sources() {
   echo "==> Staging sources into $ART"
   rm -rf "$ART"
   mkdir -p "$ART/diagrams"
-  cp "$SRC"/0?-*.md "$SRC"/1?-*.md "$ART"/
+  cp "$SRC"/[0-9][0-9]-*.md "$ART"/
   cp "$SRC"/book-metadata.yaml "$SRC"/template.typ "$SRC"/epub.css "$ART"/
 }
 
@@ -54,7 +54,7 @@ combine_markdown() {
   echo "==> Combining chapter markdowns"
   local out="$ART/$BASE-combined.md"
   : > "$out"
-  for f in "$ART"/00-*.md "$ART"/0[1-9]-*.md "$ART"/1[0-3]-*.md; do
+  for f in "$ART"/[0-9][0-9]-*.md; do
     cat "$f" >> "$out"
     printf "\n\n" >> "$out"
   done

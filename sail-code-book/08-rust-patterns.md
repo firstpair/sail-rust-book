@@ -120,7 +120,7 @@ Spark clients expect specific error shapes, including `ErrorInfo` gRPC status de
 
 Sail's entire server is async. The convention is:
 
-- **Protocol layer** (gRPC handlers): `#[tonic::async_trait]` on trait implementations. This is a `proc_macro` that rewrites `async fn` in trait impls into boxed futures, working around Rust's current limitation on `async fn` in traits.
+- **Protocol layer** (gRPC handlers): `#[tonic::async_trait]` on trait implementations. This is a `proc_macro` that rewrites `async fn` in trait impls into boxed futures, matching the object-safe async trait shape used by the generated gRPC service traits.
 - **Planning**: `async fn` for catalog lookups and UDF resolution (which may require Python calls).
 - **Execution**: Tokio tasks spawned via `tokio::spawn`, channels for coordination.
 
@@ -136,7 +136,7 @@ pub trait CatalogProvider: Send + Sync {
 }
 ```
 
-`#[async_trait]` (from the `async-trait` crate) desugars this to:
+`#[async_trait]` (from the `async-trait` crate) desugars this to a boxed future shape suitable for trait-object use:
 
 ```rust
 fn get_table<'life0, 'life1, 'life2, 'async_trait>(

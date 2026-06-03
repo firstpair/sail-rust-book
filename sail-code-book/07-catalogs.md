@@ -43,7 +43,7 @@ pub trait CatalogProvider: Send + Sync {
     async fn list_tables(&self, database: &Namespace) -> CatalogResult<Vec<TableStatus>>;
     async fn drop_table(&self, database: &Namespace, table: &str, options: DropTableOptions) -> CatalogResult<()>;
     async fn alter_table(&self, database: &Namespace, table: &str, options: AlterTableOptions)
-        -> CatalogResult<TableStatus>;
+        -> CatalogResult<()>;
 
     async fn create_view(&self, database: &Namespace, view: &str, options: CreateViewOptions)
         -> CatalogResult<TableStatus>;
@@ -55,7 +55,7 @@ pub trait CatalogProvider: Send + Sync {
 
 The `Namespace` type is a `Vec<String>` — the multi-part database name (e.g. `["default"]` or `["hive", "prod"]`). `TableStatus` and `DatabaseStatus` are structs that carry the full metadata needed to create a DataFusion table provider (schema, location, format, properties).
 
-Note that all methods are `async`. Catalog operations are inherently I/O-bound: they call remote APIs (Glue, HMS, Unity), and Rust's `async_trait` makes this natural. The `#[async_trait::async_trait]` macro is necessary because Rust does not yet support `async fn` in traits natively at the time of writing.
+Note that all methods are `async`. Catalog operations are inherently I/O-bound: they call remote APIs (Glue, HMS, Unity), and Rust's `async_trait` makes this natural. Sail stores catalog providers behind trait objects such as `Arc<dyn CatalogProvider>`, so `#[async_trait::async_trait]` provides an object-safe boxed-future representation for these async methods.
 
 ## The In-Memory Catalog
 

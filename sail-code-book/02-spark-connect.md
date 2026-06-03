@@ -240,7 +240,7 @@ impl ServerSessionMutator for SparkSessionMutator {
 }
 ```
 
-Two extensions are added: a `PlanService` (which holds the `JobRunner`) and the `SparkSession`. Any code that has a `&SessionContext` can retrieve either of these with `ctx.extension::<SparkSession>()`.
+Two extensions are added here: a `PlanService` (catalog display and plan formatting) and the `SparkSession`. The `JobRunner` lives in a separate `JobService` extension that `sail-session` installs while building the session. Any code that has a `&SessionContext` can retrieve these typed extensions with `ctx.extension::<SparkSession>()`, `ctx.extension::<PlanService>()`, or `ctx.extension::<JobService>()`.
 
 ## The Executor: Buffering and Reattachment
 
@@ -370,10 +370,10 @@ The execute-relation path, for example, converts a protobuf `Relation` (the Spar
 
 `sail-spark-connect` translates the Spark Connect gRPC protocol into Rust. Its responsibilities are:
 
-- Implementing the `SparkConnectService` trait with all nine RPC methods
+- Implementing the `SparkConnectService` trait with all ten RPC methods
 - Managing sessions: creating, retrieving, and destroying DataFusion `SessionContext` instances
 - Routing logical plans and commands to planning code in `sail-plan`
 - Buffering executor output for reattachable streams
 - Serializing Arrow `RecordBatch` values to IPC bytes for the wire
 
-The crate knows nothing about how queries are planned or executed — that is the responsibility of `sail-plan` and `sail-execution`, described in the chapters that follow.
+The crate does not own query planning or physical execution — those responsibilities live in `sail-plan`, `sail-session`, and `sail-execution`, described in the chapters that follow.

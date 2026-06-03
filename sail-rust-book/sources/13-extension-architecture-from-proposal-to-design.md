@@ -1452,4 +1452,4 @@ The final design principle is simple:
 That is the difference between a convenient local hook and a real distributed
 query engine extension API.
 
-Navigation: [Previous: Chapter 12, Catalogs, Lakehouse Tables, And File Formats](12-catalogs-lakehouse-tables-and-file-formats.md) | [Reader Guide](00-reader-guide.md)
+Navigation: [Previous: Chapter 12, Catalogs, Lakehouse Tables, And File Formats](12-catalogs-lakehouse-tables-and-file-formats.md) | [Next: Chapter 14, Arrow Flight SQL](14-arrow-flight-sql.md) | [Reader Guide](00-reader-guide.md)

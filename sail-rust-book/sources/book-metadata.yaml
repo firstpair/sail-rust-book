@@ -1,12 +1,11 @@
 ---
 title: |
-  Learning Rust, SparkConnect, Apache Arrow and DataFusion \
-  with Sail
-subtitle: "A Guided Architecture Book for Distributed Query Processing and Extensions"
+  Sail: The Rust, Arrow, and DataFusion Guide
+subtitle: "A Definitive Architecture Book for Spark-Compatible Distributed Query Processing"
 author:
   - "Alexy Khrabrov (chiefscientist.org)"
   - "Codex ChatGPT 5.5 and Claude Opus 4.7"
-date: "May 2026"
+date: "June 2026"
 lang: "en-US"
 toc-title: "Contents"
 ---

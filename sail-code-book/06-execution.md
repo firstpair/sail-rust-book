@@ -351,7 +351,7 @@ impl StreamingRewriter {
 }
 ```
 
-Table scans are rewritten to use `StreamSourceWrapperNode`, which wraps a `StreamSource` trait object. The `StreamSource` trait is implemented by each streaming source (Kafka, file-based micro-batch, etc.) and provides a `scan()` method that returns a `SendableRecordBatchStream` for each micro-batch.
+Table scans are rewritten to use `StreamSourceWrapperNode`, which wraps a `StreamSource` trait object. The `StreamSource` trait is implemented by streaming sources such as Sail's rate and socket sources, and provides a `scan()` method that returns an `ExecutionPlan` whose execution produces flow-event `RecordBatch`es.
 
 ### The Flow Event Schema
 

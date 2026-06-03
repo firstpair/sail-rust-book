@@ -138,7 +138,7 @@ This layering is enforced by the Cargo workspace. Circular dependencies would ca
 
 ## The Two Runtimes
 
-Sail runs two Tokio runtimes: a *primary* runtime for the server (gRPC, session management, query planning) and a *worker* runtime for execution tasks. The `RuntimeHandle` type in `sail-common` wraps both and is threaded through the codebase wherever a handle to the right runtime is needed. This separation allows the execution layer to be offloaded to its own thread pool without interfering with the server's responsiveness.
+Sail runs two Tokio runtimes: a *primary* runtime and an *I/O* runtime. The `RuntimeHandle` type in `sail-common` wraps both and is threaded through the codebase wherever a handle to the right runtime is needed. In the current code, catalog providers and other runtime-aware services can use the I/O handle for blocking or remote-service work; the source also notes a future split where I/O-bound tasks run on the primary runtime and CPU-bound tasks on the secondary runtime.
 
 When running in embedded Python mode (`SparkConnectServer` via PyO3), there is an additional constraint: the Python GIL. Python UDFs must be able to call back into the Python interpreter, which requires releasing the GIL on the Rust side at the right points. `sail-python/src/spark/server.rs` handles this by running the Tokio server on a dedicated OS thread and using `py.detach(...)` to release the GIL when blocking on server shutdown.
 

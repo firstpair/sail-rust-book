@@ -1,19 +1,22 @@
 # Reader Guide: How This Book Builds
 
-This book is meant to be read in order, but it is also a code companion. Each chapter
-introduces one architectural layer, then later chapters reuse that layer when the
-distributed and extension stories become more demanding.
+This book is mostly meant to be read in order, but it is also a code companion.
+Chapters 1-13 walk the core system from architecture through extension design.
+Chapters 14-19 are definitive-guide companion chapters: they fill protocol,
+optimizer, streaming, testing, contribution, and navigation coverage that readers
+will want after the main pass.
 
 ## Chapter Links
 
 | Part | Chapters | What They Establish |
 |---|---|---|
 | System shape | [1. Architecture Overview](01-architecture-overview.md), [2. Rust Foundations](02-rust-foundations-in-sail.md) | The full query pipeline and the Rust patterns that make it possible. |
-| Front doors | [3. Spark Connect](03-spark-connect.md), [4. PySpark and pysail](04-pyspark-and-pysail.md) | How user intent enters Sail through PySpark, gRPC, protobufs, and Python packaging. |
+| Front doors | [3. Spark Connect](03-spark-connect.md), [4. PySpark and pysail](04-pyspark-and-pysail.md), [14. Arrow Flight SQL](14-arrow-flight-sql.md) | How user intent enters Sail through PySpark, Spark Connect, SQL, Flight SQL, gRPC, protobufs, and Python packaging. |
 | Columnar runtime | [5. Apache Arrow](05-apache-arrow.md), [6. Apache DataFusion](06-apache-datafusion.md) | The data model and query engine Sail builds on. |
-| Distribution | [7. Physical Plan to Job Graph](07-physical-plan-to-job-graph.md), [8. Drivers, Workers, Tasks, and Streams](08-drivers-workers-tasks-and-streams.md), [9. Shuffle and Data Movement](09-shuffle-and-data-movement.md) | How one DataFusion plan becomes distributed task execution and Arrow stream movement. |
-| Spark semantics | [10. Sail Spec and Plan Resolver](10-sail-spec-and-plan-resolver.md), [11. Functions, UDFs, and Codecs](11-functions-udfs-and-codecs.md), [12. Catalogs, Lakehouse Tables, and File Formats](12-catalogs-lakehouse-tables-and-file-formats.md) | How Spark-compatible names, expressions, functions, commands, tables, and writes become executable DataFusion objects. |
+| Distribution | [7. Physical Plan to Job Graph](07-physical-plan-to-job-graph.md), [8. Drivers, Workers, Tasks, and Streams](08-drivers-workers-tasks-and-streams.md), [9. Shuffle and Data Movement](09-shuffle-and-data-movement.md), [16. Local and Streaming Execution](16-local-and-streaming-execution.md) | How one DataFusion plan becomes local execution, streaming execution, distributed tasks, and Arrow stream movement. |
+| Spark semantics | [10. Sail Spec and Plan Resolver](10-sail-spec-and-plan-resolver.md), [11. Functions, UDFs, and Codecs](11-functions-udfs-and-codecs.md), [12. Catalogs, Lakehouse Tables, and File Formats](12-catalogs-lakehouse-tables-and-file-formats.md), [15. Custom Nodes and Optimizers](15-custom-nodes-and-optimizers.md) | How Spark-compatible names, expressions, functions, commands, tables, writes, custom logical nodes, and optimizer rules become executable DataFusion objects. |
 | Extension design | [13. Extension Architecture](13-extension-architecture-from-proposal-to-design.md) | How the previous patterns become a proposed extension architecture for discussion #2001. |
+| Practice and navigation | [17. Testing Spark Compatibility](17-testing-spark-compatibility.md), [18. Feature Playbooks](18-feature-playbooks.md), [19. Roadmap and Codebase Navigation](19-roadmap-and-codebase-navigation.md) | How to verify behavior, add features without missing layers, and navigate the codebase as it evolves. |
 
 ## Concept Progression
 
@@ -23,14 +26,16 @@ The chapters deliberately introduce concepts before relying on them:
 |---|---|---|---|
 | Spark Connect unresolved plans | Chapter 3 | Chapters 4 and 10 | Chapter 13, where extensions must preserve Spark-facing behavior. |
 | Spark Connect extension messages | Chapter 3 | Chapter 10 | Chapter 13, where `Relation.extension`, `Command.extension`, and `Expression.extension` become the plan-time extension ABI. |
-| Rust trait objects and `Arc` | Chapter 2 | Chapters 6, 8, 11, and 12 | Chapter 13, where execution-time extension capabilities are trait-object contributions. |
-| Arrow `RecordBatch` streams | Chapter 5 | Chapters 8 and 9 | Chapters 11 and 13, where UDFs and custom operators must execute on Arrow batches. |
-| DataFusion logical and physical plans | Chapter 6 | Chapters 7 and 10 | Chapter 13, where extensions add optimizer rules and physical planners. |
-| Job graphs and stages | Chapter 7 | Chapters 8 and 9 | Chapter 13, where extension plans must survive distributed execution. |
-| Typed session extensions | Chapter 2 | Chapters 6, 11, and 12 | Chapter 13, where the extension registry is proposed as a session service. |
-| Function resolution and codecs | Chapter 11 | Chapter 13 | The core reason the execution-time extension boundary needs worker-side registration and serialization. |
-| Table format registry | Chapter 12 | Chapter 13 | The strongest existing model for extension registration. |
-| Two extension boundaries | Chapter 1 | Chapters 3, 10, 11 | Chapter 13, where plan-time (Spark Connect dispatch) and execution-time (DataFusion-shaped contributions) are designed separately under one `SailExtension` object. |
+| Flight SQL as a second front door | Chapter 14 | Chapters 6 and 10 | Chapter 13, where protocol-independent registration becomes necessary. |
+| Rust trait objects and `Arc` | Chapter 2 | Chapters 6, 8, 11, 12, and 16 | Chapter 13, where execution-time extension capabilities are trait-object contributions. |
+| Arrow `RecordBatch` streams | Chapter 5 | Chapters 8, 9, 14, and 16 | Chapters 11 and 13, where UDFs and custom operators must execute on Arrow batches. |
+| DataFusion logical and physical plans | Chapter 6 | Chapters 7, 10, and 15 | Chapter 13, where extensions add optimizer rules and physical planners. |
+| Job graphs and stages | Chapter 7 | Chapters 8 and 9 | Chapters 13 and 18, where extension plans must survive distributed execution. |
+| Streaming flow events | Chapter 16 | Chapters 5 and 15 | Chapter 18, where streaming sources must emit the right event schema. |
+| Typed session extensions | Chapter 2 | Chapters 6, 11, 12, 14, and 16 | Chapter 13, where the extension registry is proposed as a session service. |
+| Function resolution and codecs | Chapter 11 | Chapters 17 and 18 | The core reason the execution-time extension boundary needs worker-side registration and serialization. |
+| Table format registry | Chapter 12 | Chapter 18 | The strongest existing model for extension registration. |
+| Two extension boundaries | Chapter 1 | Chapters 3, 10, 11, 13, and 18 | Chapter 13, where plan-time and execution-time contributions are designed separately. |
 
 ## Code Reading Strategy
 
@@ -50,6 +55,11 @@ first:
 | How do custom functions and plans reach workers? | `crates/sail-execution/src/codec.rs` |
 | How do catalogs and file formats plug in? | `crates/sail-catalog/src/manager/mod.rs`, `crates/sail-common-datafusion/src/datasource.rs`, and `crates/sail-session/src/formats.rs` |
 | How do lakehouse row-level operations work? | `crates/sail-plan-lakehouse/src/lib.rs`, `crates/sail-delta-lake/src/table_format.rs`, and `crates/sail-logical-plan/src/merge.rs` |
+| How does Flight SQL enter the same engine? | `crates/sail-flight/src/service.rs` |
+| Where are custom logical nodes planned physically? | `crates/sail-session/src/planner.rs` |
+| Where are optimizer rules registered? | `crates/sail-session/src/session_factory/server.rs` and `crates/sail-physical-optimizer/src/lib.rs` |
+| How does structured streaming change a plan? | `crates/sail-plan/src/streaming/rewriter.rs` and `crates/sail-common-datafusion/src/streaming/event/schema.rs` |
+| How should I add a feature safely? | [18. Feature Playbooks](18-feature-playbooks.md) |
 
 ## What To Look For In Code Excerpts
 
@@ -10893,6 +10903,1234 @@ The final design principle is simple:
 That is the difference between a convenient local hook and a real distributed
 query engine extension API.
 
-Navigation: [Previous: Chapter 12, Catalogs, Lakehouse Tables, And File Formats](12-catalogs-lakehouse-tables-and-file-formats.md) | [Reader Guide](00-reader-guide.md)
+Navigation: [Previous: Chapter 12, Catalogs, Lakehouse Tables, And File Formats](12-catalogs-lakehouse-tables-and-file-formats.md) | [Next: Chapter 14, Arrow Flight SQL](14-arrow-flight-sql.md) | [Reader Guide](00-reader-guide.md)
+
+
+# Chapter 14: Arrow Flight SQL
+
+Spark Connect is Sail's primary front door, but it is not the only one. Sail also
+exposes Apache Arrow Flight SQL for clients that want SQL over Arrow-native
+transport rather than PySpark over Spark Connect.
+
+This chapter is deliberately short and concrete. Its job is to place `sail-flight`
+in the definitive architecture: it is a second protocol surface that converges on
+the same SQL parser, Sail spec layer, DataFusion physical planning, `JobService`,
+and Arrow `RecordBatch` streams.
+
+## Code Map
+
+| Concern | File |
+|---|---|
+| Flight SQL service | `crates/sail-flight/src/service.rs` |
+| Query handle state | `crates/sail-flight/src/state.rs` |
+| Metrics wrapper | `crates/sail-flight/src/metrics.rs` |
+| SQL parser entry point | `crates/sail-sql-analyzer/src/parser.rs` |
+| SQL AST to spec | `crates/sail-sql-analyzer/src/statement.rs` |
+| Planning entry point | `crates/sail-plan/src/lib.rs` |
+| Job runner extension | `crates/sail-common-datafusion/src/session/job.rs` |
+| Session manager | `crates/sail-session/src/session_manager/` |
+
+## Why Flight SQL Exists Beside Spark Connect
+
+Spark Connect is Spark-shaped. It carries unresolved Spark relations, commands,
+expressions, config operations, reattachable execution, artifacts, and session
+semantics. That is exactly what PySpark needs.
+
+Flight SQL is SQL-shaped. It is useful for ADBC, JDBC-style tools, BI clients, and
+systems that already understand Arrow Flight. The protocol does not try to model
+the Spark DataFrame API. It asks a simpler question:
+
+```text
+Given this SQL statement, what schema will it produce, and where can I fetch the
+Arrow stream?
+```
+
+That makes `sail-flight` an excellent example of Sail's internal layering. The
+protocol is different, but the planning core is the same.
+
+![Flowchart 14.1](diagrams/14-diagram-01.svg)
+
+## The Service Shape
+
+`SailFlightSqlService` is small compared with `SparkConnectServer`:
+
+```rust
+pub struct SailFlightSqlService {
+    session_manager: SessionManager,
+    config: Arc<PlanConfig>,
+    metrics: Option<Arc<MetricRegistry>>,
+    state: Arc<Mutex<SailFlightSqlState>>,
+}
+```
+
+The service implements `FlightSqlService` from the `arrow-flight` crate. The key
+methods for query execution are:
+
+- `get_flight_info_statement`
+- `do_get_statement`
+- `do_handshake`
+
+Other Flight SQL methods can remain unimplemented until Sail needs them. This is a
+different compatibility posture than Spark Connect, where PySpark expects a wider
+service surface.
+
+## Phase One: `GetFlightInfo`
+
+Flight SQL separates planning from fetching. The first request is
+`GetFlightInfo(CommandStatementQuery)`. Sail parses the SQL text, converts it to
+`spec::Plan`, creates a physical plan, starts execution through the session's
+`JobService`, and stores the resulting stream under an opaque handle.
+
+The key sequence is:
+
+```rust
+let statement = parse_one_statement(&query.query)?;
+let plan = from_ast_statement(statement)?;
+let ctx = self.get_session_context().await?;
+let (plan, _) = resolve_and_execute_plan(&ctx, self.config.clone(), plan).await?;
+let schema = plan.schema();
+let service = ctx.extension::<JobService>()?;
+let stream = service.runner().execute(&ctx, plan).await?;
+```
+
+That is the same core path used elsewhere:
+
+```text
+SQL text
+  -> SQL AST
+  -> Sail spec
+  -> DataFusion physical plan
+  -> JobRunner stream
+```
+
+The service then stores the stream in `SailFlightSqlState`:
+
+```rust
+let handle = QueryHandle::new();
+self.state.lock().await.add_stream(handle.clone(), stream);
+```
+
+The returned `FlightInfo` contains the schema and a `TicketStatementQuery` carrying
+that handle.
+
+## Phase Two: `DoGet`
+
+The second request presents the ticket:
+
+```rust
+let handle = QueryHandle::try_from(ticket.statement_handle.as_ref())?;
+let stream = self
+    .state
+    .lock()
+    .await
+    .remove_stream(&handle)
+    .ok_or_else(|| Status::not_found(...))?;
+```
+
+The handle is consumed once. This keeps server state simple: Flight SQL clients can
+re-run a query if a fetch fails, while Spark Connect clients use reattachable
+execution and response buffering.
+
+After retrieving the stream, Sail encodes batches as Flight data:
+
+```rust
+let output = FlightDataEncoderBuilder::new()
+    .with_schema(schema)
+    .build(output)
+    .map(|result| result.map_err(|e| Status::internal(format!("encoding error: {e}"))));
+```
+
+This is where Flight SQL differs from Spark Connect at the wire level. Spark Connect
+wraps Arrow IPC bytes in Spark protobuf messages. Flight SQL sends Arrow Flight
+frames directly.
+
+## The Shared Session Model
+
+The current Flight SQL service uses a shared default session:
+
+```rust
+const DEFAULT_SESSION_ID: &'static str = "flight-default";
+const DEFAULT_USER_ID: &'static str = "flight-user";
+```
+
+That means Flight SQL queries share session configuration and catalog state. It is
+a reasonable initial model, but a definitive guide should call it out because it is
+not the same as Spark Connect's client-provided session IDs.
+
+A future version could carry session identity in Flight headers. The important
+architectural point is that the same `SessionManager` and `SessionContext` machinery
+still applies.
+
+## Commands
+
+SQL commands are different from queries because the effect matters more than the
+result stream. Sail classifies the parsed plan:
+
+```rust
+let statement_type = match &plan {
+    spec::Plan::Query(_) => StatementType::Query,
+    spec::Plan::Command(_) => StatementType::Command,
+};
+```
+
+For commands, the service drains the stream eagerly in `get_flight_info_statement`.
+That ensures the command has completed before the client receives `FlightInfo`.
+
+This detail matters for DDL. A BI client that sends `CREATE TABLE` should not have
+to call `DoGet` just to make the side effect happen.
+
+## Metrics
+
+When OpenTelemetry metrics are available, `sail-flight` wraps the result stream in
+`MetricsRecordingStream`. The wrapper records row counts, batch counts, elapsed
+time, and statement type.
+
+This mirrors a general Sail design habit: protocol crates should add protocol-level
+metrics around streams without changing the core execution layer.
+
+## Spark Connect Versus Flight SQL
+
+| Concern | Spark Connect | Flight SQL |
+|---|---|---|
+| Main client | PySpark | ADBC/JDBC/BI tools |
+| Request payload | Spark protobuf plan | SQL statement |
+| Result transport | Spark `ExecutePlanResponse` with `ArrowBatch` | Arrow Flight `FlightData` |
+| Session identity | Client-provided session ID | Shared default session today |
+| Retry model | Reattachable operation stream | Re-execute query |
+| Planning convergence | `spec::Plan` | `spec::Plan` |
+| Execution convergence | `JobService` / `JobRunner` | `JobService` / `JobRunner` |
+
+## Extension Implications
+
+Flight SQL is a useful test for extension design. If a future extension only works
+when a user enters through Spark Connect protobufs, then SQL clients cannot use it.
+If it registers through the common spec/resolver/function/table-format layers, both
+front doors can use it.
+
+For extension authors, this gives a simple rule:
+
+```text
+Protocol-specific dispatch is allowed, but semantic registration should happen below
+the protocol boundary whenever possible.
+```
+
+## Takeaways
+
+Flight SQL is not a separate query engine inside Sail. It is another way to reach
+the same SQL parser, Sail spec IR, DataFusion planning path, and job runner. The
+protocol differences are real, especially around session identity and fetch handles,
+but the internal convergence is the point.
+
+Navigation: [Previous: Chapter 13, Extension Architecture](13-extension-architecture-from-proposal-to-design.md) | [Next: Chapter 15, Custom Nodes And Optimizers](15-custom-nodes-and-optimizers.md) | [Reader Guide](00-reader-guide.md)
+
+
+# Chapter 15: Custom Nodes And Optimizers
+
+Sail uses DataFusion as its query kernel, but Spark compatibility requires plan
+constructs DataFusion does not provide directly. The solution is a set of custom
+logical nodes, custom physical plans, logical optimizer rules, physical optimizer
+rules, and extension planners that connect the pieces.
+
+This chapter collects that machinery in one place. Earlier chapters introduced it
+as part of DataFusion and plan resolution; here we treat it as a contributor's map.
+
+## Code Map
+
+| Concern | File |
+|---|---|
+| Logical nodes | `crates/sail-logical-plan/src/` |
+| Physical nodes | `crates/sail-physical-plan/src/` |
+| Logical optimizer rules | `crates/sail-logical-optimizer/src/lib.rs` |
+| Lakehouse optimizer rule | `crates/sail-plan-lakehouse/src/optimizer.rs` |
+| Physical optimizer rules | `crates/sail-physical-optimizer/src/` |
+| Physical optimizer pipeline | `crates/sail-physical-optimizer/src/lib.rs` |
+| Extension physical planner | `crates/sail-session/src/planner.rs` |
+| Session optimizer registration | `crates/sail-session/src/session_factory/server.rs` |
+
+## The Pattern
+
+A Spark-specific plan feature usually crosses five layers:
+
+```text
+spec node or resolver condition
+  -> DataFusion LogicalPlan::Extension(UserDefinedLogicalNodeCore)
+  -> optional logical optimizer rewrite
+  -> ExtensionPhysicalPlanner downcast
+  -> DataFusion ExecutionPlan
+  -> optional physical optimizer rewrite
+```
+
+That is a lot of plumbing, but it buys a clear boundary: Sail can keep using
+DataFusion's optimizer and execution APIs while adding Spark-shaped behavior.
+
+## Logical Node Inventory
+
+The current Sail logical extension nodes include:
+
+| Logical node | Main purpose |
+|---|---|
+| `RangeNode` | Spark `range` |
+| `ExplicitRepartitionNode` | `repartition`, `coalesce`, `repartitionByRange` |
+| `ShowStringNode` | `df.show()` table-string formatting |
+| `MapPartitionsNode` | stream and Python/Pandas map-style UDF execution |
+| `FileWriteNode` | writes through table/data-source formats |
+| `FileDeleteNode` | DELETE planning |
+| `MergeIntoNode` | MERGE planning before row-level expansion |
+| `MonotonicIdNode` | `monotonically_increasing_id()` |
+| `SparkPartitionIdNode` | `spark_partition_id()` |
+| `SortWithinPartitionsNode` | Spark partition-preserving sort |
+| `SchemaPivotNode` | schema-producing pivot behavior |
+| `CatalogCommandNode` | DDL/catalog commands as physical work |
+| `BarrierNode` | streaming barrier/checkpoint coordination |
+| streaming source/filter/limit/collector nodes | structured streaming flow-event plans |
+
+The exact list can change, so readers should treat `crates/sail-session/src/planner.rs`
+as the authoritative dispatch table. If a logical node cannot be downcast there,
+it will not become a physical plan.
+
+## Example: Range
+
+`spark.range(start, end, step, numPartitions)` is a good first node because it is
+a leaf plan. The logical node carries the range parameters and schema. The physical
+planner downcasts it and constructs `RangeExec`.
+
+The lesson is simple:
+
+```text
+Spark has a relation; Sail models it as a DataFusion extension node; physical
+planning turns it into an executable operator.
+```
+
+`Range` also contains partitioning logic, which makes it distributed-friendly. Each
+partition receives a slice of the range rather than every worker scanning the whole
+sequence.
+
+## Example: Explicit Repartition
+
+Spark repartitioning semantics are more explicit than DataFusion's default optimizer
+choices. Sail models user-requested repartitioning as `ExplicitRepartitionNode`.
+
+That node survives logical planning so the physical optimizer can later decide the
+right concrete physical shape:
+
+- hash repartition,
+- round-robin repartition,
+- coalesce,
+- or passthrough.
+
+This is a recurring Sail technique: preserve Spark intent long enough that a later
+stage can lower it correctly.
+
+## The Extension Physical Planner
+
+`ExtensionPhysicalPlanner` in `sail-session` is the central bridge. It implements
+DataFusion's `ExtensionPlanner` trait and performs a sequence of downcasts:
+
+```rust
+if let Some(node) = node.as_any().downcast_ref::<RangeNode>() {
+    ...
+} else if let Some(node) = node.as_any().downcast_ref::<ShowStringNode>() {
+    ...
+} else if let Some(node) = node.as_any().downcast_ref::<MapPartitionsNode>() {
+    ...
+}
+```
+
+This is not glamorous code, but it is one of the most important files in Sail.
+It tells you which extension nodes are executable and where each one enters the
+physical layer.
+
+The planner chain is assembled in `ExtensionQueryPlanner`:
+
+```text
+lakehouse extension planners
+  -> system table planner
+  -> listing table planner
+  -> Sail custom extension physical planner
+```
+
+Ordering matters. Delta and Iceberg table planners get a chance to handle table-
+format-specific nodes before the generic Sail planner handles ordinary logical
+extension nodes.
+
+## Logical Optimizers
+
+Sail has a small logical optimizer layer in front of DataFusion's defaults.
+
+`DecorrelateLateralProjection` handles a Spark lateral-subquery case before
+DataFusion's broader decorrelation rule runs. The important point is not just the
+rule itself, but its placement. It must run before DataFusion's `DecorrelateLateralJoin`
+because it handles a simpler projection-only case.
+
+Lakehouse writes add another logical rule: `ExpandRowLevelOp`. It rewrites
+lakehouse `MERGE` and `DELETE` nodes into row-level write plans that format-specific
+planners can execute.
+
+That rule is the bridge between Spark SQL commands and Delta/Iceberg physical
+planning.
+
+## Physical Optimizers
+
+Sail's physical optimizer pipeline is more deliberate than "append some rules to
+DataFusion." `sail-physical-optimizer` reconstructs the DataFusion rule order and
+adds Sail-specific rules at selected points.
+
+The custom rules include:
+
+| Rule | Purpose |
+|---|---|
+| `JoinReorder` | Dynamic-programming join reorder with safeguards |
+| `RewriteExplicitRepartition` | Lowers Sail's explicit repartition placeholder |
+| `RewriteCollectLeftHashJoin` | Ensures collect-left joins have valid partitioning |
+| `EnforceBarrierPartitioning` | Enforces streaming barrier partition requirements |
+
+This means contributors must distinguish logical optimizer changes from physical
+optimizer changes. A logical rule rewrites `LogicalPlan`. A physical rule rewrites
+`ExecutionPlan`.
+
+## Contributor Checklist
+
+When adding a new custom operator, ask:
+
+1. Does the Sail spec need a new representation?
+2. Does the resolver need to produce a logical extension node?
+3. Does the logical node implement `UserDefinedLogicalNodeCore` correctly?
+4. Does projection pushdown need `necessary_children_exprs`?
+5. Does the physical node implement `ExecutionPlan` and declare `PlanProperties`?
+6. Does `ExtensionPhysicalPlanner` downcast and plan it?
+7. Does the physical plan need codec support for distributed execution?
+8. Does it need logical or physical optimizer support?
+9. Does it need tests in local and cluster execution?
+
+The codec question is easy to miss. A node that works locally can still fail in
+cluster mode if workers cannot decode it.
+
+## Extension Implications
+
+Third-party extensions need this same multi-layer path. A physical operator alone
+is not enough. A logical optimizer rule alone is not enough. A function registry
+entry alone is not enough if the physical plan later runs on a worker that cannot
+decode it.
+
+That is why the extension architecture chapter treats extension registration as a
+bundle of contributions:
+
+- functions,
+- logical rules,
+- physical rules,
+- extension planners,
+- session config,
+- table formats,
+- codecs.
+
+## Takeaways
+
+Custom nodes are the places where Spark semantics become DataFusion-compatible
+plans. Optimizer rules preserve or lower those semantics at the right stage.
+`sail-session/src/planner.rs` is the physical dispatch map, and
+`sail-physical-optimizer/src/lib.rs` is the physical rewrite map.
+
+Navigation: [Previous: Chapter 14, Arrow Flight SQL](14-arrow-flight-sql.md) | [Next: Chapter 16, Local And Streaming Execution](16-local-and-streaming-execution.md) | [Reader Guide](00-reader-guide.md)
+
+
+# Chapter 16: Local And Streaming Execution
+
+The distributed chapters explain the cluster path in detail: job graphs, drivers,
+workers, task regions, streams, and shuffles. This chapter fills in two execution
+views that deserve their own concise treatment:
+
+- local execution, where Sail directly asks DataFusion to execute a physical plan,
+- structured streaming, where Sail rewrites a logical plan into a flow-event plan
+  before physical execution.
+
+Both use the same `JobRunner` abstraction, which is exactly why the abstraction is
+valuable.
+
+## Code Map
+
+| Concern | File |
+|---|---|
+| Job runner trait | `crates/sail-common-datafusion/src/session/job.rs` |
+| Local and cluster runners | `crates/sail-execution/src/job_runner.rs` |
+| Streaming rewriter | `crates/sail-plan/src/streaming/rewriter.rs` |
+| Streaming source trait | `crates/sail-common-datafusion/src/streaming/source.rs` |
+| Flow event schema | `crates/sail-common-datafusion/src/streaming/event/schema.rs` |
+| Flow event streams | `crates/sail-common-datafusion/src/streaming/event/stream.rs` |
+| Streaming logical nodes | `crates/sail-logical-plan/src/streaming/` |
+| Streaming physical nodes | `crates/sail-physical-plan/src/streaming/` |
+| Streaming query manager | `crates/sail-spark-connect/src/streaming.rs` |
+| Rate source | `crates/sail-data-source/src/formats/rate/reader.rs` |
+| Socket source | `crates/sail-data-source/src/formats/socket/reader.rs` |
+
+## One Trait, Two Execution Modes
+
+The `JobRunner` trait hides the execution backend:
+
+```rust
+#[tonic::async_trait]
+pub trait JobRunner: StateObservable<JobRunnerObserver> + Send + Sync + 'static {
+    async fn execute(
+        &self,
+        ctx: &SessionContext,
+        plan: Arc<dyn ExecutionPlan>,
+    ) -> Result<SendableRecordBatchStream>;
+
+    async fn stop(&self, history: oneshot::Sender<JobRunnerHistory>);
+}
+```
+
+The local and cluster runners implement the same method. Protocol code does not
+need to know which mode is active. It retrieves `JobService` from the session and
+calls:
+
+```rust
+service.runner().execute(ctx, plan).await
+```
+
+That line is one of Sail's key architecture compression points.
+
+## Local Execution
+
+`LocalJobRunner` is intentionally small:
+
+```rust
+let plan = trace_execution_plan(plan, options)?;
+Ok(execute_stream(plan, ctx.task_ctx())?)
+```
+
+The runner wraps the plan with telemetry tracing and then delegates to DataFusion's
+`execute_stream`. DataFusion handles partition execution inside the process, and
+Sail receives a `SendableRecordBatchStream`.
+
+Local mode is not a lesser engine. It is the same planning path with a simpler
+execution backend. That makes it useful for:
+
+- development,
+- compatibility tests,
+- small deployments,
+- debugging physical plans before cluster concerns enter.
+
+## Cluster Execution
+
+`ClusterJobRunner` sends the physical plan to the driver actor:
+
+```rust
+self.driver.send(DriverEvent::ExecuteJob {
+    plan,
+    context: ctx.task_ctx(),
+    result: tx,
+}).await?;
+```
+
+The driver builds a job graph and eventually returns a stream. From the caller's
+perspective, local and cluster modes both produce `SendableRecordBatchStream`.
+
+The difference is below the trait boundary.
+
+## Streaming Starts As A Logical Rewrite
+
+Streaming is not a different protocol. A streaming query still enters through Spark
+Connect, resolves to a logical plan, and becomes a physical plan. The key difference
+is that Sail rewrites the logical plan before physical planning:
+
+```rust
+let plan = if is_streaming_plan(&plan)? {
+    rewrite_streaming_plan(plan)?
+} else {
+    plan
+};
+```
+
+The rewriter turns ordinary plan nodes into streaming-aware extension nodes where
+needed. For example:
+
+- batch table scans over streaming sources become `StreamSourceWrapperNode`,
+- `RangeNode` can be wrapped by `StreamSourceAdapterNode`,
+- filters and limits become streaming filter/limit nodes,
+- sinks and display paths use collectors and barriers.
+
+## Stream Sources
+
+A streaming source implements `StreamSource`:
+
+```rust
+#[async_trait::async_trait]
+pub trait StreamSource: Send + Sync + fmt::Debug {
+    fn data_schema(&self) -> SchemaRef;
+
+    async fn scan(
+        &self,
+        state: &dyn Session,
+        projection: Option<&Vec<usize>>,
+        filters: &[Expr],
+        limit: Option<usize>,
+    ) -> Result<Arc<dyn ExecutionPlan>>;
+}
+```
+
+The source returns an `ExecutionPlan`, not a raw stream. That keeps it inside the
+DataFusion physical-planning model. Current concrete examples include Sail's rate
+and socket sources.
+
+## Flow Event Schema
+
+Streaming records carry more than user columns. Sail prepends flow-event fields:
+
+```text
+_marker
+_retracted
+<user columns...>
+```
+
+`_marker` is for control messages. `_retracted` distinguishes normal insert events
+from retraction/delete events.
+
+This design lets streaming physical operators process one Arrow `RecordBatch`
+shape while preserving event semantics. It also gives future stateful operators a
+place to represent retract-mode updates.
+
+## Streaming Physical Nodes
+
+The streaming logical nodes are planned by `ExtensionPhysicalPlanner`, just like
+other custom nodes. Their physical counterparts live under
+`crates/sail-physical-plan/src/streaming/`.
+
+The important nodes are:
+
+| Node | Role |
+|---|---|
+| `StreamSourceWrapperNode` | Scans a real streaming source |
+| `StreamSourceAdapterNode` | Adapts a bounded source into flow events |
+| `StreamFilterNode` | Filters flow-event batches |
+| `StreamLimitNode` | Applies streaming limit/offset behavior |
+| `StreamCollectorNode` | Collects or strips flow-event fields near output |
+
+`BarrierNode` and `BarrierExec` provide checkpoint-like coordination points.
+
+## Streaming Query Lifecycle
+
+Spark Connect exposes streaming operations such as start, stop, status, and await.
+Sail tracks running queries with `StreamingQuery` and `StreamingQueryManager`.
+
+The lifecycle uses asynchronous coordination primitives:
+
+- `watch` channels for stopped/error state,
+- `oneshot` channels for stop signals,
+- `JoinHandle` for the background task.
+
+The manager lives in `SparkSessionState`, so streaming query state is scoped to the
+Spark session.
+
+## Current Boundaries
+
+Streaming support is real, but not all Spark streaming semantics are complete.
+Readers should distinguish:
+
+- the architecture, which is present and coherent,
+- the feature surface, which is still evolving.
+
+The flow-event schema, streaming rewriter, and query manager are the architectural
+foundation. Full stateful aggregations, event-time triggers, and continuous-mode
+coverage are areas to verify against the current code before making claims.
+
+## Takeaways
+
+Local execution and cluster execution share `JobRunner`. Streaming and batch
+execution share the planning/execution stack below a logical rewrite. That is the
+pattern to preserve: new execution behavior should enter through clear boundaries,
+not by bypassing the common plan and stream model.
+
+Navigation: [Previous: Chapter 15, Custom Nodes And Optimizers](15-custom-nodes-and-optimizers.md) | [Next: Chapter 17, Testing Spark Compatibility](17-testing-spark-compatibility.md) | [Reader Guide](00-reader-guide.md)
+
+
+# Chapter 17: Testing Spark Compatibility
+
+Sail's promise is compatibility with Spark-facing behavior, not merely successful
+Rust compilation. Testing therefore has to compare Sail against Spark semantics:
+SQL output, DataFrame behavior, functions, errors, type coercion, schema names,
+streaming state, and protocol responses.
+
+This chapter gives contributors a testing map.
+
+## Code Map
+
+| Concern | File or directory |
+|---|---|
+| Gold test crate | `crates/sail-gold-test/` |
+| Spark gold data scripts | `scripts/spark-gold-data/` |
+| Common gold report scripts | `scripts/common-gold-data/` |
+| PySpark tests | `python/pysail/tests/spark/` |
+| Flight tests | `python/pysail/tests/flight/` |
+| Streaming tests | `python/pysail/tests/spark/streaming/` |
+| SQL docs and feature docs | `docs/guide/sql/` |
+| Spark test recipes | `docs/development/spark-tests/` |
+| Function support utilities | `python/pysail/spark/utils/` |
+
+## The Test Pyramid
+
+Sail has several useful test layers:
+
+| Layer | What it catches |
+|---|---|
+| Rust unit tests | local invariants, parser behavior, optimizer rewrites, codecs |
+| Gold tests | Spark SQL/function output compatibility |
+| PySpark integration tests | DataFrame API, Connect behavior, Python UDFs |
+| Flight tests | Flight SQL protocol and Arrow transport |
+| Feature files | behavior-oriented execution scenarios |
+| Manual plan inspection | logical/physical plan regressions |
+
+No single layer is enough. A function can pass unit tests and still fail Spark
+compatibility because Spark's null handling, string formatting, overflow behavior,
+or timestamp display rules differ from DataFusion defaults.
+
+## Gold Tests
+
+Gold tests are the strongest compatibility signal. The workflow is:
+
+1. Run real Spark examples or documentation-derived queries.
+2. Store the expected output.
+3. Replay the same query through Sail.
+4. Compare schemas, values, ordering behavior, and display semantics.
+
+The point is not only "does this expression run?" The point is "does this expression
+behave like Spark?"
+
+This is especially important for:
+
+- string functions,
+- timestamp and interval functions,
+- decimal precision/scale,
+- arrays/maps/structs,
+- aggregate edge cases,
+- null handling,
+- ANSI versus non-ANSI behavior.
+
+## Parser Round Trips
+
+The SQL parser has a second testing dimension: syntax preservation. `TreeText`
+lets tests parse SQL and unparse it back to normalized text.
+
+Round-trip tests catch grammar regressions that a semantic query test might miss.
+For example, a parser can still produce a plan for a common query while losing
+support for a rare Spark syntax form.
+
+Use parser round trips for:
+
+- DDL syntax,
+- Hive compatibility clauses,
+- interval literals,
+- complex expressions,
+- identifiers and quoting,
+- function-call variants.
+
+## PySpark Integration Tests
+
+The Python tests exercise the surface users actually touch. They are especially
+important for:
+
+- Spark Connect DataFrame APIs,
+- Python UDF registration and execution,
+- Pandas and Arrow UDF paths,
+- UDTFs,
+- streaming commands,
+- config behavior,
+- error messages as seen by PySpark.
+
+When a test failure shows up here, debug the path in layers:
+
+```text
+PySpark call
+  -> Spark Connect protobuf
+  -> proto-to-spec conversion
+  -> PlanResolver
+  -> DataFusion plan
+  -> JobRunner
+  -> Arrow IPC response
+  -> PySpark decoding
+```
+
+Do not assume the bug is in the final function implementation. Many compatibility
+bugs are conversion or type-resolution bugs.
+
+## Flight Tests
+
+Flight SQL tests should verify:
+
+- `GetFlightInfo` schema,
+- ticket creation,
+- `DoGet` fetch behavior,
+- handle consumption,
+- command execution,
+- Arrow batch encoding,
+- basic session/catalog state expectations.
+
+Flight SQL enters through SQL, so it shares parser/analyzer coverage with Spark SQL.
+Its unique risk is protocol handling and Arrow Flight framing.
+
+## Plan Inspection
+
+Sail records plan strings for explain output:
+
+- initial logical plan,
+- final logical plan,
+- final physical plan.
+
+Plan inspection is useful when the output is wrong but no panic occurs. Ask:
+
+1. Did the proto or SQL path produce the right `spec`?
+2. Did the resolver choose the right DataFusion expression or Sail extension node?
+3. Did the optimizer rewrite away something Spark required?
+4. Did physical planning choose the expected custom operator?
+5. Did cluster execution introduce a repartition or shuffle issue?
+
+Plan bugs often look like data bugs until you inspect the tree.
+
+## Local Versus Cluster Testing
+
+Local mode is necessary but not sufficient. Cluster mode adds:
+
+- physical plan encoding and decoding,
+- worker session setup,
+- function re-resolution,
+- stream locations,
+- shuffle channels,
+- task attempts,
+- remote data movement.
+
+Any feature that creates a custom physical operator, UDF, UDAF, table format, or
+shuffle-sensitive distribution should be tested in cluster mode before being treated
+as complete.
+
+## Testing New Functions
+
+For a new Spark function:
+
+1. Add focused Rust unit tests for implementation details.
+2. Add gold examples based on Spark behavior.
+3. Test nulls, empty inputs, nested types, and edge values.
+4. Verify type coercion and return type.
+5. Test both SQL and DataFrame entry paths if they differ.
+6. If the function creates a UDF or aggregate state, verify distributed execution.
+
+Spark compatibility failures tend to hide in boring edge cases. That is where the
+tests earn their keep.
+
+## Testing New Table Formats Or Catalogs
+
+For storage work, test both metadata and execution:
+
+- name resolution,
+- create/list/drop behavior,
+- schema conversion,
+- path and option handling,
+- table properties,
+- scan projection and filters,
+- write modes,
+- row-level operations if supported,
+- object-store URI behavior.
+
+Catalog code can be correct while the resulting `TableProvider` is wrong. Table
+format code can scan correctly while catalog metadata is wrong. Test both sides of
+the boundary.
+
+## Testing Extensions
+
+An extension test matrix should include:
+
+| Extension contribution | Required tests |
+|---|---|
+| Scalar function | SQL, DataFrame, local, cluster if encoded |
+| Aggregate/window function | partial aggregation and cluster merge |
+| Logical optimizer rule | before/after logical plan |
+| Physical planner | local physical execution and cluster codec |
+| Table format | read/write plus catalog integration |
+| Python discovery | package import and registration |
+
+An extension that only works in a custom local binary has not met Sail's likely
+extension bar.
+
+## Takeaways
+
+Testing Sail means testing conversions. Every query crosses protocol, spec,
+planning, execution, Arrow, and client boundaries. Good tests identify which
+boundary failed.
+
+Navigation: [Previous: Chapter 16, Local And Streaming Execution](16-local-and-streaming-execution.md) | [Next: Chapter 18, Feature Playbooks](18-feature-playbooks.md) | [Reader Guide](00-reader-guide.md)
+
+
+# Chapter 18: Feature Playbooks
+
+This chapter is a practical contributor guide. It turns the architecture from the
+previous chapters into checklists for common changes.
+
+The point is not to replace code review. The point is to help a contributor avoid
+the classic Sail mistake: implementing one layer of a feature and forgetting the
+other four.
+
+## Adding A Spark Function
+
+Start by classifying the function.
+
+| Kind | Typical location |
+|---|---|
+| Scalar expression that maps to DataFusion | `crates/sail-plan/src/function/scalar/` |
+| Scalar function requiring Spark-specific runtime behavior | `crates/sail-function/src/scalar/` |
+| Aggregate function | `crates/sail-function/src/aggregate/` and function registry |
+| Window function | `crates/sail-function/src/window/` and function registry |
+| Table/generator function | `crates/sail-plan/src/function/table/` and resolver paths |
+
+Then follow the lifecycle:
+
+1. Confirm Spark syntax and behavior.
+2. Decide whether the function can be expressed as a DataFusion `Expr`.
+3. If yes, register it through the `ScalarFunctionBuilder` closure model.
+4. If no, implement the appropriate DataFusion UDF/UDAF/window function.
+5. Add type coercion and return-type logic.
+6. Add SQL/gold tests.
+7. Add DataFrame/PySpark tests if the API path differs.
+8. Verify distributed behavior if aggregate state or custom UDF encoding is involved.
+
+Prefer expression-level registration when possible. It keeps the function visible
+to DataFusion optimization.
+
+## Adding A Python UDF Path
+
+Python UDF work crosses a wide boundary:
+
+```text
+Spark Connect function payload
+  -> Sail spec
+  -> resolver UDF object
+  -> Python serialization/deserialization
+  -> Arrow/Python conversion
+  -> local or worker execution
+  -> codec support if distributed
+```
+
+Before editing, identify which UDF family you are touching:
+
+- scalar row-by-row,
+- Arrow scalar,
+- Pandas scalar,
+- grouped aggregate,
+- grouped map,
+- co-grouped map,
+- iterator UDF,
+- UDTF.
+
+Then check:
+
+1. Does Spark Connect carry enough metadata?
+2. Does the spec type preserve it?
+3. Does resolver logic construct the right UDF object?
+4. Does `sail-python-udf` know how to call it?
+5. Does the codec preserve it for workers?
+6. Are Python exceptions mapped back to Spark-friendly errors?
+
+## Adding A Catalog Backend
+
+Catalogs answer questions about names, databases, tables, and views.
+
+1. Add or update configuration in Sail's config model.
+2. Implement `CatalogProvider`.
+3. Register the provider in `crates/sail-session/src/catalog.rs`.
+4. Decide whether it needs runtime-aware wrapping for I/O runtime use.
+5. Decide whether catalog caching applies.
+6. Map backend errors to `CatalogError`.
+7. Return `TableStatus` with accurate format, schema, location, and properties.
+8. Test create/list/get/drop behavior.
+9. Test table scans through the DataFusion bridge.
+
+Do not stop at metadata tests. A catalog backend is only useful if its `TableStatus`
+leads to the right table provider.
+
+## Adding A Table Format
+
+Table formats translate table metadata into read and write behavior.
+
+1. Implement or extend the `TableFormat` contract.
+2. Register it in `crates/sail-session/src/formats.rs`.
+3. Define source and sink option resolution.
+4. Implement scan creation.
+5. Implement write planning if supported.
+6. Add object-store handling if needed.
+7. Add projection/filter tests.
+8. Add write-mode tests.
+9. Add catalog integration tests.
+
+For lakehouse formats, also ask:
+
+- Does this format support row-level operations?
+- Does it need logical expansion rules?
+- Does it need an extension physical planner?
+- Does it need metadata columns for merge/delete?
+
+## Adding A Logical Plan Node
+
+Use this path when Spark has a logical concept DataFusion does not represent
+natively.
+
+1. Add the spec representation if needed.
+2. Add resolver logic that creates a `LogicalPlan::Extension`.
+3. Implement `UserDefinedLogicalNodeCore`.
+4. Preserve schema and expressions correctly.
+5. Implement projection-pushdown hints if relevant.
+6. Add the physical `ExecutionPlan`.
+7. Register downcast planning in `ExtensionPhysicalPlanner`.
+8. Add optimizer rules only if planning alone is insufficient.
+9. Add codec support for cluster mode if the physical node can reach workers.
+
+The physical planner registration belongs in `sail-session`, not `sail-plan`.
+
+## Adding A Physical Optimizer Rule
+
+Physical optimizer rules rewrite executable plans. They should be used when:
+
+- DataFusion's physical plan is valid but not Spark-compatible,
+- a Sail placeholder exec must be lowered,
+- a partitioning/distribution contract must be enforced,
+- cluster execution needs a safer physical shape.
+
+Checklist:
+
+1. Write down the exact physical invariant.
+2. Add a focused rule implementation.
+3. Insert it in `get_physical_optimizers` at the correct point.
+4. Add tests for before/after plan shape.
+5. Confirm the rule does not fight DataFusion's own rules.
+6. Test local and cluster execution when distribution changes.
+
+## Adding A Streaming Source
+
+Streaming sources implement `StreamSource`.
+
+1. Define source options and schema.
+2. Implement `data_schema`.
+3. Implement `scan` to return an `ExecutionPlan`.
+4. Ensure execution emits flow-event batches.
+5. Register source discovery/read resolution.
+6. Test projection behavior.
+7. Test query lifecycle: start, status, stop, await.
+8. Test interactions with filters, limits, and sinks.
+
+The source should not return ordinary user-schema batches from physical execution.
+It must produce the flow-event schema expected by streaming physical operators.
+
+## Adding Distributed Codec Support
+
+If a feature creates a physical object that workers need to execute, the remote
+execution codec has to know about it.
+
+Ask:
+
+1. Does the object appear inside an `ExecutionPlan` sent to workers?
+2. Does DataFusion's protobuf codec already support it?
+3. If not, does Sail's codec need a custom representation?
+4. Does the worker session have all function/table-format registrations required
+   to decode or re-resolve it?
+5. Are version mismatches possible?
+
+Codec work is often the difference between "works locally" and "works in Sail."
+
+## Debugging A Compatibility Bug
+
+Use this order:
+
+1. Reproduce with a minimal SQL query if possible.
+2. Compare with Spark output.
+3. Inspect the Spark Connect or SQL entry path.
+4. Inspect the Sail spec.
+5. Inspect initial and final logical plans.
+6. Inspect the physical plan.
+7. Run in local mode.
+8. Run in cluster mode if the feature is distributed-sensitive.
+9. Add the smallest regression test that would have caught it.
+
+## Takeaways
+
+Sail features are pipelines. A complete contribution usually needs protocol/spec,
+resolver, DataFusion planning, execution, tests, and sometimes distributed codec
+support. The playbook is there to keep those layers visible.
+
+Navigation: [Previous: Chapter 17, Testing Spark Compatibility](17-testing-spark-compatibility.md) | [Next: Chapter 19, Roadmap And Codebase Navigation](19-roadmap-and-codebase-navigation.md) | [Reader Guide](00-reader-guide.md)
+
+
+# Chapter 19: Roadmap And Codebase Navigation
+
+This final chapter is a field guide. It tells you where to start, what is solid,
+what is evolving, and how to keep your mental model synchronized with the code.
+
+Sail moves quickly, so treat exact capability claims as snapshots. The stable part
+is the architecture: front doors converge to spec, spec resolves to DataFusion,
+DataFusion plans run locally or through the distributed job runner, and Arrow
+batches move through every layer.
+
+## Start By Task
+
+| Goal | Start here |
+|---|---|
+| Understand a PySpark query | `crates/sail-spark-connect/src/service/plan_executor.rs` |
+| Understand SQL parsing | `crates/sail-sql-parser/src/parser.rs` |
+| Understand SQL to spec | `crates/sail-sql-analyzer/src/statement.rs` |
+| Understand spec to logical plan | `crates/sail-plan/src/resolver/` |
+| Understand session setup | `crates/sail-session/src/session_factory/server.rs` |
+| Understand physical planning | `crates/sail-session/src/planner.rs` |
+| Understand local execution | `crates/sail-execution/src/job_runner.rs` |
+| Understand distributed execution | `crates/sail-execution/src/driver/` |
+| Understand job graph splitting | `crates/sail-execution/src/job_graph/` |
+| Understand shuffles | `crates/sail-execution/src/plan/shuffle_*.rs` and `crates/sail-execution/src/stream/` |
+| Understand Python UDFs | `crates/sail-python-udf/src/` |
+| Understand catalogs | `crates/sail-catalog/` and `crates/sail-session/src/catalog.rs` |
+| Understand table formats | `crates/sail-common-datafusion/src/datasource.rs` and `crates/sail-session/src/formats.rs` |
+| Understand Delta | `crates/sail-delta-lake/` and `crates/sail-plan-lakehouse/` |
+| Understand extensions | `crates/sail-session`, `crates/sail-plan`, `crates/sail-execution/src/codec.rs` |
+
+## Start By Symptom
+
+| Symptom | Likely area |
+|---|---|
+| PySpark API call fails before planning | Spark Connect service/proto conversion |
+| SQL text parses incorrectly | SQL parser or analyzer |
+| Column cannot be resolved | resolver state or attribute resolution |
+| Function gives Spark-incompatible output | function registry or implementation |
+| Works in SQL but not DataFrame API | protocol-to-spec conversion mismatch |
+| Works locally but not in cluster | codec, worker session, shuffle, or task execution |
+| Table name resolves incorrectly | catalog manager or namespace handling |
+| File scan has wrong schema | table format or source option resolution |
+| Merge/delete fails | lakehouse optimizer/planner path |
+| Streaming query starts but never finishes/stops | streaming query manager or background task |
+
+## What Is Mature
+
+The following areas are central and well established architecturally:
+
+- Spark Connect request handling,
+- Sail spec as the internal semantic boundary,
+- DataFusion logical and physical planning,
+- Arrow `RecordBatch` execution,
+- local `JobRunner`,
+- catalog/table-format separation,
+- custom logical/physical node pattern,
+- Python UDF architecture,
+- distributed job graph architecture.
+
+Mature does not mean bug-free. It means the architecture is settled enough that new
+work should usually fit into the existing pattern.
+
+## What Is Evolving
+
+Several areas are active design surfaces:
+
+- third-party extension architecture,
+- DataFusion FFI or other execution-time plugin boundaries,
+- worker-side extension registration and codec negotiation,
+- full streaming feature coverage,
+- lakehouse write breadth,
+- Iceberg writes,
+- broader Flight SQL session semantics,
+- Kubernetes worker lifecycle and fault tolerance,
+- remote stream storage and shuffle spill behavior.
+
+When working in these areas, prefer small changes that preserve future extension
+options.
+
+## Capability Snapshot
+
+At the time this guide was prepared, the important capability shape is:
+
+| Area | Current shape |
+|---|---|
+| PySpark/DataFrame | Primary target through Spark Connect |
+| SQL | Custom parser/analyzer, Spark syntax focus |
+| Flight SQL | Secondary SQL front door |
+| Arrow | Core memory and wire model |
+| DataFusion | Query kernel |
+| Local execution | Direct DataFusion stream execution |
+| Cluster execution | Driver/worker/job graph/task stream architecture |
+| Python UDFs | Multiple PySpark UDF/UDTF paths |
+| Catalogs | Memory, Glue, HMS, Iceberg REST, Unity, OneLake, system |
+| Formats | Listing file formats, Delta, Iceberg, Python data sources |
+| Delta | Reads, append/overwrite writes, row-level paths for MERGE/DELETE, variant-related work |
+| Iceberg | Read path, write support evolving |
+| Streaming | Architecture present, feature coverage evolving |
+
+Always verify exact support in the current repository before documenting a public
+claim. Capability surfaces move faster than architecture chapters.
+
+## Reading The Crate Graph
+
+The crate graph has a useful directional shape:
+
+```text
+protocol crates
+  -> spec/resolver/session crates
+  -> DataFusion extension crates
+  -> execution/storage/support crates
+```
+
+The most important rule is separation:
+
+- `sail-spark-connect` should know about Spark protobufs.
+- `sail-plan` should know about Sail spec and DataFusion logical plans.
+- `sail-session` should assemble DataFusion session state and physical planners.
+- `sail-execution` should execute physical plans without caring which protocol
+  produced them.
+
+When a change violates that separation, pause. Sometimes it is necessary, but it
+usually signals that a boundary type or extension point is missing.
+
+## The Files Worth Bookmarking
+
+Bookmark these first:
+
+- `crates/sail-spark-connect/src/service/plan_executor.rs`
+- `crates/sail-common/src/spec/plan.rs`
+- `crates/sail-plan/src/lib.rs`
+- `crates/sail-plan/src/resolver/plan.rs`
+- `crates/sail-plan/src/resolver/query/mod.rs`
+- `crates/sail-session/src/session_factory/server.rs`
+- `crates/sail-session/src/planner.rs`
+- `crates/sail-execution/src/job_runner.rs`
+- `crates/sail-execution/src/job_graph/planner.rs`
+- `crates/sail-execution/src/codec.rs`
+- `crates/sail-common-datafusion/src/session/job.rs`
+- `crates/sail-common-datafusion/src/datasource.rs`
+
+These files are not the whole system. They are the quickest route back to the
+architecture when you feel lost.
+
+## The Definitive Mental Model
+
+The entire guide can be compressed to one path:
+
+```text
+client intent
+  -> protocol-specific message or SQL
+  -> Sail spec
+  -> DataFusion logical plan with Sail extensions
+  -> optimized logical plan
+  -> physical plan with Sail extensions
+  -> local stream or distributed job graph
+  -> Arrow RecordBatch stream
+  -> protocol-specific response
+```
+
+And one warning:
+
+```text
+If a feature cannot survive every boundary it crosses, it is not complete.
+```
+
+## Closing
+
+Sail is interesting because it is not merely a Rust rewrite of Spark. It is a
+careful compatibility layer over a modern Rust query stack. The best way to learn it
+is to follow conversions: protobuf to spec, SQL to spec, spec to logical plan,
+logical plan to physical plan, physical plan to job graph, job graph to tasks, tasks
+to Arrow streams, Arrow streams back to the client.
+
+That is the shape to preserve as Sail grows.
+
+Navigation: [Previous: Chapter 18, Feature Playbooks](18-feature-playbooks.md) | [Reader Guide](00-reader-guide.md)
 
 

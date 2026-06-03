@@ -1,112 +1,96 @@
-# Learning Rust, Apache Arrow, and DataFusion Through Sail
+# Sail: The Rust, Arrow, and DataFusion Guide
 
-This book is a guided reading of Sail as a modern distributed query engine. It teaches Rust, Apache Arrow, Apache DataFusion, Spark Connect, PySpark interoperability, and extension design by following the code paths that make Sail work.
+This book is a definitive guided reading of Sail as a Spark-compatible distributed
+query engine. It teaches Rust, Apache Arrow, Apache DataFusion, Spark Connect,
+Flight SQL, PySpark interoperability, distributed execution, storage integration,
+testing, and extension design by following the code paths that make Sail work.
 
-The first pass is intentionally chapter-by-chapter so each chapter can stay close to the code and leave room for examples, diagrams, and refinements.
+The source chapters live in `sources/`. The build script renders Markdown and
+Mermaid diagrams to PDF, EPUB, and MOBI artifacts in `book/`.
 
-## Proposed Structure
+## Structure
 
-### Part I: The System Shape
+### Part I: Orientation
 
-1. **Architecture Overview**
-   - Sail as a Spark-compatible server backed by DataFusion.
-   - Local versus cluster execution.
-   - The high-level path from PySpark to Spark Connect to Sail specs, DataFusion logical plans, physical plans, stages, tasks, and Arrow batches.
-   - The extension seams that matter for issue #1810.
+1. **Architecture Overview** - the end-to-end path from PySpark and SQL clients to
+   Sail spec, DataFusion plans, job runners, Arrow streams, and responses.
+2. **Rust Foundations in Sail** - `Arc`, trait objects, async traits, actors,
+   session extensions, downcasting, and typed errors.
 
-2. **Rust Foundations in Sail**
-   - `Arc`, trait objects, async traits, actors, ownership, error propagation, and typed extension patterns.
-   - Why Sail uses Rust for query planning, execution, and transport.
-   - Reading examples: `JobRunner`, `ExecutionPlan`, `ServerSessionFactory`, and `SessionExtension`.
+### Part II: Front Doors
 
-### Part II: Front Doors and Compatibility
+3. **Spark Connect** - gRPC service surface, sessions, relations, commands,
+   reattachable operations, config, artifacts, and Spark-compatible errors.
+4. **PySpark and pysail** - Python packaging, PyO3 startup, the GIL, UDF payloads,
+   PySpark compatibility, and Python data sources.
+14. **Arrow Flight SQL** - SQL-over-Flight as a second protocol front door that
+   converges on the same parser, spec, planner, and `JobRunner`.
 
-3. **Spark Connect**
-   - Spark Connect as Sail's wire protocol.
-   - gRPC service shape in `sail-spark-connect`.
-   - Request handling, session lookup, relation versus command execution, and streaming responses.
-   - How Spark Connect constrains Sail's data types, errors, and reattachment behavior.
+### Part III: Data Model and Planning
 
-4. **PySpark and pysail**
-   - How PySpark talks to Sail with no Python query engine in the middle.
-   - The `pysail` Python package and its PyO3 bridge to the Rust server.
-   - PySpark UDF registration and execution.
-   - Where Python entry-point based extensions would fit.
+5. **Apache Arrow** - schemas, arrays, record batches, IPC, PyArrow, extension
+   types, shuffle, and common mistakes.
+6. **Apache DataFusion** - logical plans, physical plans, session state, extension
+   planners, optimizer rules, and execution contracts.
+10. **The Sail Spec and Plan Resolver** - Spark Connect and SQL conversion into
+   `spec::Plan`, then resolution into DataFusion logical plans.
+15. **Custom Nodes and Optimizers** - Sail logical nodes, physical nodes, logical
+   optimizer rules, physical optimizer rules, and contributor checklists.
 
-### Part III: The Columnar Runtime
+### Part IV: Execution
 
-5. **Apache Arrow**
-   - Arrow arrays, schemas, record batches, and IPC streams.
-   - How Sail serializes results back to Spark Connect clients.
-   - Arrow Flight in the distributed data plane.
-   - Arrow extension types for GeoArrow and variants.
+7. **From Physical Plan to Job Graph** - stage splitting, inputs, distributions,
+   driver stages, job topology, and worked examples.
+8. **Drivers, Workers, Tasks, and Streams** - actor runtime, worker lifecycle,
+   task regions, task attempts, stream management, and job output.
+9. **Shuffle and Data Movement** - shuffle write/read, output channels, Arrow
+   Flight data movement, and failure behavior.
+16. **Local and Streaming Execution** - `LocalJobRunner`, `ClusterJobRunner`,
+   streaming plan rewriting, flow-event schemas, streaming sources, and query
+   lifecycle.
 
-6. **Apache DataFusion**
-   - Logical plans, optimizer rules, physical plans, execution plans, partitions, and task contexts.
-   - Sail's custom query planner and extension physical planner.
-   - Function registries and Spark compatibility functions.
-   - How DataFusion provides the kernel while Sail supplies Spark semantics.
+### Part V: Semantics and Storage
 
-### Part IV: Distributed Query Processing
+11. **Functions, UDFs, and Codecs** - built-in functions, Python UDFs/UDAFs/UDTFs,
+   stream UDFs, remote execution codecs, and worker re-resolution.
+12. **Catalogs, Lakehouse Tables, and File Formats** - catalog providers, table
+   formats, file scans/writes, Delta, Iceberg, row-level operations, and Python
+   data sources.
 
-7. **From Physical Plan to Job Graph**
-   - How Sail splits a DataFusion physical plan into stages.
-   - Shuffle boundaries, repartitioning, coalescing, broadcast, merge, and rescale modes.
-   - Why distributed planning has to rewrite some joins and limits.
+### Part VI: Extension, Testing, and Practice
 
-8. **Drivers, Workers, Tasks, and Streams**
-   - The actor-based control plane.
-   - Worker managers for local cluster and Kubernetes.
-   - Task scheduling, attempts, worker registration, and task status.
-   - The stream manager and how task output is located.
+13. **Extension Architecture** - a design path for third-party DataFusion
+   integrations, plan-time and execution-time extension boundaries, and discussion
+   #2001.
+17. **Testing Spark Compatibility** - gold tests, PySpark integration tests,
+   parser round trips, Flight tests, local/cluster matrices, and extension tests.
+18. **Feature Playbooks** - practical checklists for adding functions, UDF paths,
+   catalogs, table formats, logical nodes, optimizer rules, streaming sources, and
+   distributed codecs.
+19. **Roadmap and Codebase Navigation** - task-oriented file map, symptom map,
+   maturity/evolution areas, capability snapshot, and closing mental model.
 
-9. **Shuffle and Data Movement**
-   - `ShuffleWriteExec`, `ShuffleReadExec`, output channels, hash distribution, and round-robin distribution.
-   - Arrow Flight as the data plane.
-   - How shuffle data flows between workers and returns results to the driver.
+## Build
 
-### Part V: Planning Spark Semantics
+Requirements:
 
-10. **The Sail Spec and Plan Resolver**
-    - Sail's unresolved plan representation.
-    - SQL parser and Spark relation conversion.
-    - Name resolution, catalogs, functions, commands, and logical extension nodes.
+- `pandoc`
+- `typst`
+- `node`
+- Calibre's `ebook-convert` for MOBI output, optional
 
-11. **Functions, UDFs, and Codecs**
-    - Built-in scalar, aggregate, window, generator, and table functions.
-    - PySpark UDF/UDAF/UDTF representation.
-    - Why distributed execution needs physical-plan encoding and UDF re-resolution on workers.
+Build everything:
 
-12. **Catalogs, Lakehouse Tables, and File Formats**
-    - Catalog manager, table format registry, system tables, Delta/Iceberg/lakehouse planner extensions.
-    - How file scans and writes cross the DataFusion/Sail boundary.
+```bash
+cd sail-rust-book
+./build.sh
+```
 
-### Part VI: Extensions
+Build only the PDF:
 
-13. **Extension Architecture: From Proposal to Design**
-    - Issue #1810 as the central design problem.
-    - A unified `SailExtension` trait.
-    - Function registration, session config, logical and physical optimizer rules, physical extension planners, and codec fallback registries.
-    - Python entry-point discovery for `pip install pysail pysail-sedona`.
-    - Collision policy, ordering policy, per-session enablement, and distributed-worker compatibility.
-    - Worked extension examples: scalar UDF, optimizer rule, physical planner node, and Sedona-style spatial join.
+```bash
+./build.sh pdf
+```
 
-## Reading Map
+Build artifacts are published to `sail-rust-book/book/`.
 
-Core files for the first chapter:
-
-- `docs/concepts/architecture/index.md`
-- `docs/concepts/query-planning/index.md`
-- `crates/sail-spark-connect/src/server.rs`
-- `crates/sail-spark-connect/src/service/plan_executor.rs`
-- `crates/sail-plan/src/lib.rs`
-- `crates/sail-session/src/session_factory/server.rs`
-- `crates/sail-session/src/planner.rs`
-- `crates/sail-execution/src/job_runner.rs`
-- `crates/sail-execution/src/job_graph/mod.rs`
-- `crates/sail-execution/src/job_graph/planner.rs`
-- `crates/sail-execution/src/plan/shuffle_write.rs`
-- `crates/sail-execution/src/plan/shuffle_read.rs`
-- `crates/sail-execution/src/codec.rs`
-
-The extension proposal is GitHub issue #1810: "Extension API for third-party DataFusion integrations (UDFs, optimizer rules, planner extensions)."

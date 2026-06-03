@@ -80,7 +80,7 @@ The function crate has many examples to follow. The `to_csv` and `timestampdiff`
 1. Create a new crate `sail-catalog-newbackend`.
 2. Implement `CatalogProvider` for your struct.
 3. Add a `GlueCatalogConfig`-style configuration struct.
-4. Register the provider in the session factory in `sail-spark-connect/src/session_manager.rs` (or wherever catalog selection happens based on config).
+4. Register the provider in `crates/sail-session/src/catalog.rs`, where `create_catalog_manager` maps catalog configuration to provider instances.
 5. Add integration tests.
 
 ### Adding a Logical Plan Node
@@ -88,7 +88,7 @@ The function crate has many examples to follow. The `to_csv` and `timestampdiff`
 1. Define the node struct in `sail-logical-plan/src/new_node.rs`.
 2. Implement `UserDefinedLogicalNodeCore`.
 3. Add the physical counterpart in `sail-physical-plan/src/new_node.rs` implementing `ExecutionPlan`.
-4. Add the logical → physical conversion in `sail-plan`'s physical planner extension.
+4. Add the logical → physical conversion in `sail-session`'s `ExtensionPhysicalPlanner`.
 5. Add the spec IR type if needed.
 6. Add the resolver arm in `sail-plan/src/resolver/query/`.
 
