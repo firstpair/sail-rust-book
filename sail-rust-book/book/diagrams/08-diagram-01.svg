@@ -1,24 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="239" viewBox="0 0 1039 276">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="215" viewBox="0 0 1277 305">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1039" height="276" fill="white"/>
+<rect x="0" y="0" width="1277" height="305" fill="white"/>
 
-<line x1="232" y1="81" x2="267" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="511" y1="81" x2="522" y2="211" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="511" y1="81" x2="528" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="760" y1="81" x2="795" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1003" y1="81" x2="36" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="36" y="52" width="196" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="134" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="134" dy="0">Actor message</tspan></text>
-<rect x="267" y="36" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="389" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="389" dy="0">receive() mutates</tspan><tspan x="389" dy="32">state</tspan></text>
-<rect x="528" y="52" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="644" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="644" dy="0">spawn async work</tspan></text>
-<rect x="795" y="36" width="208" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="899" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="899" dy="0">send follow-up</tspan><tspan x="899" dy="32">message</tspan></text>
-<rect x="522" y="182" width="244" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="644" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="644" dy="0">actor-owned state</tspan></text>
+<line x1="274" y1="83" x2="328" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="622" y1="83" x2="648" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="622" y1="83" x2="655" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="935" y1="83" x2="989" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1241" y1="83" x2="36" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="52" width="238" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="155" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="155" dy="0">Actor message</tspan></text>
+<rect x="328" y="36" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="475" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="475" dy="0">receive() mutates</tspan><tspan x="475" dy="32">state</tspan></text>
+<rect x="655" y="52" width="280" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="795" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="795" dy="0">spawn async work</tspan></text>
+<rect x="989" y="36" width="252" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1115" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1115" dy="0">send follow-up</tspan><tspan x="1115" dy="32">message</tspan></text>
+<rect x="648" y="207" width="294" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="795" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="795" dy="0">actor-owned state</tspan></text>
 </svg>

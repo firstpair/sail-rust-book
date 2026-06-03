@@ -1,35 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="687" viewBox="0 0 1063 812">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="649" viewBox="0 0 1305 941">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1063" height="812" fill="white"/>
+<rect x="0" y="0" width="1305" height="941" fill="white"/>
 
-<line x1="140" y1="126" x2="140" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="140" y1="256" x2="140" y2="312" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="140" y1="370" x2="140" y2="426" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="140" y1="516" x2="140" y2="556" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="140" y1="646" x2="140" y2="702" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="140" y1="646" x2="395" y2="702" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="140" y1="646" x2="650" y2="702" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="140" y1="646" x2="905" y2="686" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="42" y="36" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="140" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="140" dy="0">Spark Connect</tspan><tspan x="140" dy="32">request</tspan></text>
-<rect x="48" y="166" width="184" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="140" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="140" dy="0">session_id +</tspan><tspan x="140" dy="32">user_id</tspan></text>
-<rect x="36" y="312" width="208" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="140" y="341" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="140" dy="0">SessionManager</tspan></text>
-<rect x="36" y="426" width="208" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="140" y="455" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="140" dy="0">DataFusion</tspan><tspan x="140" dy="32">SessionContext</tspan></text>
-<rect x="42" y="556" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="140" y="585" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="140" dy="0">SessionConfig</tspan><tspan x="140" dy="32">extensions</tspan></text>
-<rect x="48" y="702" width="184" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="140" y="731" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="140" dy="0">SparkSession</tspan></text>
-<rect x="309" y="702" width="172" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="395" y="731" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="395" dy="0">PlanService</tspan></text>
-<rect x="565" y="702" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="650" y="731" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="650" dy="0">JobService</tspan></text>
-<rect x="783" y="686" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="905" y="715" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="905" dy="0">Catalog manager /</tspan><tspan x="905" dy="32">table formats</tspan></text>
+<line x1="162" y1="130" x2="162" y2="191" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="162" y1="285" x2="162" y2="362" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="162" y1="424" x2="162" y2="501" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="162" y1="595" x2="162" y2="656" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="162" y1="750" x2="162" y2="827" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="162" y1="750" x2="482" y2="827" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="162" y1="750" x2="802" y2="827" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="162" y1="750" x2="1122" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="43" y="36" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="162" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="162" dy="0">Spark Connect</tspan><tspan x="162" dy="32">request</tspan></text>
+<rect x="50" y="191" width="224" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="162" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="162" dy="0">session_id +</tspan><tspan x="162" dy="32">user_id</tspan></text>
+<rect x="36" y="362" width="252" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="162" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="162" dy="0">SessionManager</tspan></text>
+<rect x="36" y="501" width="252" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="162" y="532" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="162" dy="0">DataFusion</tspan><tspan x="162" dy="32">SessionContext</tspan></text>
+<rect x="43" y="656" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="162" y="687" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="162" dy="0">SessionConfig</tspan><tspan x="162" dy="32">extensions</tspan></text>
+<rect x="50" y="827" width="224" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="162" y="858" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="162" dy="0">SparkSession</tspan></text>
+<rect x="377" y="827" width="210" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="482" y="858" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="482" dy="0">PlanService</tspan></text>
+<rect x="704" y="827" width="196" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="802" y="858" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="802" dy="0">JobService</tspan></text>
+<rect x="975" y="811" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1122" y="842" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1122" dy="0">Catalog manager /</tspan><tspan x="1122" dy="32">table formats</tspan></text>
 </svg>

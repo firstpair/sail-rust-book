@@ -22,31 +22,37 @@ const FLOW_GROUP_FONT_SIZE = 24;
 const FLOW_EDGE_FONT_SIZE = 22;
 const FLOW_LINE_HEIGHT = 32;
 const FLOW_TEXT_Y_OFFSET = 16;
-const FLOW_TEXT_CHAR_WIDTH = 12;
-const FLOW_NODE_MIN_WIDTH = 170;
-const FLOW_NODE_MAX_WIDTH = 300;
-const FLOW_NODE_PADDING_X = 40;
-const FLOW_NODE_PADDING_Y = 26;
+const FLOW_TEXT_CHAR_WIDTH = 14;
+const FLOW_NODE_MIN_WIDTH = 190;
+const FLOW_NODE_MAX_WIDTH = 420;
+const FLOW_NODE_PADDING_X = 56;
+const FLOW_NODE_PADDING_Y = 30;
 const SEQUENCE_FONT_SIZE = 24;
 const SEQUENCE_MESSAGE_FONT_SIZE = 22;
 const SEQUENCE_PARTICIPANT_WIDTH = 190;
 const DIAGRAM_PADDING = 36;
 
 function wrapText(text, maxChars = 24) {
-  const words = String(text).replace(/\s+/g, " ").trim().split(" ");
+  const segments = String(text)
+    .replace(/<br\s*\/?>/gi, "\n")
+    .split(/\n+/)
+    .map((segment) => segment.replace(/\s+/g, " ").trim());
   const lines = [];
-  let current = "";
-  for (const word of words) {
-    if (!current) {
-      current = word;
-    } else if ((current + " " + word).length <= maxChars) {
-      current += " " + word;
-    } else {
-      lines.push(current);
-      current = word;
+  for (const segment of segments) {
+    const words = segment ? segment.split(" ") : [""];
+    let current = "";
+    for (const word of words) {
+      if (!current) {
+        current = word;
+      } else if ((current + " " + word).length <= maxChars) {
+        current += " " + word;
+      } else {
+        lines.push(current);
+        current = word;
+      }
     }
+    if (current) lines.push(current);
   }
-  if (current) lines.push(current);
   return lines.length ? lines : [""];
 }
 
@@ -177,10 +183,10 @@ function parseFlowchart(source) {
     byRank.get(r).push(id);
   }
 
-  const columnGap = 255;
-  const rowGap = 130;
-  const bandGap = 215;
-  const margin = 90;
+  const columnGap = 320;
+  const rowGap = 155;
+  const bandGap = 255;
+  const margin = 110;
   for (const [r, groupIds] of byRank) {
     groupIds.forEach((id, index) => {
       const node = nodes.get(id);
@@ -218,10 +224,10 @@ function parseFlowchart(source) {
     .filter((group) => group.nodes.length > 0)
     .map((group) => {
       const ns = group.nodes.map((id) => nodes.get(id)).filter(Boolean);
-      const minX = Math.min(...ns.map((n) => n.x - 95)) - 18;
-      const maxX = Math.max(...ns.map((n) => n.x + 95)) + 18;
-      const minY = Math.min(...ns.map((n) => n.y - 35)) - 26;
-      const maxY = Math.max(...ns.map((n) => n.y + 35)) + 18;
+      const minX = Math.min(...ns.map((n) => n.x - n.width / 2)) - 26;
+      const maxX = Math.max(...ns.map((n) => n.x + n.width / 2)) + 26;
+      const minY = Math.min(...ns.map((n) => n.y - n.height / 2)) - 34;
+      const maxY = Math.max(...ns.map((n) => n.y + n.height / 2)) + 26;
       return `<rect x="${minX}" y="${minY}" width="${maxX - minX}" height="${maxY - minY}" rx="10" fill="#eef6ff" stroke="#9bc3e6" stroke-dasharray="5 4"/>
 <text x="${minX + 12}" y="${minY + 24}" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${FLOW_GROUP_FONT_SIZE}" font-weight="700" fill="#315a86">${escapeXml(group.label)}</text>`;
     })

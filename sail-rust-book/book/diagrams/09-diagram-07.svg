@@ -1,41 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="282" viewBox="0 0 1348 422">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="258" viewBox="0 0 1660 476">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1348" height="422" fill="white"/>
+<rect x="0" y="0" width="1660" height="476" fill="white"/>
 
-<line x1="292" y1="81" x2="303" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="535" y1="81" x2="546" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="535" y1="81" x2="546" y2="211" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="535" y1="81" x2="546" y2="341" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="802" y1="81" x2="831" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="802" y1="211" x2="831" y2="211" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="802" y1="341" x2="831" y2="341" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1027" y1="81" x2="1056" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1027" y1="211" x2="1056" y2="211" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1027" y1="341" x2="1056" y2="341" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="36" y="52" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="164" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="164" dy="0">orders RecordBatch</tspan></text>
-<rect x="303" y="52" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="419" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="419" dy="0">hash customer_id</tspan></text>
-<rect x="546" y="52" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="674" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="674" dy="0">rows for channel 0</tspan></text>
-<rect x="546" y="182" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="674" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="674" dy="0">rows for channel 1</tspan></text>
-<rect x="546" y="312" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="674" y="341" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="674" dy="0">rows for channel 2</tspan></text>
-<rect x="831" y="36" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="929" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="929" dy="0">TaskStreamKey</tspan><tspan x="929" dy="32">channel 0</tspan></text>
-<rect x="831" y="166" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="929" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="929" dy="0">TaskStreamKey</tspan><tspan x="929" dy="32">channel 1</tspan></text>
-<rect x="831" y="296" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="929" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="929" dy="0">TaskStreamKey</tspan><tspan x="929" dy="32">channel 2</tspan></text>
-<rect x="1056" y="36" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="1184" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1184" dy="0">consumer partition</tspan><tspan x="1184" dy="32">0</tspan></text>
-<rect x="1056" y="166" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="1184" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1184" dy="0">consumer partition</tspan><tspan x="1184" dy="32">1</tspan></text>
-<rect x="1056" y="296" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="1184" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1184" dy="0">consumer partition</tspan><tspan x="1184" dy="32">2</tspan></text>
+<line x1="344" y1="83" x2="370" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="650" y1="83" x2="676" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="650" y1="83" x2="676" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="650" y1="83" x2="676" y2="393" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="984" y1="83" x2="1031" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="984" y1="238" x2="1031" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="984" y1="393" x2="1031" y2="393" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1269" y1="83" x2="1316" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1269" y1="238" x2="1316" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1269" y1="393" x2="1316" y2="393" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="52" width="308" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="190" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="190" dy="0">orders RecordBatch</tspan></text>
+<rect x="370" y="52" width="280" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="510" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="510" dy="0">hash customer_id</tspan></text>
+<rect x="676" y="52" width="308" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="830" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="830" dy="0">rows for channel 0</tspan></text>
+<rect x="676" y="207" width="308" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="830" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="830" dy="0">rows for channel 1</tspan></text>
+<rect x="676" y="362" width="308" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="830" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="830" dy="0">rows for channel 2</tspan></text>
+<rect x="1031" y="36" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1150" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1150" dy="0">TaskStreamKey</tspan><tspan x="1150" dy="32">channel 0</tspan></text>
+<rect x="1031" y="191" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1150" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1150" dy="0">TaskStreamKey</tspan><tspan x="1150" dy="32">channel 1</tspan></text>
+<rect x="1031" y="346" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1150" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1150" dy="0">TaskStreamKey</tspan><tspan x="1150" dy="32">channel 2</tspan></text>
+<rect x="1316" y="36" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1470" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1470" dy="0">consumer partition</tspan><tspan x="1470" dy="32">0</tspan></text>
+<rect x="1316" y="191" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1470" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1470" dy="0">consumer partition</tspan><tspan x="1470" dy="32">1</tspan></text>
+<rect x="1316" y="346" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1470" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1470" dy="0">consumer partition</tspan><tspan x="1470" dy="32">2</tspan></text>
 </svg>

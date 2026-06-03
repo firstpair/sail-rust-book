@@ -1,26 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="262" viewBox="0 0 1294 377">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="237" viewBox="0 0 1597 421">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1294" height="377" fill="white"/>
+<rect x="0" y="0" width="1597" height="421" fill="white"/>
 
-<line x1="208" y1="81" x2="279" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="475" y1="81" x2="547" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="717" y1="81" x2="759" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1015" y1="81" x2="1026" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1258" y1="81" x2="36" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="36" y="36" width="172" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="122" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="122" dy="0">PySpark</tspan><tspan x="122" dy="32">repartition</tspan></text>
-<rect x="279" y="36" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="377" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="377" dy="0">Spark Connect</tspan><tspan x="377" dy="32">relation</tspan></text>
-<rect x="547" y="52" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="632" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="632" dy="0">Sail spec</tspan></text>
-<rect x="759" y="36" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="887" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="887" dy="0">DataFusion logical</tspan><tspan x="887" dy="32">extension node</tspan></text>
-<rect x="1026" y="36" width="232" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="1142" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1142" dy="0">Sail physical</tspan><tspan x="1142" dy="32">repartition exec</tspan></text>
-<rect x="36" y="251" width="172" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="122" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="122" dy="0">Distributed</tspan><tspan x="122" dy="32">shuffle</tspan></text>
+<line x1="246" y1="83" x2="342" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="580" y1="83" x2="686" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="876" y1="83" x2="947" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1255" y1="83" x2="1281" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1561" y1="83" x2="36" y2="338" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="141" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="141" dy="0">PySpark</tspan><tspan x="141" dy="32">repartition</tspan></text>
+<rect x="342" y="36" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="461" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="461" dy="0">Spark Connect</tspan><tspan x="461" dy="32">relation</tspan></text>
+<rect x="686" y="52" width="190" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="781" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="781" dy="0">Sail spec</tspan></text>
+<rect x="947" y="36" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1101" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1101" dy="0">DataFusion logical</tspan><tspan x="1101" dy="32">extension node</tspan></text>
+<rect x="1281" y="36" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1421" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1421" dy="0">Sail physical</tspan><tspan x="1421" dy="32">repartition exec</tspan></text>
+<rect x="36" y="291" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="141" y="322" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="141" dy="0">Distributed</tspan><tspan x="141" dy="32">shuffle</tspan></text>
 </svg>

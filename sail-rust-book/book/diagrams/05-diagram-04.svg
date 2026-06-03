@@ -1,23 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="270" viewBox="0 0 1027 308">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="240" viewBox="0 0 1263 337">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1027" height="308" fill="white"/>
+<rect x="0" y="0" width="1263" height="337" fill="white"/>
 
-<line x1="220" y1="97" x2="267" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="499" y1="97" x2="522" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="754" y1="97" x2="808" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="754" y1="97" x2="795" y2="227" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="36" y="52" width="184" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="128" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="128" dy="0">Binary Arrow</tspan><tspan x="128" dy="32">buffers</tspan></text>
-<rect x="267" y="36" width="232" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="383" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="383" dy="0">Field metadata:</tspan><tspan x="383" dy="32">extension name +</tspan><tspan x="383" dy="32">JSON</tspan></text>
-<rect x="522" y="36" width="232" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="638" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="638" dy="0">Spark Geometry /</tspan><tspan x="638" dy="32">Geography /</tspan><tspan x="638" dy="32">Variant</tspan></text>
-<rect x="808" y="36" width="170" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="893" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="893" dy="0">DataFusion</tspan><tspan x="893" dy="32">extension</tspan><tspan x="893" dy="32">functions</tspan></text>
-<rect x="795" y="182" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="893" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="893" dy="0">Spark Connect</tspan><tspan x="893" dy="32">client</tspan></text>
+<line x1="260" y1="99" x2="328" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="608" y1="99" x2="648" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="928" y1="99" x2="1010" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="928" y1="99" x2="989" y2="254" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="52" width="224" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="148" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="148" dy="0">Binary Arrow</tspan><tspan x="148" dy="32">buffers</tspan></text>
+<rect x="328" y="36" width="280" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="468" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="468" dy="0">Field metadata:</tspan><tspan x="468" dy="32">extension name +</tspan><tspan x="468" dy="32">JSON</tspan></text>
+<rect x="648" y="36" width="280" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="788" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="788" dy="0">Spark Geometry /</tspan><tspan x="788" dy="32">Geography /</tspan><tspan x="788" dy="32">Variant</tspan></text>
+<rect x="1010" y="36" width="196" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1108" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1108" dy="0">DataFusion</tspan><tspan x="1108" dy="32">extension</tspan><tspan x="1108" dy="32">functions</tspan></text>
+<rect x="989" y="207" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1108" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1108" dy="0">Spark Connect</tspan><tspan x="1108" dy="32">client</tspan></text>
 </svg>

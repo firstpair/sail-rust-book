@@ -1,20 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="184" viewBox="0 0 1075 220">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="150" viewBox="0 0 1319 220">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1075" height="220" fill="white"/>
+<rect x="0" y="0" width="1319" height="220" fill="white"/>
 
-<line x1="280" y1="97" x2="285" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="541" y1="97" x2="518" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="818" y1="97" x2="807" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="36" y="68" width="244" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="158" y="97" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="158" dy="0">spec::CommandNode</tspan></text>
-<rect x="285" y="36" width="256" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="413" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="413" dy="0">CatalogCommandNode</tspan><tspan x="413" dy="32">or other logical</tspan><tspan x="413" dy="32">extension</tspan></text>
-<rect x="518" y="68" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="668" y="97" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="668" dy="0">ExtensionPhysicalPlanner</tspan></text>
-<rect x="807" y="52" width="232" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="923" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="923" dy="0">physical command</tspan><tspan x="923" dy="32">exec</tspan></text>
+<line x1="330" y1="99" x2="349" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="657" y1="99" x2="627" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1019" y1="99" x2="1003" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="68" width="294" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="99" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">spec::CommandNode</tspan></text>
+<rect x="349" y="36" width="308" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="503" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="503" dy="0">CatalogCommandNode</tspan><tspan x="503" dy="32">or other logical</tspan><tspan x="503" dy="32">extension</tspan></text>
+<rect x="627" y="68" width="392" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="823" y="99" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="823" dy="0">ExtensionPhysicalPlanner</tspan></text>
+<rect x="1003" y="52" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1143" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1143" dy="0">physical command</tspan><tspan x="1143" dy="32">exec</tspan></text>
 </svg>

@@ -1,26 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="420" height="828" viewBox="0 0 420 828">
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="957" viewBox="0 0 420 957">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="420" height="828" fill="white"/>
+<rect x="0" y="0" width="420" height="957" fill="white"/>
 
-<line x1="164" y1="158" x2="164" y2="198" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="164" y1="256" x2="164" y2="328" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="164" y1="386" x2="164" y2="410" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="164" y1="564" x2="164" y2="572" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="164" y1="662" x2="164" y2="702" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="60" y="36" width="208" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="164" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="164" dy="0">Stage physical</tspan><tspan x="164" dy="32">plan with</tspan><tspan x="164" dy="32">StageInputExec</tspan></text>
-<rect x="54" y="198" width="220" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="164" y="227" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="164" dy="0">Task definition</tspan></text>
-<rect x="54" y="328" width="220" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="164" y="357" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="164" dy="0">rewrite_shuffle</tspan></text>
-<rect x="54" y="410" width="220" height="154" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="164" y="439" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="164" dy="0">Replace</tspan><tspan x="164" dy="32">StageInputExec</tspan><tspan x="164" dy="32">with</tspan><tspan x="164" dy="32">ShuffleReadExec</tspan></text>
-<rect x="36" y="572" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="164" y="601" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="164" dy="0">Wrap final plan in</tspan><tspan x="164" dy="32">ShuffleWriteExec</tspan></text>
-<rect x="54" y="702" width="220" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="164" y="731" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="164" dy="0">Executable task</tspan><tspan x="164" dy="32">plan</tspan></text>
+<line x1="190" y1="162" x2="190" y2="223" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="190" y1="285" x2="190" y2="378" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="190" y1="440" x2="190" y2="485" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="190" y1="643" x2="190" y2="672" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="190" y1="766" x2="190" y2="827" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="64" y="36" width="252" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="190" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="190" dy="0">Stage physical</tspan><tspan x="190" dy="32">plan with</tspan><tspan x="190" dy="32">StageInputExec</tspan></text>
+<rect x="57" y="223" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="190" y="254" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="190" dy="0">Task definition</tspan></text>
+<rect x="57" y="378" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="190" y="409" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="190" dy="0">rewrite_shuffle</tspan></text>
+<rect x="57" y="485" width="266" height="158" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="190" y="516" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="190" dy="0">Replace</tspan><tspan x="190" dy="32">StageInputExec</tspan><tspan x="190" dy="32">with</tspan><tspan x="190" dy="32">ShuffleReadExec</tspan></text>
+<rect x="36" y="672" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="190" y="703" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="190" dy="0">Wrap final plan in</tspan><tspan x="190" dy="32">ShuffleWriteExec</tspan></text>
+<rect x="57" y="827" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="190" y="858" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="190" dy="0">Executable task</tspan><tspan x="190" dy="32">plan</tspan></text>
 </svg>

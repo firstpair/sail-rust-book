@@ -1,23 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="154" viewBox="0 0 1282 220">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="125" viewBox="0 0 1583 220">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1282" height="220" fill="white"/>
+<rect x="0" y="0" width="1583" height="220" fill="white"/>
 
-<line x1="208" y1="81" x2="285" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="469" y1="81" x2="534" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="730" y1="81" x2="753" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1021" y1="81" x2="1038" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="36" y="36" width="172" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="122" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="122" dy="0">DataFusion</tspan><tspan x="122" dy="32">RecordBatch</tspan></text>
-<rect x="285" y="36" width="184" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="377" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="377" dy="0">Arrow IPC</tspan><tspan x="377" dy="32">StreamWriter</tspan></text>
-<rect x="534" y="36" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="632" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="632" dy="0">Spark Connect</tspan><tspan x="632" dy="32">ArrowBatch</tspan></text>
-<rect x="753" y="52" width="268" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="887" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="887" dy="0">ExecutePlanResponse</tspan></text>
-<rect x="1038" y="52" width="208" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="1142" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1142" dy="0">PySpark client</tspan></text>
+<line x1="246" y1="83" x2="349" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="573" y1="83" x2="662" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="900" y1="83" x2="940" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1262" y1="83" x2="1295" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="141" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="141" dy="0">DataFusion</tspan><tspan x="141" dy="32">RecordBatch</tspan></text>
+<rect x="349" y="36" width="224" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="461" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="461" dy="0">Arrow IPC</tspan><tspan x="461" dy="32">StreamWriter</tspan></text>
+<rect x="662" y="36" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="781" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="781" dy="0">Spark Connect</tspan><tspan x="781" dy="32">ArrowBatch</tspan></text>
+<rect x="940" y="52" width="322" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1101" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1101" dy="0">ExecutePlanResponse</tspan></text>
+<rect x="1295" y="52" width="252" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1421" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1421" dy="0">PySpark client</tspan></text>
 </svg>

@@ -1,51 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="806" viewBox="0 0 1324 1186">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="767" viewBox="0 0 1632 1390">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1324" height="1186" fill="white"/>
+<rect x="0" y="0" width="1632" height="1390" fill="white"/>
 
-<line x1="176" y1="126" x2="176" y2="182" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="240" x2="176" y2="312" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="370" x2="176" y2="442" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="500" x2="176" y2="556" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="500" x2="431" y2="556" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="500" x2="686" y2="556" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="500" x2="941" y2="572" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="500" x2="1196" y2="556" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="646" x2="176" y2="686" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="431" y1="646" x2="176" y2="686" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="686" y1="646" x2="176" y2="686" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="941" y1="630" x2="176" y2="686" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1196" y1="646" x2="176" y2="686" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="776" x2="176" y2="832" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="890" x2="176" y2="962" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="1020" x2="176" y2="1092" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="60" y="36" width="232" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">Spark Connect or</tspan><tspan x="176" dy="32">SQL</tspan></text>
-<rect x="91" y="182" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">Sail spec</tspan></text>
-<rect x="84" y="312" width="184" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="341" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">PlanResolver</tspan></text>
-<rect x="78" y="442" width="196" height="58" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
-<text x="176" y="471" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">function kind</tspan></text>
-<rect x="66" y="556" width="220" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="585" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">built-in scalar</tspan><tspan x="176" dy="32">expression</tspan></text>
-<rect x="303" y="556" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="431" y="585" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="431" dy="0">built-in aggregate</tspan><tspan x="431" dy="32">expression</tspan></text>
-<rect x="558" y="556" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="686" y="585" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="686" dy="0">catalog registered</tspan><tspan x="686" dy="32">PySpark UDF</tspan></text>
-<rect x="813" y="572" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="941" y="601" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="941" dy="0">inline PySpark UDF</tspan></text>
-<rect x="1104" y="556" width="184" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="1196" y="585" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1196" dy="0">PySpark UDTF</tspan><tspan x="1196" dy="32">stream UDF</tspan></text>
-<rect x="90" y="686" width="172" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="715" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">DataFusion</tspan><tspan x="176" dy="32">LogicalPlan</tspan></text>
-<rect x="78" y="832" width="196" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="861" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">physical plan</tspan></text>
-<rect x="36" y="962" width="280" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="991" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">RemoteExecutionCodec</tspan></text>
-<rect x="48" y="1092" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="1121" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">worker TaskContext</tspan></text>
+<line x1="204" y1="130" x2="204" y2="207" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="269" x2="204" y2="362" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="424" x2="204" y2="517" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="579" x2="204" y2="656" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="579" x2="524" y2="656" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="579" x2="844" y2="656" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="579" x2="1164" y2="672" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="579" x2="1484" y2="656" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="750" x2="204" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="524" y1="750" x2="204" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="844" y1="750" x2="204" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1164" y1="734" x2="204" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1484" y1="750" x2="204" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="905" x2="204" y2="982" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="1044" x2="204" y2="1137" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="1199" x2="204" y2="1292" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="64" y="36" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">Spark Connect or</tspan><tspan x="204" dy="32">SQL</tspan></text>
+<rect x="109" y="207" width="190" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">Sail spec</tspan></text>
+<rect x="92" y="362" width="224" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">PlanResolver</tspan></text>
+<rect x="85" y="517" width="238" height="62" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="204" y="548" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">function kind</tspan></text>
+<rect x="71" y="656" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="687" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">built-in scalar</tspan><tspan x="204" dy="32">expression</tspan></text>
+<rect x="370" y="656" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="524" y="687" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="524" dy="0">built-in aggregate</tspan><tspan x="524" dy="32">expression</tspan></text>
+<rect x="690" y="656" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="844" y="687" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="844" dy="0">catalog registered</tspan><tspan x="844" dy="32">PySpark UDF</tspan></text>
+<rect x="1010" y="672" width="308" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1164" y="703" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1164" dy="0">inline PySpark UDF</tspan></text>
+<rect x="1372" y="656" width="224" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1484" y="687" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1484" dy="0">PySpark UDTF</tspan><tspan x="1484" dy="32">stream UDF</tspan></text>
+<rect x="99" y="811" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="842" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">DataFusion</tspan><tspan x="204" dy="32">LogicalPlan</tspan></text>
+<rect x="85" y="982" width="238" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="1013" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">physical plan</tspan></text>
+<rect x="36" y="1137" width="336" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="1168" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">RemoteExecutionCodec</tspan></text>
+<rect x="50" y="1292" width="308" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="1323" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">worker TaskContext</tspan></text>
 </svg>

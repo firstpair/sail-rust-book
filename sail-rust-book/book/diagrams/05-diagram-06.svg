@@ -1,26 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="605" height="552" viewBox="0 0 605 552">
+<svg xmlns="http://www.w3.org/2000/svg" width="749" height="631" viewBox="0 0 749 631">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="605" height="552" fill="white"/>
+<rect x="0" y="0" width="749" height="631" fill="white"/>
 
-<line x1="186" y1="126" x2="186" y2="182" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="186" y1="240" x2="186" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="186" y1="386" x2="186" y2="426" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="186" y1="240" x2="441" y2="312" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="441" y1="370" x2="441" y2="442" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="64" y="36" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="186" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">Resolved physical</tspan><tspan x="186" dy="32">plan</tspan></text>
-<rect x="36" y="182" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="186" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">SendableRecordBatchStream</tspan></text>
-<rect x="88" y="296" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="186" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">Spark Connect</tspan><tspan x="186" dy="32">executor</tspan></text>
-<rect x="94" y="426" width="184" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="186" y="455" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">Arrow IPC in</tspan><tspan x="186" dy="32">ArrowBatch</tspan></text>
-<rect x="313" y="312" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="441" y="341" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="441" dy="0">Flight SQL service</tspan></text>
-<rect x="319" y="442" width="244" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="441" y="471" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="441" dy="0">FlightData stream</tspan></text>
+<line x1="239" y1="130" x2="239" y2="207" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="239" y1="269" x2="239" y2="346" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="239" y1="440" x2="239" y2="501" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="239" y1="269" x2="559" y2="362" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="559" y1="424" x2="559" y2="517" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="92" y="36" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="239" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="239" dy="0">Resolved physical</tspan><tspan x="239" dy="32">plan</tspan></text>
+<rect x="36" y="207" width="406" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="239" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="239" dy="0">SendableRecordBatchStream</tspan></text>
+<rect x="120" y="346" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="239" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="239" dy="0">Spark Connect</tspan><tspan x="239" dy="32">executor</tspan></text>
+<rect x="127" y="501" width="224" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="239" y="532" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="239" dy="0">Arrow IPC in</tspan><tspan x="239" dy="32">ArrowBatch</tspan></text>
+<rect x="405" y="362" width="308" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="559" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="559" dy="0">Flight SQL service</tspan></text>
+<rect x="412" y="517" width="294" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="559" y="548" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="559" dy="0">FlightData stream</tspan></text>
 </svg>

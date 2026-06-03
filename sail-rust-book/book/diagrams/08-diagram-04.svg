@@ -1,29 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="420" height="926" viewBox="0 0 420 926">
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="1080" viewBox="0 0 420 1080">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="420" height="926" fill="white"/>
+<rect x="0" y="0" width="420" height="1080" fill="white"/>
 
-<line x1="176" y1="126" x2="176" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="256" x2="176" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="386" x2="176" y2="426" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="516" x2="176" y2="556" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="646" x2="176" y2="686" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="176" y1="776" x2="176" y2="832" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="78" y="36" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">Serialized</tspan><tspan x="176" dy="32">physical plan</tspan></text>
-<rect x="36" y="166" width="280" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">Decode with</tspan><tspan x="176" dy="32">RemoteExecutionCodec</tspan></text>
-<rect x="54" y="296" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">StageInputExec -&gt;</tspan><tspan x="176" dy="32">ShuffleReadExec</tspan></text>
-<rect x="60" y="426" width="232" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="455" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">Plan -&gt;</tspan><tspan x="176" dy="32">ShuffleWriteExec</tspan></text>
-<rect x="54" y="556" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="585" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">plan.execute(task</tspan><tspan x="176" dy="32">partition)</tspan></text>
-<rect x="48" y="686" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="715" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">TaskMonitor drains</tspan><tspan x="176" dy="32">stream</tspan></text>
-<rect x="78" y="832" width="196" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="176" y="861" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">Report status</tspan></text>
+<line x1="204" y1="130" x2="204" y2="191" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="285" x2="204" y2="346" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="440" x2="204" y2="501" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="595" x2="204" y2="656" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="750" x2="204" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="204" y1="905" x2="204" y2="982" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="85" y="36" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">Serialized</tspan><tspan x="204" dy="32">physical plan</tspan></text>
+<rect x="36" y="191" width="336" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">Decode with</tspan><tspan x="204" dy="32">RemoteExecutionCodec</tspan></text>
+<rect x="57" y="346" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">StageInputExec -&gt;</tspan><tspan x="204" dy="32">ShuffleReadExec</tspan></text>
+<rect x="64" y="501" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="532" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">Plan -&gt;</tspan><tspan x="204" dy="32">ShuffleWriteExec</tspan></text>
+<rect x="57" y="656" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="687" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">plan.execute(task</tspan><tspan x="204" dy="32">partition)</tspan></text>
+<rect x="50" y="811" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="842" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">TaskMonitor drains</tspan><tspan x="204" dy="32">stream</tspan></text>
+<rect x="85" y="982" width="238" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="204" y="1013" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="204" dy="0">Report status</tspan></text>
 </svg>
