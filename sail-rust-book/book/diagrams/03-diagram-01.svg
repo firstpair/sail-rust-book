@@ -1,32 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="315" viewBox="0 0 1230 430">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="279" viewBox="0 0 1312 406">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1230" height="430" fill="white"/>
+<rect x="0" y="0" width="1312" height="406" fill="white"/>
 
-<line x1="145" y1="70" x2="225" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="375" y1="70" x2="441.75" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="375" y1="70" x2="430.5" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="375" y1="70" x2="455" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="605" y1="280" x2="660.5" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="859.5" y1="70" x2="915" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1065" y1="70" x2="-18.25" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">server.rs</tspan></text>
-<rect x="225" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">service/*</tspan></text>
-<rect x="441.75" y="44.5" width="176.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">proto/* conversions</tspan></text>
-<rect x="430.5" y="149.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">SparkSession extension</tspan></text>
-<rect x="455" y="254.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">sail-plan</tspan></text>
-<rect x="660.5" y="44.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="760" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">JobService / JobRunner</tspan></text>
-<rect x="915" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="990" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="990" dy="0">executor.rs</tspan></text>
-<rect x="-18.25" y="211" width="176.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="237" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">ExecutePlanResponse</tspan><tspan x="70" dy="17">stream</tspan></text>
+<line x1="255" y1="81" x2="340" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="510" y1="81" x2="594" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="510" y1="81" x2="588" y2="211" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="510" y1="81" x2="595" y2="341" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="765" y1="341" x2="843" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1027" y1="81" x2="1104" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1276" y1="81" x2="36" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="85" y="52" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="170" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="170" dy="0">server.rs</tspan></text>
+<rect x="340" y="52" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="425" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="425" dy="0">service/*</tspan></text>
+<rect x="594" y="36" width="172" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="680" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="680" dy="0">proto/*</tspan><tspan x="680" dy="32">conversions</tspan></text>
+<rect x="588" y="166" width="184" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="680" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="680" dy="0">SparkSession</tspan><tspan x="680" dy="32">extension</tspan></text>
+<rect x="595" y="312" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="680" y="341" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="680" dy="0">sail-plan</tspan></text>
+<rect x="843" y="36" width="184" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="935" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="935" dy="0">JobService /</tspan><tspan x="935" dy="32">JobRunner</tspan></text>
+<rect x="1104" y="52" width="172" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1190" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1190" dy="0">executor.rs</tspan></text>
+<rect x="36" y="251" width="268" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="170" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="170" dy="0">ExecutePlanResponse</tspan><tspan x="170" dy="32">stream</tspan></text>
 </svg>

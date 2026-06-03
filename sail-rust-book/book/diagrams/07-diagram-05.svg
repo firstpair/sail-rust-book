@@ -1,20 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="198" viewBox="0 0 1000 220">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="188" viewBox="0 0 1051 220">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1000" height="220" fill="white"/>
+<rect x="0" y="0" width="1051" height="220" fill="white"/>
 
-<line x1="154.5" y1="70" x2="225" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="375" y1="70" x2="415.5" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="644.5" y1="70" x2="685" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-14.5" y="44.5" width="169" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Child plan subtree</tspan></text>
-<rect x="225" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">New stage</tspan></text>
-<rect x="415.5" y="44.5" width="229" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">StageInputExec(StageInput)</tspan></text>
-<rect x="685" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="760" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">Parent plan</tspan></text>
+<line x1="292" y1="65" x2="334" y2="65" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="504" y1="65" x2="524" y2="65" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="824" y1="65" x2="843" y2="65" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="164" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="164" dy="0">Child plan subtree</tspan></text>
+<rect x="334" y="36" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="419" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="419" dy="0">New stage</tspan></text>
+<rect x="524" y="36" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="674" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="674" dy="0">StageInputExec(StageInput)</tspan></text>
+<rect x="843" y="36" width="172" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="929" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="929" dy="0">Parent plan</tspan></text>
 </svg>

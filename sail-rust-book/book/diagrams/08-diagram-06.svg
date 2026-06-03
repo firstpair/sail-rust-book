@@ -1,89 +1,89 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="715" viewBox="0 0 1540 1224">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="672" viewBox="0 0 2120 1583">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1540" height="1224" fill="white"/>
-<rect x="8" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="70" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Spark/Flight caller</text>
-<line x1="70" y1="55" x2="70" y2="1169" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="8" y="1169" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="70" y="1188" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">Spark/Flight caller</text>
-<rect x="183" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="245" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">ClusterJobRunner</text>
-<line x1="245" y1="55" x2="245" y2="1169" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="183" y="1169" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="245" y="1188" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">ClusterJobRunner</text>
-<rect x="358" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="420" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">DriverActor</text>
-<line x1="420" y1="55" x2="420" y2="1169" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="358" y="1169" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="420" y="1188" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">DriverActor</text>
-<rect x="533" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="595" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">JobScheduler</text>
-<line x1="595" y1="55" x2="595" y2="1169" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="533" y="1169" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="595" y="1188" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">JobScheduler</text>
-<rect x="708" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="770" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">TaskAssigner</text>
-<line x1="770" y1="55" x2="770" y2="1169" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="708" y="1169" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="770" y="1188" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">TaskAssigner</text>
-<rect x="883" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="945" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerPool</text>
-<line x1="945" y1="55" x2="945" y2="1169" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="883" y="1169" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="945" y="1188" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerPool</text>
-<rect x="1058" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="1120" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerActor</text>
-<line x1="1120" y1="55" x2="1120" y2="1169" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="1058" y="1169" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="1120" y="1188" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerActor</text>
-<rect x="1233" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="1295" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">TaskRunner</text>
-<line x1="1295" y1="55" x2="1295" y2="1169" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="1233" y="1169" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="1295" y="1188" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">TaskRunner</text>
-<rect x="1408" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="1470" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">StreamManager</text>
-<line x1="1470" y1="55" x2="1470" y2="1169" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="1408" y="1169" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="1470" y="1188" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">StreamManager</text>
-<line x1="82" y1="90" x2="233" y2="90" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="157.5" y="83" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">execute physical plan</text>
-<line x1="257" y1="148" x2="408" y2="148" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="332.5" y="141" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">ExecuteJob</text>
-<line x1="432" y1="206" x2="583" y2="206" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="507.5" y="199" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">accept_job</text>
-<path d="M 595 264 C 665 264, 665 292, 595 292" fill="none" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<text x="669" y="280" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">JobGraph + JobTopology</text>
-<line x1="432" y1="322" x2="583" y2="322" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="507.5" y="315" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">refresh_job</text>
-<line x1="583" y1="380" x2="432" y2="380" stroke="#5f6f85" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
-<text x="507.5" y="373" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">ScheduleTaskRegion</text>
-<line x1="432" y1="438" x2="758" y2="438" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="595" y="431" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">enqueue + assign</text>
-<line x1="432" y1="496" x2="583" y2="496" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="507.5" y="489" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">get_task_definition</text>
-<line x1="432" y1="554" x2="933" y2="554" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="682.5" y="547" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">run_task(worker, definition)</text>
-<line x1="957" y1="612" x2="1108" y2="612" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="1032.5" y="605" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">RunTask</text>
-<line x1="1132" y1="670" x2="1283" y2="670" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="1207.5" y="663" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">decode + rewrite + execute</text>
-<line x1="1307" y1="728" x2="1458" y2="728" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="1382.5" y="721" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">create output streams</text>
-<line x1="1283" y1="786" x2="1132" y2="786" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="1207.5" y="779" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">ReportTaskStatus Running/Succeeded</text>
-<line x1="1108" y1="844" x2="432" y2="844" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="770" y="837" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">UpdateTask</text>
-<line x1="432" y1="902" x2="583" y2="902" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="507.5" y="895" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">refresh_job</text>
-<line x1="583" y1="960" x2="432" y2="960" stroke="#5f6f85" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
-<text x="507.5" y="953" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">ExtendJobOutput / CleanUpJob</text>
-<line x1="432" y1="1018" x2="1458" y2="1018" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="945" y="1011" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">fetch final streams</text>
-<line x1="1458" y1="1076" x2="82" y2="1076" stroke="#5f6f85" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
-<text x="770" y="1069" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">RecordBatch stream</text>
+<rect x="0" y="0" width="2120" height="1583" fill="white"/>
+<rect x="5" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="100" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">Spark/Flight caller</text>
+<line x1="100" y1="70" x2="100" y2="1528" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="5" y="1528" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="100" y="1557" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">Spark/Flight caller</text>
+<rect x="245" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="340" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">ClusterJobRunner</text>
+<line x1="340" y1="70" x2="340" y2="1528" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="245" y="1528" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="340" y="1557" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">ClusterJobRunner</text>
+<rect x="485" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="580" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">DriverActor</text>
+<line x1="580" y1="70" x2="580" y2="1528" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="485" y="1528" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="580" y="1557" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">DriverActor</text>
+<rect x="725" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="820" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">JobScheduler</text>
+<line x1="820" y1="70" x2="820" y2="1528" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="725" y="1528" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="820" y="1557" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">JobScheduler</text>
+<rect x="965" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1060" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">TaskAssigner</text>
+<line x1="1060" y1="70" x2="1060" y2="1528" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="965" y="1528" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1060" y="1557" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">TaskAssigner</text>
+<rect x="1205" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1300" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerPool</text>
+<line x1="1300" y1="70" x2="1300" y2="1528" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="1205" y="1528" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1300" y="1557" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerPool</text>
+<rect x="1445" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1540" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerActor</text>
+<line x1="1540" y1="70" x2="1540" y2="1528" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="1445" y="1528" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1540" y="1557" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerActor</text>
+<rect x="1685" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1780" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">TaskRunner</text>
+<line x1="1780" y1="70" x2="1780" y2="1528" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="1685" y="1528" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1780" y="1557" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">TaskRunner</text>
+<rect x="1925" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="2020" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">StreamManager</text>
+<line x1="2020" y1="70" x2="2020" y2="1528" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="1925" y="1528" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="2020" y="1557" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">StreamManager</text>
+<line x1="112" y1="105" x2="328" y2="105" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="220" y="95" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">execute physical plan</text>
+<line x1="352" y1="181" x2="568" y2="181" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="460" y="171" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">ExecuteJob</text>
+<line x1="592" y1="257" x2="808" y2="257" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="700" y="247" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">accept_job</text>
+<path d="M 820 333 C 890 333, 890 361, 820 361" fill="none" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="894" y="353" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">JobGraph + JobTopology</text>
+<line x1="592" y1="409" x2="808" y2="409" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="700" y="399" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">refresh_job</text>
+<line x1="808" y1="485" x2="592" y2="485" stroke="#5f6f85" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="700" y="475" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">ScheduleTaskRegion</text>
+<line x1="592" y1="561" x2="1048" y2="561" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="820" y="551" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">enqueue + assign</text>
+<line x1="592" y1="637" x2="808" y2="637" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="700" y="627" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">get_task_definition</text>
+<line x1="592" y1="713" x2="1288" y2="713" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="940" y="703" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">run_task(worker, definition)</text>
+<line x1="1312" y1="789" x2="1528" y2="789" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="1420" y="779" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">RunTask</text>
+<line x1="1552" y1="865" x2="1768" y2="865" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="1660" y="855" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">decode + rewrite + execute</text>
+<line x1="1792" y1="941" x2="2008" y2="941" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="1900" y="931" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">create output streams</text>
+<line x1="1768" y1="1017" x2="1552" y2="1017" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="1660" y="1007" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">ReportTaskStatus Running/Succeeded</text>
+<line x1="1528" y1="1093" x2="592" y2="1093" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="1060" y="1083" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">UpdateTask</text>
+<line x1="592" y1="1169" x2="808" y2="1169" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="700" y="1159" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">refresh_job</text>
+<line x1="808" y1="1245" x2="592" y2="1245" stroke="#5f6f85" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="700" y="1235" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">ExtendJobOutput / CleanUpJob</text>
+<line x1="592" y1="1321" x2="2008" y2="1321" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="1300" y="1311" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">fetch final streams</text>
+<line x1="2008" y1="1397" x2="112" y2="1397" stroke="#5f6f85" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="1060" y="1387" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">RecordBatch stream</text>
 </svg>

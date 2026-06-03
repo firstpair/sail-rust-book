@@ -1,44 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="770" height="430" viewBox="0 0 770 430">
+<svg xmlns="http://www.w3.org/2000/svg" width="814" height="390" viewBox="0 0 814 390">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="770" height="430" fill="white"/>
-<rect x="-43" y="9" width="226" height="324" rx="10" fill="#eef6ff" stroke="#9bc3e6" stroke-dasharray="5 4"/>
-<text x="-31" y="27" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#315a86">Producer stage</text>
-<rect x="187" y="9" width="226" height="324" rx="10" fill="#eef6ff" stroke="#9bc3e6" stroke-dasharray="5 4"/>
-<text x="199" y="27" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#315a86">Shuffle streams</text>
-<rect x="417" y="9" width="226" height="324" rx="10" fill="#eef6ff" stroke="#9bc3e6" stroke-dasharray="5 4"/>
-<text x="429" y="27" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#315a86">Consumer stage</text>
-<line x1="147" y1="70" x2="219.25" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="147" y1="70" x2="219.25" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="147" y1="70" x2="219.25" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="147" y1="175" x2="219.25" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="147" y1="175" x2="219.25" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="147" y1="175" x2="219.25" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="147" y1="280" x2="219.25" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="147" y1="280" x2="219.25" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="147" y1="280" x2="219.25" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="380.75" y1="70" x2="453" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="380.75" y1="175" x2="453" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="380.75" y1="280" x2="453" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-7" y="44.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Task partition 0</tspan></text>
-<rect x="-7" y="149.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Task partition 1</tspan></text>
-<rect x="-7" y="254.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Task partition 2</tspan></text>
-<rect x="219.25" y="44.5" width="161.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">channel 0 streams</tspan></text>
-<rect x="219.25" y="149.5" width="161.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">channel 1 streams</tspan></text>
-<rect x="219.25" y="254.5" width="161.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">channel 2 streams</tspan></text>
-<rect x="453" y="44.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">Task partition 0</tspan></text>
-<rect x="453" y="149.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">Task partition 1</tspan></text>
-<rect x="453" y="254.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">Task partition 2</tspan></text>
+<rect x="0" y="0" width="814" height="390" fill="white"/>
+<rect x="39" y="4" width="226" height="374" rx="10" fill="#eef6ff" stroke="#9bc3e6" stroke-dasharray="5 4"/>
+<text x="51" y="28" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#315a86">Producer stage</text>
+<rect x="294" y="4" width="226" height="374" rx="10" fill="#eef6ff" stroke="#9bc3e6" stroke-dasharray="5 4"/>
+<text x="306" y="28" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#315a86">Shuffle streams</text>
+<rect x="549" y="4" width="226" height="374" rx="10" fill="#eef6ff" stroke="#9bc3e6" stroke-dasharray="5 4"/>
+<text x="561" y="28" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#315a86">Consumer stage</text>
+<line x1="268" y1="65" x2="285" y2="65" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="268" y1="65" x2="285" y2="195" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="268" y1="65" x2="285" y2="325" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="268" y1="195" x2="285" y2="65" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="268" y1="195" x2="285" y2="195" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="268" y1="195" x2="285" y2="325" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="268" y1="325" x2="285" y2="65" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="268" y1="325" x2="285" y2="195" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="268" y1="325" x2="285" y2="325" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="529" y1="65" x2="546" y2="65" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="529" y1="195" x2="546" y2="195" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="529" y1="325" x2="546" y2="325" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="152" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="152" dy="0">Task partition 0</tspan></text>
+<rect x="36" y="166" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="152" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="152" dy="0">Task partition 1</tspan></text>
+<rect x="36" y="296" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="152" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="152" dy="0">Task partition 2</tspan></text>
+<rect x="285" y="36" width="244" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="407" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="407" dy="0">channel 0 streams</tspan></text>
+<rect x="285" y="166" width="244" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="407" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="407" dy="0">channel 1 streams</tspan></text>
+<rect x="285" y="296" width="244" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="407" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="407" dy="0">channel 2 streams</tspan></text>
+<rect x="546" y="36" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="662" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="662" dy="0">Task partition 0</tspan></text>
+<rect x="546" y="166" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="662" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="662" dy="0">Task partition 1</tspan></text>
+<rect x="546" y="296" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="662" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="662" dy="0">Task partition 2</tspan></text>
 </svg>

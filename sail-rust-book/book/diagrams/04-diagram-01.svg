@@ -1,35 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="540" height="640" viewBox="0 0 540 640">
+<svg xmlns="http://www.w3.org/2000/svg" width="587" height="666" viewBox="0 0 587 666">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="540" height="640" fill="white"/>
+<rect x="0" y="0" width="587" height="666" fill="white"/>
 
-<line x1="70" y1="95.5" x2="70" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="95.5" x2="300" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="200.5" x2="70" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="200.5" x2="300" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="305.5" x2="70" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="300" y1="305.5" x2="300" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="410.5" x2="70" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="300" y1="410.5" x2="300" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">pysail wheel</tspan></text>
-<rect x="-5" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">python/pysail</tspan></text>
-<rect x="200.5" y="149.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">_native Rust extension</tspan></text>
-<rect x="-5" y="254.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">pysail.cli</tspan></text>
-<rect x="166.75" y="254.5" width="266.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">pysail.spark.SparkConnectServer</tspan></text>
-<rect x="-5" y="359.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">_native.main</tspan></text>
-<rect x="163" y="359.5" width="274" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">_native.spark.SparkConnectServer</tspan></text>
-<rect x="-5" y="464.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">sail-cli runner</tspan></text>
-<rect x="208" y="464.5" width="184" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Spark Connect server</tspan></text>
+<line x1="146" y1="94" x2="146" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="146" y1="94" x2="401" y2="150" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="146" y1="224" x2="146" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="146" y1="224" x2="401" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="146" y1="354" x2="146" y2="426" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="401" y1="354" x2="401" y2="426" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="146" y1="484" x2="146" y2="556" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="401" y1="484" x2="401" y2="540" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="54" y="36" width="184" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="146" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="146" dy="0">pysail wheel</tspan></text>
+<rect x="48" y="166" width="196" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="146" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="146" dy="0">python/pysail</tspan></text>
+<rect x="309" y="150" width="184" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="401" y="179" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="401" dy="0">_native Rust</tspan><tspan x="401" dy="32">extension</tspan></text>
+<rect x="61" y="296" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="146" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="146" dy="0">pysail.cli</tspan></text>
+<rect x="251" y="296" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="401" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="401" dy="0">pysail.spark.SparkConnectServer</tspan></text>
+<rect x="54" y="426" width="184" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="146" y="455" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="146" dy="0">_native.main</tspan></text>
+<rect x="251" y="426" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="401" y="455" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="401" dy="0">_native.spark.SparkConnectServer</tspan></text>
+<rect x="36" y="556" width="220" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="146" y="585" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="146" dy="0">sail-cli runner</tspan></text>
+<rect x="303" y="540" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="401" y="569" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="401" dy="0">Spark Connect</tspan><tspan x="401" dy="32">server</tspan></text>
 </svg>

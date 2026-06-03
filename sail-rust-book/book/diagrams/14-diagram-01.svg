@@ -1,36 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="289" viewBox="0 0 1230 395">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="259" viewBox="0 0 1364 393">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1230" height="395" fill="white"/>
+<rect x="0" y="0" width="1364" height="393" fill="white"/>
 
-<line x1="150.75" y1="70" x2="150" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="450" y1="70" x2="441.75" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="618.25" y1="70" x2="664.25" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="855.75" y1="70" x2="883" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1097" y1="70" x2="-29.5" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="169.5" y1="245" x2="196.75" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="150.75" y1="70" x2="225" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="375" y1="175" x2="196.75" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="403.25" y1="245" x2="423" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-10.75" y="44.5" width="161.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Flight SQL client</tspan></text>
-<rect x="150" y="44.5" width="300" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">GetFlightInfo(CommandStatementQuery)</tspan></text>
-<rect x="441.75" y="44.5" width="176.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">parse_one_statement</tspan></text>
-<rect x="664.25" y="36" width="191.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="760" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">from_ast_statement -&gt;</tspan><tspan x="760" dy="17">spec::Plan</tspan></text>
-<rect x="883" y="44.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="990" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="990" dy="0">resolve_and_execute_plan</tspan></text>
-<rect x="-29.5" y="219.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="245" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">JobService / JobRunner</tspan></text>
-<rect x="196.75" y="211" width="206.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="237" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">SailFlightSqlState</tspan><tspan x="300" dy="17">stores stream by handle</tspan></text>
-<rect x="225" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">DoGet(Ticket)</tspan></text>
-<rect x="423" y="219.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="245" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">FlightDataEncoderBuilder</tspan></text>
+<line x1="280" y1="81" x2="263" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="563" y1="81" x2="534" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="802" y1="81" x2="795" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1051" y1="81" x2="1028" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1328" y1="81" x2="66" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="250" y1="296" x2="285" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="280" y1="81" x2="315" y2="211" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="511" y1="211" x2="285" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="541" y1="296" x2="518" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="52" width="244" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="158" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="158" dy="0">Flight SQL client</tspan></text>
+<rect x="263" y="52" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="413" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="413" dy="0">GetFlightInfo(CommandStatementQuery)</tspan></text>
+<rect x="534" y="52" width="268" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="668" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="668" dy="0">parse_one_statement</tspan></text>
+<rect x="795" y="36" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="923" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="923" dy="0">from_ast_statement</tspan><tspan x="923" dy="32">-&gt; spec::Plan</tspan></text>
+<rect x="1028" y="52" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1178" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1178" dy="0">resolve_and_execute_plan</tspan></text>
+<rect x="66" y="251" width="184" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="158" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="158" dy="0">JobService /</tspan><tspan x="158" dy="32">JobRunner</tspan></text>
+<rect x="285" y="235" width="256" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="413" y="264" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="413" dy="0">SailFlightSqlState</tspan><tspan x="413" dy="32">stores stream by</tspan><tspan x="413" dy="32">handle</tspan></text>
+<rect x="315" y="182" width="196" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="413" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="413" dy="0">DoGet(Ticket)</tspan></text>
+<rect x="518" y="267" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="668" y="296" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="668" dy="0">FlightDataEncoderBuilder</tspan></text>
 </svg>

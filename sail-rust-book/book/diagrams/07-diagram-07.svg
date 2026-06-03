@@ -1,27 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="293" viewBox="0 0 1000 325">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="232" viewBox="0 0 1007 260">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1000" height="325" fill="white"/>
+<rect x="0" y="0" width="1007" height="260" fill="white"/>
 
-<line x1="70" y1="95.5" x2="70" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="300" y1="95.5" x2="300" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="95.5" x2="530" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="200.5" x2="530" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="300" y1="95.5" x2="760" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="300" y1="200.5" x2="760" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Stage A p0</tspan></text>
-<rect x="-5" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Stage B p0</tspan></text>
-<rect x="225" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Stage A p1</tspan></text>
-<rect x="225" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Stage B p1</tspan></text>
-<rect x="455" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">Region 0</tspan></text>
-<rect x="685" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="760" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">Region 1</tspan></text>
+<line x1="121" y1="94" x2="121" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="376" y1="94" x2="376" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="121" y1="94" x2="631" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="121" y1="224" x2="631" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="376" y1="94" x2="886" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="376" y1="224" x2="886" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="121" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="121" dy="0">Stage A p0</tspan></text>
+<rect x="36" y="166" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="121" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="121" dy="0">Stage B p0</tspan></text>
+<rect x="291" y="36" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="376" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="376" dy="0">Stage A p1</tspan></text>
+<rect x="291" y="166" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="376" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="376" dy="0">Stage B p1</tspan></text>
+<rect x="546" y="166" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="631" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="631" dy="0">Region 0</tspan></text>
+<rect x="801" y="166" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="886" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="886" dy="0">Region 1</tspan></text>
 </svg>

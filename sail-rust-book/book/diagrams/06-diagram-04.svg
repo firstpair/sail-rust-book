@@ -1,23 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="293" viewBox="0 0 1000 325">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="232" viewBox="0 0 1069 276">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1000" height="325" fill="white"/>
+<rect x="0" y="0" width="1069" height="276" fill="white"/>
 
-<line x1="165.75" y1="70" x2="200.5" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="399.5" y1="70" x2="423" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="637" y1="70" x2="671.75" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="637" y1="70" x2="675.5" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-25.75" y="44.5" width="191.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Spark-specific intent</tspan></text>
-<rect x="200.5" y="36" width="199" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Sail logical extension</tspan><tspan x="300" dy="17">node</tspan></text>
-<rect x="423" y="44.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">ExtensionPhysicalPlanner</tspan></text>
-<rect x="671.75" y="36" width="176.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="760" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">DataFusion physical</tspan><tspan x="760" dy="17">operator</tspan></text>
-<rect x="675.5" y="149.5" width="169" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="760" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">Sail ExecutionPlan</tspan></text>
+<line x1="244" y1="81" x2="291" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="499" y1="81" x2="500" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="800" y1="81" x2="783" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="800" y1="81" x2="777" y2="211" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="208" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="140" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="140" dy="0">Spark-specific</tspan><tspan x="140" dy="32">intent</tspan></text>
+<rect x="291" y="36" width="208" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="395" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="395" dy="0">Sail logical</tspan><tspan x="395" dy="32">extension node</tspan></text>
+<rect x="500" y="52" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="650" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="650" dy="0">ExtensionPhysicalPlanner</tspan></text>
+<rect x="783" y="36" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="905" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="905" dy="0">DataFusion</tspan><tspan x="905" dy="32">physical operator</tspan></text>
+<rect x="777" y="182" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="905" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="905" dy="0">Sail ExecutionPlan</tspan></text>
 </svg>

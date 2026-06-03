@@ -1,38 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="665" height="470" viewBox="0 0 665 470">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="582" viewBox="0 0 920 595">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="665" height="470" fill="white"/>
-<rect x="8" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="70" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">DriverActor</text>
-<line x1="70" y1="55" x2="70" y2="415" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="8" y="415" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="70" y="434" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">DriverActor</text>
-<rect x="183" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="245" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerClient</text>
-<line x1="245" y1="55" x2="245" y2="415" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="183" y="415" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="245" y="434" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerClient</text>
-<rect x="358" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="420" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerServer</text>
-<line x1="420" y1="55" x2="420" y2="415" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="358" y="415" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="420" y="434" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerServer</text>
-<rect x="533" y="25" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="595" y="44" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerActor</text>
-<line x1="595" y1="55" x2="595" y2="415" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="533" y="415" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="595" y="434" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">WorkerActor</text>
-<line x1="82" y1="90" x2="233" y2="90" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="157.5" y="83" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">run_task RPC</text>
-<line x1="257" y1="148" x2="408" y2="148" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="332.5" y="141" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">RunTaskRequest</text>
-<path d="M 420 206 C 490 206, 490 234, 420 234" fill="none" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<text x="494" y="222" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">decode TaskDefinition</text>
-<line x1="432" y1="264" x2="583" y2="264" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
-<text x="507.5" y="257" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">WorkerEvent::RunTask</text>
-<path d="M 595 322 C 665 322, 665 350, 595 350" fill="none" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<text x="669" y="338" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">run task / manage state</text>
+<rect x="0" y="0" width="920" height="595" fill="white"/>
+<rect x="5" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="100" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">DriverActor</text>
+<line x1="100" y1="70" x2="100" y2="540" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="5" y="540" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="100" y="569" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">DriverActor</text>
+<rect x="245" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="340" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerClient</text>
+<line x1="340" y1="70" x2="340" y2="540" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="245" y="540" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="340" y="569" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerClient</text>
+<rect x="485" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="580" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerServer</text>
+<line x1="580" y1="70" x2="580" y2="540" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="485" y="540" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="580" y="569" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerServer</text>
+<rect x="725" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="820" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerActor</text>
+<line x1="820" y1="70" x2="820" y2="540" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="725" y="540" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="820" y="569" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">WorkerActor</text>
+<line x1="112" y1="105" x2="328" y2="105" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="220" y="95" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">run_task RPC</text>
+<line x1="352" y1="181" x2="568" y2="181" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="460" y="171" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">RunTaskRequest</text>
+<path d="M 580 257 C 650 257, 650 285, 580 285" fill="none" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="654" y="277" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">decode TaskDefinition</text>
+<line x1="592" y1="333" x2="808" y2="333" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="700" y="323" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">WorkerEvent::RunTask</text>
+<path d="M 820 409 C 890 409, 890 437, 820 437" fill="none" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="894" y="429" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">run task / manage state</text>
 </svg>

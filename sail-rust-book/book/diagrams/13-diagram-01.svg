@@ -1,48 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="770" height="1165" viewBox="0 0 770 1165">
+<svg xmlns="http://www.w3.org/2000/svg" width="836" height="1332" viewBox="0 0 836 1332">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="770" height="1165" fill="white"/>
+<rect x="0" y="0" width="836" height="1332" fill="white"/>
 
-<line x1="70" y1="104" x2="70" y2="141" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="209" x2="70" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="305.5" x2="70" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="410.5" x2="70" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="515.5" x2="70" y2="569.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="620.5" x2="70" y2="674.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="725.5" x2="70" y2="771" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="70" y="742.25" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">no</text>
-<line x1="70" y1="725.5" x2="300" y2="779.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="185" y="746.5" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">yes</text>
-<line x1="300" y1="830.5" x2="70" y2="771" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="185" y="794.75" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">no</text>
-<line x1="300" y1="830.5" x2="70" y2="876" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="185" y="847.25" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">yes</text>
-<line x1="70" y1="944" x2="70" y2="989.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="944" x2="300" y2="989.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="944" x2="530" y2="989.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-5" y="36" width="150" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">pip install</tspan><tspan x="70" dy="17">pysail-sedona</tspan></text>
-<rect x="-33.25" y="141" width="206.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="167" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">pysail.extensions entry</tspan><tspan x="70" dy="17">point</tspan></text>
-<rect x="-70.75" y="254.5" width="281.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">importlib.metadata.entry_points()</tspan></text>
-<rect x="-14.5" y="359.5" width="169" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">load Python module</tspan></text>
-<rect x="-5" y="464.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">call register()</tspan></text>
-<rect x="-29.5" y="569.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="595" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">read ExtensionManifest</tspan></text>
-<rect x="-5" y="674.5" width="150" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
-<text x="70" y="700" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">manifest valid?</tspan></text>
-<rect x="-25.75" y="771" width="191.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="797" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">error with actionable</tspan><tspan x="70" dy="17">diagnostic</tspan></text>
-<rect x="211.75" y="779.5" width="176.5" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
-<text x="300" y="805" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">version compatible?</tspan></text>
-<rect x="-25.75" y="876" width="191.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="902" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">register on</tspan><tspan x="70" dy="17">SailExtensionRegistry</tspan></text>
-<rect x="-37" y="989.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="1015" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Spark Connect dispatcher</tspan></text>
-<rect x="189.25" y="989.5" width="221.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="1015" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">FunctionExtensionRegistry</tspan></text>
-<rect x="426.75" y="989.5" width="206.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="1015" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">physical codec registry</tspan></text>
+<line x1="186" y1="126" x2="186" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="256" x2="186" y2="312" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="370" x2="186" y2="442" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="500" x2="186" y2="572" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="630" x2="186" y2="686" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="776" x2="186" y2="832" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="890" x2="186" y2="930" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="186" y="902" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">no</text>
+<line x1="186" y1="890" x2="441" y2="946" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="313.5" y="910" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">yes</text>
+<line x1="441" y1="1036" x2="186" y2="930" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="313.5" y="975" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">no</text>
+<line x1="441" y1="1036" x2="186" y2="1076" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="313.5" y="1048" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">yes</text>
+<line x1="186" y1="1166" x2="186" y2="1206" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="1166" x2="441" y2="1222" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="1166" x2="696" y2="1206" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="88" y="36" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">pip install</tspan><tspan x="186" dy="32">pysail-sedona</tspan></text>
+<rect x="64" y="166" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">pysail.extensions</tspan><tspan x="186" dy="32">entry point</tspan></text>
+<rect x="36" y="312" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="341" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">importlib.metadata.entry_points()</tspan></text>
+<rect x="58" y="442" width="256" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="471" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">load Python module</tspan></text>
+<rect x="76" y="572" width="220" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="601" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">call register()</tspan></text>
+<rect x="64" y="686" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="715" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">read</tspan><tspan x="186" dy="32">ExtensionManifest</tspan></text>
+<rect x="76" y="832" width="220" height="58" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="186" y="861" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">manifest valid?</tspan></text>
+<rect x="101" y="930" width="170" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="959" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">error with</tspan><tspan x="186" dy="32">actionable</tspan><tspan x="186" dy="32">diagnostic</tspan></text>
+<rect x="355" y="946" width="172" height="90" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="441" y="975" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="441" dy="0">version</tspan><tspan x="441" dy="32">compatible?</tspan></text>
+<rect x="40" y="1076" width="292" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="1105" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">register on</tspan><tspan x="186" dy="32">SailExtensionRegistry</tspan></text>
+<rect x="88" y="1206" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="1235" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">Spark Connect</tspan><tspan x="186" dy="32">dispatcher</tspan></text>
+<rect x="291" y="1222" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="441" y="1251" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="441" dy="0">FunctionExtensionRegistry</tspan></text>
+<rect x="592" y="1206" width="208" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="696" y="1235" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="696" dy="0">physical codec</tspan><tspan x="696" dy="32">registry</tspan></text>
 </svg>

@@ -1,47 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="765" viewBox="0 0 1000 850">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="739" viewBox="0 0 1109 910">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1000" height="850" fill="white"/>
+<rect x="0" y="0" width="1109" height="910" fill="white"/>
 
-<line x1="70" y1="95.5" x2="70" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="200.5" x2="70" y2="246" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="70" y="217.25" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">yes, format exists</text>
-<line x1="70" y1="200.5" x2="300" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="185" y="221.5" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">no</text>
-<line x1="300" y1="305.5" x2="70" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="185" y="326.5" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">yes</text>
-<line x1="300" y1="305.5" x2="300" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="300" y="326.5" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">no</text>
-<line x1="300" y1="410.5" x2="70" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="515.5" x2="70" y2="561" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="515.5" x2="300" y2="561" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="515.5" x2="530" y2="561" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="515.5" x2="760" y2="561" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="629" x2="70" y2="674.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="300" y1="629" x2="70" y2="674.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="530" y1="629" x2="70" y2="674.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="760" y1="629" x2="70" y2="674.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">ReadNamedTable</tspan></text>
-<rect x="-18.25" y="149.5" width="176.5" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
-<text x="70" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">format.path syntax?</tspan></text>
-<rect x="-14.5" y="246" width="169" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="272" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">direct TableFormat</tspan><tspan x="70" dy="17">source</tspan></text>
-<rect x="225" y="254.5" width="150" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
-<text x="300" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">CTE exists?</tspan></text>
-<rect x="-7" y="359.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">CTE logical plan</tspan></text>
-<rect x="163" y="359.5" width="274" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">CatalogManager.get_table_or_view</tspan></text>
-<rect x="-5" y="464.5" width="150" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
-<text x="70" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">TableKind</tspan></text>
-<rect x="-40.75" y="561" width="221.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="587" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Table: SourceInfo -&gt;</tspan><tspan x="70" dy="17">TableFormat.create_source</tspan></text>
-<rect x="200.5" y="561" width="199" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="587" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">View: parse stored SQL</tspan><tspan x="300" dy="17">and resolve</tspan></text>
-<rect x="430.5" y="561" width="199" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="587" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">Temporary view: stored</tspan><tspan x="530" dy="17">logical plan</tspan></text>
-<rect x="653" y="561" width="214" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="760" y="587" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">Global temp view: stored</tspan><tspan x="760" dy="17">logical plan</tspan></text>
-<rect x="-29.5" y="674.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="700" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">LogicalPlan::TableScan</tspan></text>
+<line x1="186" y1="94" x2="186" y2="150" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="240" x2="186" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="186" y="252" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">yes, format exists</text>
+<line x1="186" y1="240" x2="441" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="313.5" y="260" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">no</text>
+<line x1="441" y1="354" x2="186" y2="426" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="313.5" y="382" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">yes</text>
+<line x1="441" y1="354" x2="441" y2="426" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="441" y="382" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">no</text>
+<line x1="441" y1="484" x2="186" y2="556" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="614" x2="186" y2="654" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="614" x2="441" y2="670" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="614" x2="696" y2="654" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="614" x2="951" y2="654" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="776" x2="186" y2="816" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="441" y1="760" x2="186" y2="816" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="696" y1="776" x2="186" y2="816" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="951" y1="776" x2="186" y2="816" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="82" y="36" width="208" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">ReadNamedTable</tspan></text>
+<rect x="100" y="150" width="172" height="90" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="186" y="179" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">format.path</tspan><tspan x="186" dy="32">syntax?</tspan></text>
+<rect x="58" y="280" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="309" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">direct TableFormat</tspan><tspan x="186" dy="32">source</tspan></text>
+<rect x="355" y="296" width="172" height="58" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="441" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="441" dy="0">CTE exists?</tspan></text>
+<rect x="70" y="426" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="455" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">CTE logical plan</tspan></text>
+<rect x="291" y="426" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="441" y="455" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="441" dy="0">CatalogManager.get_table_or_view</tspan></text>
+<rect x="101" y="556" width="170" height="58" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="186" y="585" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">TableKind</tspan></text>
+<rect x="36" y="654" width="300" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="683" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">Table: SourceInfo</tspan><tspan x="186" dy="32">-&gt;</tspan><tspan x="186" dy="32">TableFormat.create_source</tspan></text>
+<rect x="313" y="670" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="441" y="699" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="441" dy="0">View: parse stored</tspan><tspan x="441" dy="32">SQL and resolve</tspan></text>
+<rect x="586" y="654" width="220" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="696" y="683" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="696" dy="0">Temporary view:</tspan><tspan x="696" dy="32">stored logical</tspan><tspan x="696" dy="32">plan</tspan></text>
+<rect x="829" y="654" width="244" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="951" y="683" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="951" dy="0">Global temp view:</tspan><tspan x="951" dy="32">stored logical</tspan><tspan x="951" dy="32">plan</tspan></text>
+<rect x="36" y="816" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="845" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">LogicalPlan::TableScan</tspan></text>
 </svg>

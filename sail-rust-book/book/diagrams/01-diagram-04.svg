@@ -1,43 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="770" height="745" viewBox="0 0 770 745">
+<svg xmlns="http://www.w3.org/2000/svg" width="830" height="828" viewBox="0 0 830 828">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="770" height="745" fill="white"/>
+<rect x="0" y="0" width="830" height="828" fill="white"/>
 
-<line x1="145" y1="70" x2="193" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="145" y1="70" x2="211.75" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="145" y1="70" x2="193" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="145" y1="70" x2="223" y2="385" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="145" y1="70" x2="200.5" y2="490" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="145" y1="70" x2="219.25" y2="595" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="407" y1="70" x2="455" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="388.25" y1="175" x2="455" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="407" y1="280" x2="455" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="377" y1="385" x2="434.25" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="399.5" y1="490" x2="455" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="380.75" y1="595" x2="419.25" y2="385" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">SailExtension</tspan></text>
-<rect x="193" y="27.5" width="214" height="85" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="54" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Spark Connect</tspan><tspan x="300" dy="17">dispatcher&lt;br/&gt;plan-time</tspan><tspan x="300" dy="17">boundary</tspan></text>
-<rect x="211.75" y="149.5" width="176.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Function registries</tspan></text>
-<rect x="193" y="254.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">SessionConfig extensions</tspan></text>
-<rect x="223" y="351" width="154" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Logical/physical</tspan><tspan x="300" dy="17">optimizer rules</tspan></text>
-<rect x="200.5" y="464.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">ExtensionPlanner chain</tspan></text>
-<rect x="219.25" y="561" width="161.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="587" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Distributed codec</tspan><tspan x="300" dy="17">fallback registry</tspan></text>
-<rect x="455" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">Plan resolution</tspan></text>
-<rect x="434.25" y="149.5" width="191.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">Optimized LogicalPlan</tspan></text>
-<rect x="455" y="254.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">ExecutionPlan</tspan></text>
-<rect x="419.25" y="342.5" width="221.5" height="85" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="369" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">Remote worker</tspan><tspan x="530" dy="17">decode&lt;br/&gt;execution-time</tspan><tspan x="530" dy="17">boundary</tspan></text>
+<line x1="232" y1="97" x2="239" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="232" y1="97" x2="304" y2="227" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="232" y1="97" x2="291" y2="357" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="232" y1="97" x2="273" y2="487" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="232" y1="97" x2="273" y2="617" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="232" y1="97" x2="267" y2="747" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="539" y1="97" x2="534" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="474" y1="227" x2="534" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="487" y1="357" x2="534" y2="97" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="505" y1="487" x2="558" y2="227" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="505" y1="617" x2="546" y2="357" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="511" y1="747" x2="494" y2="487" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="68" width="196" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="134" y="97" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="134" dy="0">SailExtension</tspan></text>
+<rect x="239" y="36" width="300" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="389" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="389" dy="0">Spark Connect</tspan><tspan x="389" dy="32">dispatcher&lt;br/&gt;plan-time</tspan><tspan x="389" dy="32">boundary</tspan></text>
+<rect x="304" y="182" width="170" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="389" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="389" dy="0">Function</tspan><tspan x="389" dy="32">registries</tspan></text>
+<rect x="291" y="312" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="389" y="341" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="389" dy="0">SessionConfig</tspan><tspan x="389" dy="32">extensions</tspan></text>
+<rect x="273" y="442" width="232" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="389" y="471" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="389" dy="0">Logical/physical</tspan><tspan x="389" dy="32">optimizer rules</tspan></text>
+<rect x="273" y="572" width="232" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="389" y="601" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="389" dy="0">ExtensionPlanner</tspan><tspan x="389" dy="32">chain</tspan></text>
+<rect x="267" y="702" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="389" y="731" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="389" dy="0">Distributed codec</tspan><tspan x="389" dy="32">fallback registry</tspan></text>
+<rect x="534" y="68" width="220" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="644" y="97" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="644" dy="0">Plan resolution</tspan></text>
+<rect x="558" y="182" width="172" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="644" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="644" dy="0">Optimized</tspan><tspan x="644" dy="32">LogicalPlan</tspan></text>
+<rect x="546" y="328" width="196" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="644" y="357" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="644" dy="0">ExecutionPlan</tspan></text>
+<rect x="494" y="426" width="300" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="644" y="455" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="644" dy="0">Remote worker</tspan><tspan x="644" dy="32">decode&lt;br/&gt;execution-time</tspan><tspan x="644" dy="32">boundary</tspan></text>
 </svg>

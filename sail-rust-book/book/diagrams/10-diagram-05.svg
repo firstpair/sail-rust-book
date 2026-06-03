@@ -1,29 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="366" viewBox="0 0 1230 500">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="343" viewBox="0 0 1287 491">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1230" height="500" fill="white"/>
+<rect x="0" y="0" width="1287" height="491" fill="white"/>
 
-<line x1="145" y1="70" x2="211.75" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="388.25" y1="70" x2="453" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="607" y1="70" x2="685" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="835" y1="70" x2="901.75" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="1078.25" y1="70" x2="-5" y2="245" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="536.625" y="151.5" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">yes</text>
-<line x1="1078.25" y1="70" x2="-5" y2="350" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="536.625" y="204" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">no</text>
-<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">spec Project</tspan></text>
-<rect x="211.75" y="44.5" width="176.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">resolve expressions</tspan></text>
-<rect x="453" y="44.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">expand wildcards</tspan></text>
-<rect x="685" y="36" width="150" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="760" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">rewrite special</tspan><tspan x="760" dy="17">expressions</tspan></text>
-<rect x="901.75" y="44.5" width="176.5" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
-<text x="990" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="990" dy="0">contains aggregate?</tspan></text>
-<rect x="-5" y="219.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="245" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Aggregate plan</tspan></text>
-<rect x="-5" y="324.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="350" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Projection plan</tspan></text>
+<line x1="238" y1="81" x2="315" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="487" y1="81" x2="540" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="772" y1="81" x2="801" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1021" y1="81" x2="1081" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1251" y1="81" x2="42" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="646.5" y="180.5" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">yes</text>
+<line x1="1251" y1="81" x2="36" y2="426" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/><text x="643.5" y="245.5" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#4b5563">no</text>
+<rect x="54" y="52" width="184" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="146" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="146" dy="0">spec Project</tspan></text>
+<rect x="315" y="36" width="172" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="401" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="401" dy="0">resolve</tspan><tspan x="401" dy="32">expressions</tspan></text>
+<rect x="540" y="52" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="656" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="656" dy="0">expand wildcards</tspan></text>
+<rect x="801" y="36" width="220" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="911" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="911" dy="0">rewrite special</tspan><tspan x="911" dy="32">expressions</tspan></text>
+<rect x="1081" y="36" width="170" height="90" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="1166" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1166" dy="0">contains</tspan><tspan x="1166" dy="32">aggregate?</tspan></text>
+<rect x="42" y="267" width="208" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="146" y="296" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="146" dy="0">Aggregate plan</tspan></text>
+<rect x="36" y="397" width="220" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="146" y="426" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="146" dy="0">Projection plan</tspan></text>
 </svg>

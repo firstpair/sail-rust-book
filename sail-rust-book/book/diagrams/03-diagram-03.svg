@@ -1,32 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="540" height="640" viewBox="0 0 540 640">
+<svg xmlns="http://www.w3.org/2000/svg" width="623" height="666" viewBox="0 0 623 666">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="540" height="640" fill="white"/>
+<rect x="0" y="0" width="623" height="666" fill="white"/>
 
-<line x1="70" y1="95.5" x2="70" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="200.5" x2="70" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="200.5" x2="300" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="305.5" x2="70" y2="359.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="300" y1="305.5" x2="300" y2="342.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="410.5" x2="70" y2="456" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="300" y1="427.5" x2="300" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">execute_plan</tspan></text>
-<rect x="-5" y="149.5" width="150" height="51" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
-<text x="70" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Plan op</tspan></text>
-<rect x="-5" y="254.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Root relation</tspan></text>
-<rect x="225" y="254.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Command</tspan></text>
-<rect x="-25.75" y="359.5" width="191.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="385" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">ExecutePlanMode::Lazy</tspan></text>
-<rect x="178" y="342.5" width="244" height="85" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="369" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">ExecutePlanMode::EagerSilent</tspan><tspan x="300" dy="17">or custom command</tspan><tspan x="300" dy="17">response</tspan></text>
-<rect x="-29.5" y="456" width="199" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="482" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Arrow batches streamed</tspan><tspan x="70" dy="17">to client</tspan></text>
-<rect x="193" y="464.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">Execute and drain stream</tspan></text>
+<line x1="182" y1="94" x2="182" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="182" y1="224" x2="182" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="182" y1="224" x2="437" y2="296" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="182" y1="354" x2="182" y2="426" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="437" y1="354" x2="437" y2="394" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="182" y1="484" x2="182" y2="540" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="437" y1="516" x2="437" y2="540" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="90" y="36" width="184" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="182" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="182" dy="0">execute_plan</tspan></text>
+<rect x="97" y="166" width="170" height="58" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="182" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="182" dy="0">Plan op</tspan></text>
+<rect x="84" y="296" width="196" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="182" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="182" dy="0">Root relation</tspan></text>
+<rect x="352" y="296" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="437" y="325" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="437" dy="0">Command</tspan></text>
+<rect x="36" y="426" width="292" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="182" y="455" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="182" dy="0">ExecutePlanMode::Lazy</tspan></text>
+<rect x="287" y="394" width="300" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="437" y="423" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="437" dy="0">ExecutePlanMode::EagerSilent</tspan><tspan x="437" dy="32">or custom command</tspan><tspan x="437" dy="32">response</tspan></text>
+<rect x="54" y="540" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="182" y="569" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="182" dy="0">Arrow batches</tspan><tspan x="182" dy="32">streamed to client</tspan></text>
+<rect x="315" y="540" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="437" y="569" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="437" dy="0">Execute and drain</tspan><tspan x="437" dy="32">stream</tspan></text>
 </svg>

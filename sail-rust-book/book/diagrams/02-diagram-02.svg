@@ -1,29 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="238" viewBox="0 0 1230 325">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="194" viewBox="0 0 1282 276">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="1230" height="325" fill="white"/>
+<rect x="0" y="0" width="1282" height="276" fill="white"/>
 
-<line x1="145" y1="70" x2="225" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="145" y1="70" x2="223" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="375" y1="70" x2="455" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="377" y1="175" x2="455" y2="175" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="605" y1="175" x2="685" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="835" y1="70" x2="915" y2="70" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">dyn JobRunner</tspan></text>
-<rect x="225" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">LocalJobRunner</tspan></text>
-<rect x="223" y="149.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">ClusterJobRunner</tspan></text>
-<rect x="455" y="36" width="150" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">DataFusion</tspan><tspan x="530" dy="17">execute_stream</tspan></text>
-<rect x="455" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="530" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="530" dy="0">DriverActor</tspan></text>
-<rect x="685" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="760" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="760" dy="0">JobGraph</tspan></text>
-<rect x="915" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="990" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="990" dy="0">WorkerActors</tspan></text>
+<line x1="232" y1="81" x2="285" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="232" y1="81" x2="273" y2="211" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="493" y1="81" x2="540" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="505" y1="211" x2="558" y2="211" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="730" y1="211" x2="814" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="984" y1="81" x2="1062" y2="81" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="52" width="196" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="134" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="134" dy="0">dyn JobRunner</tspan></text>
+<rect x="285" y="52" width="208" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="389" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="389" dy="0">LocalJobRunner</tspan></text>
+<rect x="273" y="182" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="389" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="389" dy="0">ClusterJobRunner</tspan></text>
+<rect x="540" y="36" width="208" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="644" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="644" dy="0">DataFusion</tspan><tspan x="644" dy="32">execute_stream</tspan></text>
+<rect x="558" y="182" width="172" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="644" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="644" dy="0">DriverActor</tspan></text>
+<rect x="814" y="52" width="170" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="899" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="899" dy="0">JobGraph</tspan></text>
+<rect x="1062" y="52" width="184" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1154" y="81" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1154" dy="0">WorkerActors</tspan></text>
 </svg>

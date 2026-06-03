@@ -18,6 +18,8 @@
   kind: image
 ): set figure.caption(position: $if(figure-caption-position)$$figure-caption-position$$else$bottom$endif$)
 
+#show figure.where(kind: image): it => align(center, it)
+
 $if(highlighting-definitions)$
 // syntax highlighting functions from skylighting:
 $highlighting-definitions$

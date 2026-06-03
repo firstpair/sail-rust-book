@@ -1,35 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="420" height="1060" viewBox="0 0 420 1060">
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="1186" viewBox="0 0 420 1186">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="420" height="1060" fill="white"/>
+<rect x="0" y="0" width="420" height="1186" fill="white"/>
 
-<line x1="70" y1="95.5" x2="70" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="200.5" x2="70" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="305.5" x2="70" y2="351" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="419" x2="70" y2="464.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="515.5" x2="70" y2="569.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="620.5" x2="70" y2="674.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="725.5" x2="70" y2="779.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="830.5" x2="70" y2="876" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-5" y="44.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">DELETE / MERGE</tspan></text>
-<rect x="-5" y="149.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">PlanResolver</tspan></text>
-<rect x="-29.5" y="254.5" width="199" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">row-level logical node</tspan></text>
-<rect x="-18.25" y="351" width="176.5" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">lakehouse optimizer</tspan><tspan x="70" dy="17">expansion</tspan></text>
-<rect x="-10.75" y="464.5" width="161.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="490" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">RowLevelWriteNode</tspan></text>
-<rect x="-25.75" y="569.5" width="191.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="595" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">DeltaExtensionPlanner</tspan></text>
-<rect x="-80" y="674.5" width="300" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="700" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">create_row_level_write_physical_plan</tspan></text>
-<rect x="-78.25" y="779.5" width="296.5" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="805" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">TableFormat.create_row_level_writer</tspan></text>
-<rect x="-5" y="876" width="150" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="902" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">Delta row-level</tspan><tspan x="70" dy="17">ExecutionPlan</tspan></text>
+<line x1="186" y1="94" x2="186" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="224" x2="186" y2="280" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="370" x2="186" y2="394" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="516" x2="186" y2="556" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="614" x2="186" y2="686" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="744" x2="186" y2="816" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="874" x2="186" y2="946" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="186" y1="1004" x2="186" y2="1060" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="82" y="36" width="208" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">DELETE / MERGE</tspan></text>
+<rect x="94" y="166" width="184" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">PlanResolver</tspan></text>
+<rect x="64" y="280" width="244" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="309" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">row-level logical</tspan><tspan x="186" dy="32">node</tspan></text>
+<rect x="101" y="394" width="170" height="122" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="423" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">lakehouse</tspan><tspan x="186" dy="32">optimizer</tspan><tspan x="186" dy="32">expansion</tspan></text>
+<rect x="64" y="556" width="244" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="585" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">RowLevelWriteNode</tspan></text>
+<rect x="40" y="686" width="292" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="715" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">DeltaExtensionPlanner</tspan></text>
+<rect x="36" y="816" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="845" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">create_row_level_write_physical_plan</tspan></text>
+<rect x="36" y="946" width="300" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="975" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">TableFormat.create_row_level_writer</tspan></text>
+<rect x="76" y="1060" width="220" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="186" y="1089" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="186" dy="0">Delta row-level</tspan><tspan x="186" dy="32">ExecutionPlan</tspan></text>
 </svg>

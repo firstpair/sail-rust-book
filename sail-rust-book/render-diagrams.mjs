@@ -17,6 +17,21 @@ const escapeXml = (value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
+const FLOW_NODE_FONT_SIZE = 26;
+const FLOW_GROUP_FONT_SIZE = 24;
+const FLOW_EDGE_FONT_SIZE = 22;
+const FLOW_LINE_HEIGHT = 32;
+const FLOW_TEXT_Y_OFFSET = 16;
+const FLOW_TEXT_CHAR_WIDTH = 12;
+const FLOW_NODE_MIN_WIDTH = 170;
+const FLOW_NODE_MAX_WIDTH = 300;
+const FLOW_NODE_PADDING_X = 40;
+const FLOW_NODE_PADDING_Y = 26;
+const SEQUENCE_FONT_SIZE = 24;
+const SEQUENCE_MESSAGE_FONT_SIZE = 22;
+const SEQUENCE_PARTICIPANT_WIDTH = 190;
+const DIAGRAM_PADDING = 36;
+
 function wrapText(text, maxChars = 24) {
   const words = String(text).replace(/\s+/g, " ").trim().split(" ");
   const lines = [];
@@ -37,7 +52,7 @@ function wrapText(text, maxChars = 24) {
 
 function nodeSvg(node) {
   measureNode(node);
-  const lines = wrapText(node.label, 24);
+  const lines = wrapText(node.label, 18);
   const width = node.width;
   const height = node.height;
   const rx = node.shape === "decision" ? 10 : 8;
@@ -45,19 +60,25 @@ function nodeSvg(node) {
   const stroke = node.shape === "decision" ? "#c58c00" : "#496a9a";
   const tspans = lines
     .map((line, index) => {
-      const dy = index === 0 ? 0 : 17;
+      const dy = index === 0 ? 0 : FLOW_LINE_HEIGHT;
       return `<tspan x="${node.x}" dy="${dy}">${escapeXml(line)}</tspan>`;
     })
     .join("");
   return `<rect x="${node.x - width / 2}" y="${node.y - height / 2}" width="${width}" height="${height}" rx="${rx}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
-<text x="${node.x}" y="${node.y - (lines.length - 1) * 8}" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937">${tspans}</text>`;
+<text x="${node.x}" y="${node.y - (lines.length - 1) * FLOW_TEXT_Y_OFFSET}" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${FLOW_NODE_FONT_SIZE}" fill="#1f2937">${tspans}</text>`;
 }
 
 function measureNode(node) {
   if (node.width && node.height) return;
-  const lines = wrapText(node.label, 24);
-  const width = Math.max(150, Math.min(300, Math.max(...lines.map((x) => x.length)) * 7.5 + 34));
-  const height = 34 + lines.length * 17;
+  const lines = wrapText(node.label, 18);
+  const width = Math.max(
+    FLOW_NODE_MIN_WIDTH,
+    Math.min(
+      FLOW_NODE_MAX_WIDTH,
+      Math.max(...lines.map((x) => x.length)) * FLOW_TEXT_CHAR_WIDTH + FLOW_NODE_PADDING_X,
+    ),
+  );
+  const height = FLOW_NODE_PADDING_Y + lines.length * FLOW_LINE_HEIGHT;
   node.width = width;
   node.height = height;
 }
@@ -156,10 +177,10 @@ function parseFlowchart(source) {
     byRank.get(r).push(id);
   }
 
-  const columnGap = 230;
-  const rowGap = 105;
-  const bandGap = 175;
-  const margin = 70;
+  const columnGap = 255;
+  const rowGap = 130;
+  const bandGap = 215;
+  const margin = 90;
   for (const [r, groupIds] of byRank) {
     groupIds.forEach((id, index) => {
       const node = nodes.get(id);
@@ -175,11 +196,23 @@ function parseFlowchart(source) {
       }
     });
   }
-  const maxX = Math.max(...ids.map((id) => nodes.get(id).x), margin);
-  const maxY = Math.max(...ids.map((id) => nodes.get(id).y), margin);
-  const width = Math.max(420, maxX + margin + 170);
-  const height = Math.max(220, maxY + margin + 80);
   for (const id of ids) measureNode(nodes.get(id));
+
+  const bounds = {
+    left: Math.min(...ids.map((id) => nodes.get(id).x - nodes.get(id).width / 2)),
+    right: Math.max(...ids.map((id) => nodes.get(id).x + nodes.get(id).width / 2)),
+    top: Math.min(...ids.map((id) => nodes.get(id).y - nodes.get(id).height / 2)),
+    bottom: Math.max(...ids.map((id) => nodes.get(id).y + nodes.get(id).height / 2)),
+  };
+  const shiftX = DIAGRAM_PADDING - bounds.left;
+  const shiftY = DIAGRAM_PADDING - bounds.top;
+  for (const id of ids) {
+    const node = nodes.get(id);
+    node.x += shiftX;
+    node.y += shiftY;
+  }
+  const width = Math.max(420, bounds.right - bounds.left + DIAGRAM_PADDING * 2);
+  const height = Math.max(220, bounds.bottom - bounds.top + DIAGRAM_PADDING * 2);
 
   const groupSvg = groups
     .filter((group) => group.nodes.length > 0)
@@ -190,7 +223,7 @@ function parseFlowchart(source) {
       const minY = Math.min(...ns.map((n) => n.y - 35)) - 26;
       const maxY = Math.max(...ns.map((n) => n.y + 35)) + 18;
       return `<rect x="${minX}" y="${minY}" width="${maxX - minX}" height="${maxY - minY}" rx="10" fill="#eef6ff" stroke="#9bc3e6" stroke-dasharray="5 4"/>
-<text x="${minX + 12}" y="${minY + 18}" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#315a86">${escapeXml(group.label)}</text>`;
+<text x="${minX + 12}" y="${minY + 24}" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${FLOW_GROUP_FONT_SIZE}" font-weight="700" fill="#315a86">${escapeXml(group.label)}</text>`;
     })
     .join("\n");
 
@@ -206,7 +239,7 @@ function parseFlowchart(source) {
       const mx = (sx + tx) / 2;
       const my = (sy + ty) / 2;
       const label = edge.label
-        ? `<text x="${mx}" y="${my - 6}" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#4b5563">${escapeXml(edge.label)}</text>`
+        ? `<text x="${mx}" y="${my - 8}" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${FLOW_EDGE_FONT_SIZE}" fill="#4b5563">${escapeXml(edge.label)}</text>`
         : "";
       return `<line x1="${sx}" y1="${sy}" x2="${tx}" y2="${ty}" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>${label}`;
     })
@@ -241,11 +274,11 @@ function parseSequence(source) {
     }
   }
 
-  const gap = 175;
-  const margin = 70;
-  const top = 55;
-  const messageGap = 58;
-  const bottom = top + messages.length * messageGap + 70;
+  const gap = 240;
+  const margin = 100;
+  const top = 70;
+  const messageGap = 76;
+  const bottom = top + messages.length * messageGap + 90;
   const width = Math.max(420, margin * 2 + Math.max(0, participants.length - 1) * gap);
   const height = bottom + 55;
   const xs = new Map(participants.map((id, index) => [id, margin + index * gap]));
@@ -254,11 +287,11 @@ function parseSequence(source) {
     .map((id) => {
       const x = xs.get(id);
       const label = escapeXml(labels.get(id));
-      return `<rect x="${x - 62}" y="${top - 30}" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="${x}" y="${top - 11}" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">${label}</text>
+      return `<rect x="${x - SEQUENCE_PARTICIPANT_WIDTH / 2}" y="${top - 44}" width="${SEQUENCE_PARTICIPANT_WIDTH}" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="${x}" y="${top - 16}" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${SEQUENCE_FONT_SIZE}" fill="#1f2937">${label}</text>
 <line x1="${x}" y1="${top}" x2="${x}" y2="${bottom}" stroke="#b5bdc8" stroke-dasharray="4 4"/>
-<rect x="${x - 62}" y="${bottom}" width="124" height="30" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
-<text x="${x}" y="${bottom + 19}" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#1f2937">${label}</text>`;
+<rect x="${x - SEQUENCE_PARTICIPANT_WIDTH / 2}" y="${bottom}" width="${SEQUENCE_PARTICIPANT_WIDTH}" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="${x}" y="${bottom + 29}" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${SEQUENCE_FONT_SIZE}" fill="#1f2937">${label}</text>`;
     })
     .join("\n");
 
@@ -270,14 +303,14 @@ function parseSequence(source) {
       if (from === to) {
         const x = from;
         return `<path d="M ${x} ${y} C ${x + 70} ${y}, ${x + 70} ${y + 28}, ${x} ${y + 28}" fill="none" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<text x="${x + 74}" y="${y + 16}" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">${escapeXml(msg.label)}</text>`;
+<text x="${x + 74}" y="${y + 20}" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${SEQUENCE_MESSAGE_FONT_SIZE}" fill="#374151">${escapeXml(msg.label)}</text>`;
       }
       const start = from < to ? from + 12 : from - 12;
       const end = from < to ? to - 12 : to + 12;
       const dash = msg.dashed ? 'stroke-dasharray="5 4"' : "";
       const tx = (start + end) / 2;
       return `<line x1="${start}" y1="${y}" x2="${end}" y2="${y}" stroke="#5f6f85" stroke-width="1.5" ${dash} marker-end="url(#arrow)"/>
-<text x="${tx}" y="${y - 7}" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#374151">${escapeXml(msg.label)}</text>`;
+<text x="${tx}" y="${y - 10}" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${SEQUENCE_MESSAGE_FONT_SIZE}" fill="#374151">${escapeXml(msg.label)}</text>`;
     })
     .join("\n");
 

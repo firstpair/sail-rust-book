@@ -1,21 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="540" height="430" viewBox="0 0 540 430">
+<svg xmlns="http://www.w3.org/2000/svg" width="571" height="406" viewBox="0 0 571 406">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="540" height="430" fill="white"/>
+<rect x="0" y="0" width="571" height="406" fill="white"/>
 
-<line x1="70" y1="95.5" x2="70" y2="149.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="95.5" x2="300" y2="141" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="70" y1="200.5" x2="70" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="300" y1="209" x2="70" y2="254.5" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="-37" y="44.5" width="214" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="70" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">WithRelations references</tspan></text>
-<rect x="-7" y="149.5" width="154" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="175" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">store by plan_id</tspan></text>
-<rect x="215.5" y="141" width="169" height="68" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="300" y="167" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="300" dy="0">register aliased</tspan><tspan x="300" dy="17">DataFrames as CTEs</tspan></text>
-<rect x="-5" y="254.5" width="150" height="51" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="70" y="280" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2937"><tspan x="70" dy="0">resolve root</tspan></text>
+<line x1="152" y1="126" x2="152" y2="182" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="152" y1="126" x2="407" y2="166" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="152" y1="240" x2="152" y2="312" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="407" y1="256" x2="152" y2="312" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="54" y="36" width="196" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="152" y="65" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="152" dy="0">WithRelations</tspan><tspan x="152" dy="32">references</tspan></text>
+<rect x="36" y="182" width="232" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="152" y="211" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="152" dy="0">store by plan_id</tspan></text>
+<rect x="279" y="166" width="256" height="90" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="407" y="195" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="407" dy="0">register aliased</tspan><tspan x="407" dy="32">DataFrames as CTEs</tspan></text>
+<rect x="60" y="312" width="184" height="58" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="152" y="341" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="152" dy="0">resolve root</tspan></text>
 </svg>

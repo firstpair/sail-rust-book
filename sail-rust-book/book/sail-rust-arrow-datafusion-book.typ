@@ -18,6 +18,8 @@
   kind: image
 ): set figure.caption(position: bottom)
 
+#show figure.where(kind: image): it => align(center, it)
+
 // ----- Custom conf function (replaces pandoc's default template.typst) -----
 #let content-to-string(content) = {
   if content.has("text") {
