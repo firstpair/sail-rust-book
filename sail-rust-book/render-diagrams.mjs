@@ -9,6 +9,9 @@ const files = fs
   .readdirSync(root)
   .filter((name) => /^\d\d-.*\.md$/.test(name))
   .sort();
+const chapterAnchors = new Map(
+  files.map((name) => [name, `chapter-${name.slice(0, 2)}`]),
+);
 
 const escapeXml = (value) =>
   String(value)
@@ -308,8 +311,12 @@ function parseSequence(source) {
       const to = xs.get(msg.to);
       if (from === to) {
         const x = from;
-        return `<path d="M ${x} ${y} C ${x + 70} ${y}, ${x + 70} ${y + 28}, ${x} ${y + 28}" fill="none" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<text x="${x + 74}" y="${y + 20}" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${SEQUENCE_MESSAGE_FONT_SIZE}" fill="#374151">${escapeXml(msg.label)}</text>`;
+        const direction = participants.at(-1) === msg.from ? -1 : 1;
+        const control = x + direction * 70;
+        const labelX = x + direction * 74;
+        const anchor = direction < 0 ? "end" : "start";
+        return `<path d="M ${x} ${y} C ${control} ${y}, ${control} ${y + 28}, ${x} ${y + 28}" fill="none" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="${labelX}" y="${y + 20}" text-anchor="${anchor}" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${SEQUENCE_MESSAGE_FONT_SIZE}" fill="#374151">${escapeXml(msg.label)}</text>`;
       }
       const start = from < to ? from + 12 : from - 12;
       const end = from < to ? to - 12 : to + 12;
@@ -428,6 +435,13 @@ for (const file of files) {
   const fullPath = path.join(root, file);
   let content = fs.readFileSync(fullPath, "utf8");
   let localIndex = 0;
+  const chapterAnchor = chapterAnchors.get(file);
+  content = content.replace(/^(#\s+[^\n]+)$/m, `$1 {#${chapterAnchor}}`);
+  content = content.replace(/\]\((\d\d-[^)#]+\.md)(#[^)]*)?\)/g, (match, target, fragment) => {
+    const targetAnchor = chapterAnchors.get(target);
+    if (!targetAnchor) return match;
+    return `](${fragment ?? `#${targetAnchor}`})`;
+  });
   content = content.replace(/```mermaid\n([\s\S]*?)\n```/g, (_, source) => {
     globalIndex += 1;
     localIndex += 1;
