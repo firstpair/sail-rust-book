@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 12: Catalogs, Lakehouse Tables, And File
+Formats</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-014.html" accesskey="n" rel="next">Chapter 13: Extension Architecture: From Proposal To Design</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-012.html" accesskey="p" rel="previous">Chapter 11: Functions, UDFs, And Codecs</a>
+</span>
+</div>
+</nav>
+<h1 data-number="13" id="chapter-12"><span
+class="header-section-number">13</span> Chapter 12: Catalogs, Lakehouse
+Tables, And File Formats</h1>
+<p>So far, the book has followed queries from Spark Connect through Sail
+specs, DataFusion logical plans, distributed physical plans, tasks,
+streams, shuffles, and functions. This chapter turns toward storage.</p>
+<p>Storage in Sail is not a single subsystem. It is a set of
+contracts:</p>
+<ul>
+<li>catalogs answer “what is this name?”</li>
+<li>table metadata answers “what schema, location, format, partitioning,
+and properties does it have?”</li>
+<li>table formats answer “how do I read or write this storage
+layout?”</li>
+<li>physical planners answer “what executable DataFusion plan should do
+the work?”</li>
+</ul>
+<p>That separation is one of the most important architectural lessons in
+Sail. It lets Spark-compatible commands talk to Hive Metastore, Glue,
+Unity, Iceberg REST, OneLake, memory catalogs, ordinary files, Delta
+Lake, Iceberg tables, and Python data sources without forcing all of
+those concepts into one giant table abstraction.</p>
+<p>The short version is:</p>
+<pre class="text"><code>Spark table name or data source
+  -&gt; CatalogManager or direct format lookup
+  -&gt; TableStatus / SourceInfo / SinkInfo
+  -&gt; TableFormatRegistry
+  -&gt; DataFusion TableSource or ExecutionPlan</code></pre>
+<p>The long version is this chapter.</p>
+<h2 data-number="13.1" id="code-map-3"><span
+class="header-section-number">13.1</span> Code Map</h2>
+<p>The main files for this chapter are:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Catalog manager</td>
+<td><code>crates/sail-catalog/src/manager/mod.rs</code></td>
+</tr>
+<tr>
+<td>Catalog table/view status</td>
+<td><code>crates/sail-common-datafusion/src/catalog/status.rs</code></td>
+</tr>
+<tr>
+<td>Catalog command enum</td>
+<td><code>crates/sail-catalog/src/command.rs</code></td>
+</tr>
+<tr>
+<td>Catalog command physical exec</td>
+<td><code>crates/sail-physical-plan/src/catalog_command.rs</code></td>
+</tr>
+<tr>
+<td>Session catalog construction</td>
+<td><code>crates/sail-session/src/catalog.rs</code></td>
+</tr>
+<tr>
+<td>Table format trait and registry</td>
+<td><code>crates/sail-common-datafusion/src/datasource.rs</code></td>
+</tr>
+<tr>
+<td>Session table format registration</td>
+<td><code>crates/sail-session/src/formats.rs</code></td>
+</tr>
+<tr>
+<td>Named table and data source reads</td>
+<td><code>crates/sail-plan/src/resolver/query/read.rs</code></td>
+</tr>
+<tr>
+<td>Write command resolution</td>
+<td><code>crates/sail-plan/src/resolver/command/write.rs</code></td>
+</tr>
+<tr>
+<td>Logical file write node</td>
+<td><code>crates/sail-logical-plan/src/file_write.rs</code></td>
+</tr>
+<tr>
+<td>Physical file write planning</td>
+<td><code>crates/sail-physical-plan/src/file_write.rs</code></td>
+</tr>
+<tr>
+<td>Logical/physical delete planning</td>
+<td><code>crates/sail-logical-plan/src/file_delete.rs</code>,
+<code>crates/sail-physical-plan/src/file_delete.rs</code></td>
+</tr>
+<tr>
+<td>Generic listing table formats</td>
+<td><code>crates/sail-data-source/src/listing/source.rs</code></td>
+</tr>
+<tr>
+<td>Parquet format example</td>
+<td><code>crates/sail-data-source/src/formats/parquet/mod.rs</code></td>
+</tr>
+<tr>
+<td>Delta table format</td>
+<td><code>crates/sail-delta-lake/src/table_format.rs</code></td>
+</tr>
+<tr>
+<td>Iceberg table format</td>
+<td><code>crates/sail-iceberg/src/table_format.rs</code></td>
+</tr>
+<tr>
+<td>Lakehouse extension planners</td>
+<td><code>crates/sail-plan-lakehouse/src/lib.rs</code></td>
+</tr>
+<tr>
+<td>Python data source table format</td>
+<td><code>crates/sail-data-source/src/formats/python/table_format.rs</code></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="13.2" id="the-storage-boundary"><span
+class="header-section-number">13.2</span> The Storage Boundary</h2>
+<p>Sail has to preserve Spark behavior while using DataFusion as the
+execution kernel. That means it cannot simply expose DataFusion’s
+catalog model directly to clients. Spark has its own rules for:</p>
+<ul>
+<li>one-part, two-part, and three-part names,</li>
+<li>current catalog and current database,</li>
+<li>temporary and global temporary views,</li>
+<li><code>USING parquet</code>, <code>USING delta</code>, and
+<code>spark.read.format(...)</code>,</li>
+<li>save modes such as append, overwrite, ignore, and
+error-if-exists,</li>
+<li>table properties and data source options,</li>
+<li>time travel syntax,</li>
+<li>row-level commands such as DELETE and MERGE.</li>
+</ul>
+<p>Sail translates that world into a smaller set of internal
+contracts.</p>
+<figure>
+<img src="diagrams/12-diagram-01.svg" alt="Flowchart 12.1" />
+<figcaption aria-hidden="true">Flowchart 12.1</figcaption>
+</figure>
+<p>The table format layer is where Arrow and DataFusion become visible
+again. Reads produce a <code>TableSource</code>, which DataFusion can
+scan. Writes produce an <code>ExecutionPlan</code>, which DataFusion can
+run.</p>
+<h2 data-number="13.3" id="catalogs-names-before-data"><span
+class="header-section-number">13.3</span> Catalogs: Names Before
+Data</h2>
+<p>The <code>CatalogManager</code> in
+<code>crates/sail-catalog/src/manager/mod.rs</code> is a session
+extension. It owns:</p>
+<ul>
+<li>the configured catalog providers,</li>
+<li>the default catalog,</li>
+<li>the default database,</li>
+<li>the global temporary database,</li>
+<li>temporary views,</li>
+<li>registered functions,</li>
+<li>tracked logical plans and function objects.</li>
+</ul>
+<p>Its most important job is name resolution. A query like this:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> sales.orders</span></code></pre></div>
+<p>does not say whether <code>sales</code> is a catalog or a database.
+Sail follows Spark-style resolution:</p>
+<pre class="text"><code>[name]
+  -&gt; default catalog + default database + table
+
+[prefix..., table]
+  -&gt; if prefix starts with a known catalog, use that catalog
+  -&gt; otherwise use default catalog and treat prefix as database</code></pre>
+<p>The result of resolution is not data. It is metadata: a
+<code>TableStatus</code>. The table can be a physical table, a view, a
+temporary view, or a global temporary view.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> TableKind <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    Table <span class="op">{</span> <span class="op">...</span> <span class="op">},</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    View <span class="op">{</span> <span class="op">...</span> <span class="op">},</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    TemporaryView <span class="op">{</span> <span class="op">...</span> <span class="op">},</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    GlobalTemporaryView <span class="op">{</span> <span class="op">...</span> <span class="op">},</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That enum is small, but it carries a lot of Spark compatibility:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Kind</th>
+<th>What Sail does with it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Table</code></td>
+<td>Builds a table scan using the table’s format, location, schema,
+properties, and partitioning.</td>
+</tr>
+<tr>
+<td><code>View</code></td>
+<td>Parses the stored SQL definition and resolves it again into a
+logical plan.</td>
+</tr>
+<tr>
+<td><code>TemporaryView</code></td>
+<td>Reuses a stored logical plan from the session.</td>
+</tr>
+<tr>
+<td><code>GlobalTemporaryView</code></td>
+<td>Reuses a stored logical plan from the configured global temporary
+database.</td>
+</tr>
+</tbody>
+</table>
+<p>This is why catalogs come before file formats. Sail cannot decide
+whether to invoke Parquet, Delta, Iceberg, or Python data source code
+until it knows what the name refers to.</p>
+<h2 data-number="13.4" id="catalog-providers"><span
+class="header-section-number">13.4</span> Catalog Providers</h2>
+<p>Session startup builds the catalog manager in
+<code>crates/sail-session/src/catalog.rs</code>. The configured catalog
+list can include:</p>
+<ul>
+<li>memory catalog,</li>
+<li>Iceberg REST catalog,</li>
+<li>Unity catalog,</li>
+<li>OneLake catalog,</li>
+<li>Glue catalog,</li>
+<li>Hive Metastore catalog,</li>
+<li>the built-in system catalog.</li>
+</ul>
+<p>Some catalog providers are wrapped in
+<code>RuntimeAwareCatalogProvider</code>, which lets them perform
+blocking or IO-heavy setup on the runtime intended for IO. Some are
+wrapped in <code>CachingCatalogProvider</code>, depending on whether the
+configuration asks for global or session cache behavior.</p>
+<p>The key Rust idea here is trait objects:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>HashMap<span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="dt">str</span><span class="op">&gt;,</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> CatalogProvider<span class="op">&gt;&gt;</span></span></code></pre></div>
+<p>Sail does not need every catalog backend to have the same concrete
+Rust type. It needs each backend to implement the
+<code>CatalogProvider</code> contract.</p>
+<p>That same shape reappears for table formats:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>HashMap<span class="op">&lt;</span><span class="dt">String</span><span class="op">,</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> TableFormat<span class="op">&gt;&gt;</span></span></code></pre></div>
+<p>This is a pattern worth remembering for extension design: Sail favors
+small traits plus session registries over large enums that must know
+every implementation.</p>
+<h2 data-number="13.5" id="table-formats"><span
+class="header-section-number">13.5</span> Table Formats</h2>
+<p>The central storage interface is <code>TableFormat</code> in
+<code>crates/sail-common-datafusion/src/datasource.rs</code>.</p>
+<p>Its core methods are:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span>async_trait<span class="at">]</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> TableFormat<span class="op">:</span> <span class="bu">Debug</span> <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> create_source(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> Session<span class="op">,</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        info<span class="op">:</span> SourceInfo<span class="op">,</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> TableSource<span class="op">&gt;&gt;;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> infer_schema(</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> Session<span class="op">,</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        info<span class="op">:</span> SourceInfo<span class="op">,</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SchemaRef<span class="op">&gt;;</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> create_writer(</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> Session<span class="op">,</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        info<span class="op">:</span> SinkInfo<span class="op">,</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;;</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>There are extra hooks for row-level writes and table alteration:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">fn</span> create_row_level_writer(<span class="op">...</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">fn</span> alter_table_properties(<span class="op">...</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">fn</span> alter_table_column_type(<span class="op">...</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> merge_strategy(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> MergeStrategy</span></code></pre></div>
+<p>This interface tells us exactly where DataFusion sits in the storage
+architecture:</p>
+<ul>
+<li>reads become <code>Arc&lt;dyn TableSource&gt;</code>;</li>
+<li>writes become <code>Arc&lt;dyn ExecutionPlan&gt;</code>;</li>
+<li>schema inference returns Arrow <code>SchemaRef</code>;</li>
+<li>format-specific behavior stays behind the trait.</li>
+</ul>
+<p>The registry is intentionally simple:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> TableFormatRegistry <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    formats<span class="op">:</span> RwLock<span class="op">&lt;</span>HashMap<span class="op">&lt;</span><span class="dt">String</span><span class="op">,</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> TableFormat<span class="op">&gt;&gt;&gt;,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Names are lowercased at registration and lookup time. That makes
+<code>format("parquet")</code>, <code>USING PARQUET</code>, and
+mixed-case user input converge on the same format implementation.</p>
+<h2 data-number="13.6" id="session-format-registration"><span
+class="header-section-number">13.6</span> Session Format
+Registration</h2>
+<p><code>crates/sail-session/src/formats.rs</code> builds the table
+format registry for each server session.</p>
+<p>Built-in formats include:</p>
+<pre class="text"><code>arrow
+avro
+binary
+csv
+json
+parquet
+text
+socket
+rate
+console
+noop</code></pre>
+<p>External formats are registered after the built-ins:</p>
+<pre class="text"><code>delta
+iceberg
+discovered Python data sources</code></pre>
+<p>This matters for discussion #2001. Sail already has a working
+registry pattern for one important category of extension. The last
+chapter will generalize that lesson: a third-party extension should be
+able to contribute functions, optimizer rules, physical planners,
+codecs, table formats, and perhaps catalog providers through a unified
+registration story.</p>
+<h2 data-number="13.7"
+id="sourceinfo-a-read-request-in-one-struct"><span
+class="header-section-number">13.7</span> SourceInfo: A Read Request In
+One Struct</h2>
+<p>Reads pass through <code>SourceInfo</code>:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> SourceInfo <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> paths<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> schema<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>Schema<span class="op">&gt;,</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> constraints<span class="op">:</span> Constraints<span class="op">,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> partition_by<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> bucket_by<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>BucketBy<span class="op">&gt;,</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> sort_order<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span>Sort<span class="op">&gt;&gt;,</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> options<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>OptionLayer<span class="op">&gt;,</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This struct is the bridge from Spark concepts to a format-specific
+reader. It can represent:</p>
+<ul>
+<li>a direct <code>spark.read.format("parquet").load(path)</code>,</li>
+<li>a SQL table with catalog metadata,</li>
+<li>a path-based table reference such as
+<code>delta./tmp/events</code>,</li>
+<li>time-travel options,</li>
+<li>partition information,</li>
+<li>table properties and user options.</li>
+</ul>
+<p>The interesting field is
+<code>options: Vec&lt;OptionLayer&gt;</code>.</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> OptionLayer <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    TablePropertyList <span class="op">{</span> items<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>(<span class="dt">String</span><span class="op">,</span> <span class="dt">String</span>)<span class="op">&gt;</span> <span class="op">},</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    OptionList <span class="op">{</span> items<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>(<span class="dt">String</span><span class="op">,</span> <span class="dt">String</span>)<span class="op">&gt;</span> <span class="op">},</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    TableLocation <span class="op">{</span> value<span class="op">:</span> <span class="dt">String</span> <span class="op">},</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    AsOfTimestamp <span class="op">{</span> value<span class="op">:</span> <span class="dt">String</span> <span class="op">},</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    AsOfIntegerVersion <span class="op">{</span> value<span class="op">:</span> <span class="dt">i64</span> <span class="op">},</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    AsOfStringVersion <span class="op">{</span> value<span class="op">:</span> <span class="dt">String</span> <span class="op">},</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>An option is not just a string map because not all options have the
+same meaning. Sail needs to preserve the difference between:</p>
+<ul>
+<li>catalog table properties,</li>
+<li>user-provided data source options,</li>
+<li>a table location,</li>
+<li>timestamp or version time travel.</li>
+</ul>
+<p>Older or simpler data sources can collapse layers into opaque options
+with <code>into_opaque_options()</code>. Lakehouse sources can interpret
+the layers more precisely.</p>
+<h2 data-number="13.8" id="reading-a-named-table"><span
+class="header-section-number">13.8</span> Reading A Named Table</h2>
+<p>The main read path is <code>resolve_query_read_named_table()</code>
+in <code>crates/sail-plan/src/resolver/query/read.rs</code>.</p>
+<p>It has several branches:</p>
+<figure>
+<img src="diagrams/12-diagram-02.svg" alt="Flowchart 12.2" />
+<figcaption aria-hidden="true">Flowchart 12.2</figcaption>
+</figure>
+<p>The direct format branch supports Spark-style path tables:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> parquet.`<span class="op">/</span>tmp<span class="op">/</span>orders`</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> delta.`<span class="op">/</span>lake<span class="op">/</span>events` VERSION <span class="kw">AS</span> <span class="kw">OF</span> <span class="dv">12</span></span></code></pre></div>
+<p>If the prefix is a registered format, Sail does not ask the catalog.
+It builds <code>SourceInfo</code> directly from the path and options,
+then calls:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>registry<span class="op">.</span>get(format)<span class="op">?.</span>create_source(<span class="op">&amp;</span>ctx<span class="op">.</span>state()<span class="op">,</span> info)<span class="op">.</span><span class="kw">await</span></span></code></pre></div>
+<p>For catalog tables, Sail reads <code>TableKind::Table</code>
+metadata:</p>
+<ul>
+<li>columns become an Arrow schema,</li>
+<li>constraints become DataFusion constraints,</li>
+<li>location becomes a path,</li>
+<li>format selects the table format,</li>
+<li>partitioning, bucketing, and sorting are preserved,</li>
+<li>table properties and user options become layered options.</li>
+</ul>
+<p>The output is a DataFusion <code>LogicalPlan::TableScan</code>.</p>
+<p>There is a subtle Spark-compatibility detail after source creation:
+<code>resolve_table_source_with_rename()</code> handles duplicate column
+names and stored column names. DataFusion’s normal schema assumptions do
+not always match Spark’s tolerance for duplicate or case-insensitive
+field names, so Sail wraps or renames where needed.</p>
+<h2 data-number="13.9" id="reading-a-data-source"><span
+class="header-section-number">13.9</span> Reading A Data Source</h2>
+<p>The data source read path is simpler.
+<code>resolve_query_read_data_source()</code> handles queries that
+already name a format explicitly:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> spark.read.<span class="bu">format</span>(<span class="st">&quot;json&quot;</span>).schema(schema).option(<span class="st">&quot;multiLine&quot;</span>, <span class="st">&quot;true&quot;</span>).load(path)</span></code></pre></div>
+<p>The resolver:</p>
+<ol type="1">
+<li>requires a format name,</li>
+<li>resolves the optional schema,</li>
+<li>builds <code>SourceInfo</code> from paths, schema, and options,</li>
+<li>looks up the table format,</li>
+<li>asks it for a <code>TableSource</code>,</li>
+<li>turns that into an unnamed table scan.</li>
+</ol>
+<p>No catalog lookup is necessary.</p>
+<h2 data-number="13.10"
+id="listing-formats-parquet-as-the-normal-case"><span
+class="header-section-number">13.10</span> Listing Formats: Parquet As
+The Normal Case</h2>
+<p>Most ordinary file formats use
+<code>ListingTableFormat&lt;T&gt;</code> in
+<code>crates/sail-data-source/src/listing/source.rs</code>.</p>
+<p>Parquet is a good example:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">type</span> ParquetTableFormat <span class="op">=</span> ListingTableFormat<span class="op">&lt;</span>ParquetFormatFactory<span class="op">&gt;;</span></span></code></pre></div>
+<p>The factory creates a read format and write format:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> FormatFactory <span class="cf">for</span> ParquetFormatFactory <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> Read <span class="op">=</span> ParquetReadFormat<span class="op">;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> Write <span class="op">=</span> ParquetWriteFormat<span class="op">;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name() <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span> <span class="op">{</span> <span class="st">&quot;parquet&quot;</span> <span class="op">}</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> read(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Self</span><span class="pp">::</span><span class="bu">Read</span><span class="op">&gt;</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> write(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Self</span><span class="pp">::</span><span class="bu">Write</span><span class="op">&gt;</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>For reads, <code>ListingTableFormat</code>:</p>
+<ul>
+<li>resolves paths into <code>ListingTableUrl</code>s,</li>
+<li>creates a DataFusion <code>FileFormat</code>,</li>
+<li>infers schema if the caller did not provide one,</li>
+<li>discovers partition columns from <code>key=value</code> path
+segments,</li>
+<li>builds <code>ListingOptions</code>,</li>
+<li>creates a DataFusion <code>ListingTable</code>,</li>
+<li>wraps it as a <code>TableSource</code>.</li>
+</ul>
+<p>For writes, it:</p>
+<ul>
+<li>finds the output <code>path</code> in options,</li>
+<li>rejects unsupported bucketing and partition transforms,</li>
+<li>creates the format-specific writer,</li>
+<li>builds a DataFusion <code>FileSinkConfig</code>,</li>
+<li>calls <code>create_writer_physical_plan()</code>.</li>
+</ul>
+<p>So ordinary file formats are thin adapters around DataFusion’s
+listing table and file writer machinery. Sail adds Spark option
+handling, path behavior, partition discovery, and compatibility
+checks.</p>
+<h2 data-number="13.11"
+id="sinkinfo-a-write-request-in-one-struct"><span
+class="header-section-number">13.11</span> SinkInfo: A Write Request In
+One Struct</h2>
+<p>Writes pass through <code>SinkInfo</code>:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> SinkInfo <span class="op">{</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> input<span class="op">:</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;,</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> mode<span class="op">:</span> PhysicalSinkMode<span class="op">,</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> partition_by<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>CatalogPartitionField<span class="op">&gt;,</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> bucket_by<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>BucketBy<span class="op">&gt;,</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> sort_order<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>LexRequirement<span class="op">&gt;,</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> options<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>OptionLayer<span class="op">&gt;,</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> logical_schema<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>DFSchemaRef<span class="op">&gt;,</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The split between <code>SinkMode</code> and
+<code>PhysicalSinkMode</code> is important.</p>
+<p>At logical planning time, overwrite-by-condition can still carry a
+logical DataFusion expression:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="pp">SinkMode::</span>OverwriteIf <span class="op">{</span> condition <span class="op">}</span></span></code></pre></div>
+<p>At physical planning time, Sail preserves both the expression and the
+original SQL source string:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="pp">PhysicalSinkMode::</span>OverwriteIf <span class="op">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    condition<span class="op">:</span> <span class="cn">Some</span>(condition)<span class="op">,</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    source<span class="op">,</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The <code>logical_schema</code> field is also important. Physical
+planning can lose Arrow field metadata. Delta generated columns need
+that metadata, so Sail carries the logical schema down to the
+writer.</p>
+<h2 data-number="13.12" id="write-resolution"><span
+class="header-section-number">13.12</span> Write Resolution</h2>
+<p><code>crates/sail-plan/src/resolver/command/write.rs</code> is the
+central write resolver. It uses <code>WritePlanBuilder</code> to
+collect:</p>
+<ul>
+<li>target: data source or catalog table,</li>
+<li>mode: error, ignore, append, replace, truncate, conditional
+truncate, partition truncate,</li>
+<li>format,</li>
+<li>partitioning,</li>
+<li>bucketing,</li>
+<li>sorting,</li>
+<li>options,</li>
+<li>table properties,</li>
+<li>external-table flag.</li>
+</ul>
+<p>The output is usually:</p>
+<pre class="text"><code>BarrierNode(
+  preconditions = catalog commands, if needed
+  plan = FileWriteNode(input, FileWriteOptions)
+)</code></pre>
+<p>The barrier is how Sail sequences catalog-side effects before the
+data write. For example, a <code>CREATE TABLE AS SELECT</code> may need
+to create or replace catalog metadata before the file writer runs.</p>
+<figure>
+<img src="diagrams/12-diagram-03.svg" alt="Flowchart 12.3" />
+<figcaption aria-hidden="true">Flowchart 12.3</figcaption>
+</figure>
+<p>For existing catalog tables, Sail inherits stored metadata:</p>
+<ul>
+<li>location,</li>
+<li>format,</li>
+<li>partition fields,</li>
+<li>sort order,</li>
+<li>bucket spec,</li>
+<li>table properties.</li>
+</ul>
+<p>For new tables, Sail constructs a
+<code>CatalogCommand::CreateTable</code> with the input schema and
+desired metadata.</p>
+<h2 data-number="13.13" id="column-matching-and-generated-columns"><span
+class="header-section-number">13.13</span> Column Matching And Generated
+Columns</h2>
+<p>Spark has multiple write column matching modes:</p>
+<ul>
+<li>by position,</li>
+<li>by name,</li>
+<li>by an explicit column list.</li>
+</ul>
+<p>Sail rewrites the input projection accordingly before building the
+file write node. That means the storage writer receives batches in table
+order, with casts and aliases already inserted.</p>
+<p>Generated columns make this more interesting. Delta can store
+generation expression metadata on Arrow fields. Sail’s write
+resolver:</p>
+<ol type="1">
+<li>detects generated columns from field metadata,</li>
+<li>allows missing generated columns in user input,</li>
+<li>computes generated expressions from the provided columns,</li>
+<li>checks user-provided generated values when present,</li>
+<li>attaches generation metadata to output aliases.</li>
+</ol>
+<p>That logic lives before physical writing because it is relational
+expression work. The Delta writer should receive a plan whose output
+already satisfies generated column semantics.</p>
+<h2 data-number="13.14" id="filewritenode-and-physical-planning"><span
+class="header-section-number">13.14</span> FileWriteNode And Physical
+Planning</h2>
+<p><code>FileWriteNode</code> in
+<code>crates/sail-logical-plan/src/file_write.rs</code> is a custom
+DataFusion logical extension node. It carries:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> FileWriteOptions <span class="op">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> format<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> mode<span class="op">:</span> SinkMode<span class="op">,</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> partition_by<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>CatalogPartitionField<span class="op">&gt;,</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> sort_by<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Sort<span class="op">&gt;,</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> bucket_by<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>BucketBy<span class="op">&gt;,</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> options<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>OptionLayer<span class="op">&gt;,</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>It has one logical input: the query whose rows should be written.</p>
+<p>The physical planner handles it in two places:</p>
+<ul>
+<li>the lakehouse planner intercepts Delta/Iceberg writes;</li>
+<li>the general session extension planner handles ordinary writes.</li>
+</ul>
+<p>Both paths eventually call
+<code>create_file_write_physical_plan()</code> in
+<code>crates/sail-physical-plan/src/file_write.rs</code>.</p>
+<p>That function:</p>
+<ol type="1">
+<li>maps <code>SinkMode</code> to <code>PhysicalSinkMode</code>,</li>
+<li>creates physical sort requirements,</li>
+<li>builds <code>SinkInfo</code>,</li>
+<li>looks up the <code>TableFormat</code>,</li>
+<li>calls <code>create_writer()</code>.</li>
+</ol>
+<figure>
+<img src="diagrams/12-diagram-04.svg" alt="Flowchart 12.4" />
+<figcaption aria-hidden="true">Flowchart 12.4</figcaption>
+</figure>
+<p>The storage writer is just another DataFusion physical plan node. In
+distributed execution, it can become part of the job graph like other
+physical operators.</p>
+<h2 data-number="13.15" id="catalog-commands-as-physical-plans"><span
+class="header-section-number">13.15</span> Catalog Commands As Physical
+Plans</h2>
+<p>Catalog commands also become DataFusion plans.</p>
+<p>The resolver wraps commands in <code>CatalogCommandNode</code>. The
+session planner converts that node into <code>CatalogCommandExec</code>
+in <code>crates/sail-physical-plan/src/catalog_command.rs</code>.</p>
+<p>At execution time, <code>CatalogCommandExec</code>:</p>
+<ol type="1">
+<li>retrieves <code>CatalogManager</code> from the task context
+extension,</li>
+<li>executes the command,</li>
+<li>returns a single Arrow <code>RecordBatch</code>.</li>
+</ol>
+<p>That design keeps commands inside the same query execution interface
+as scans and writes. A command can produce Spark-compatible tabular
+output, such as <code>SHOW TABLES</code> or <code>DESCRIBE TABLE</code>,
+without inventing a separate result transport.</p>
+<h2 data-number="13.16" id="delta-lake"><span
+class="header-section-number">13.16</span> Delta Lake</h2>
+<p>Delta implements <code>TableFormat</code> in
+<code>crates/sail-delta-lake/src/table_format.rs</code>.</p>
+<p>For reads, <code>DeltaTableFormat</code>:</p>
+<ul>
+<li>parses the table path into a URL,</li>
+<li>resolves Delta read options,</li>
+<li>opens the Delta table through the object store registry,</li>
+<li>creates a Delta table source.</li>
+</ul>
+<p>For writes, it:</p>
+<ul>
+<li>requires a path,</li>
+<li>rejects unsupported streaming writes,</li>
+<li>rejects unsupported bucketing,</li>
+<li>handles partition column validation,</li>
+<li>opens an existing table snapshot when present,</li>
+<li>resolves Delta write options and table properties,</li>
+<li>preserves generated column expressions from the logical schema,</li>
+<li>builds a <code>DeltaPhysicalPlanner</code>,</li>
+<li>returns the writer execution plan.</li>
+</ul>
+<p>Delta also implements row-level writing:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">fn</span> create_row_level_writer(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> Session<span class="op">,</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    info<span class="op">:</span> RowLevelWriteInfo<span class="op">,</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;</span></span></code></pre></div>
+<p>The row-level implementation chooses between eager copy-on-write and
+merge-on-read based on the requested command and detected table
+properties.</p>
+<p>For example:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Strategy</th>
+<th>Delta planner path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DELETE</td>
+<td>eager</td>
+<td><code>plan_delete</code></td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>merge-on-read</td>
+<td><code>plan_delete_mor</code></td>
+</tr>
+<tr>
+<td>MERGE</td>
+<td>eager</td>
+<td><code>plan_merge</code></td>
+</tr>
+<tr>
+<td>MERGE</td>
+<td>merge-on-read</td>
+<td><code>plan_merge_mor</code></td>
+</tr>
+<tr>
+<td>UPDATE</td>
+<td>not implemented yet</td>
+<td>returns not implemented</td>
+</tr>
+</tbody>
+</table>
+<p>This is a good example of why <code>TableFormat</code> cannot stop at
+“read files” and “write files.” Lakehouse formats own transaction logs,
+table protocols, deletion vectors, metadata actions, and row-level
+rewrite strategies.</p>
+<h2 data-number="13.17" id="iceberg"><span
+class="header-section-number">13.17</span> Iceberg</h2>
+<p>Iceberg implements <code>TableFormat</code> in
+<code>crates/sail-iceberg/src/table_format.rs</code>.</p>
+<p>For reads, it:</p>
+<ul>
+<li>parses the table URL,</li>
+<li>resolves Iceberg read options,</li>
+<li>loads table metadata,</li>
+<li>creates an <code>IcebergTableProvider</code>,</li>
+<li>wraps it in <code>IcebergTableSource</code>.</li>
+</ul>
+<p>For writes, it:</p>
+<ul>
+<li>requires a path,</li>
+<li>rejects unsupported bucketing,</li>
+<li>resolves write options,</li>
+<li>checks whether metadata files already exist,</li>
+<li>validates partition spec compatibility,</li>
+<li>builds an <code>IcebergTableConfig</code>,</li>
+<li>uses <code>IcebergPlanBuilder</code> to create the execution
+plan.</li>
+</ul>
+<p>Iceberg also has format-specific table alteration support. For
+example, <code>alter_table_properties()</code> updates Iceberg metadata
+files with conflict retry logic.</p>
+<p>The file contains an explicit TODO for row-level DELETE/UPDATE/MERGE.
+That makes Iceberg a useful contrast with Delta: both are table formats,
+but their current row-level capabilities differ.</p>
+<h2 data-number="13.18" id="lakehouse-extension-planners"><span
+class="header-section-number">13.18</span> Lakehouse Extension
+Planners</h2>
+<p>Lakehouse tables need special physical planning.
+<code>crates/sail-plan-lakehouse/src/lib.rs</code> adds extension
+planners:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> new_lakehouse_extension_planners() <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">vec!</span>[</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">Arc::</span>new(<span class="pp">sail_delta_lake::planner::</span>DeltaTablePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">Arc::</span>new(<span class="pp">sail_iceberg::</span>IcebergTablePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        <span class="pp">Arc::</span>new(DeltaExtensionPlanner)<span class="op">,</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The session query planner installs these before the general Sail
+extension planner. That gives lakehouse planners first chance to handle
+lakehouse-specific nodes.</p>
+<p><code>DeltaExtensionPlanner</code> handles:</p>
+<ul>
+<li><code>FileWriteNode</code> for lakehouse formats,</li>
+<li><code>FileDeleteNode</code> for lakehouse deletes that were not
+expanded,</li>
+<li><code>RowLevelWriteNode</code>,</li>
+<li><code>MergeCardinalityCheckNode</code>.</li>
+</ul>
+<p>The row-level path looks like this:</p>
+<figure>
+<img src="diagrams/12-diagram-05.svg" alt="Flowchart 12.5" />
+<figcaption aria-hidden="true">Flowchart 12.5</figcaption>
+</figure>
+<p>This is one of the places where distributed query processing and
+storage semantics meet. A MERGE is not just a local table operation.
+Sail must identify target files, join target rows with source rows,
+check cardinality, decide row operations, and then commit the result in
+the table format’s transaction protocol.</p>
+<h2 data-number="13.19" id="row-level-metadata-columns"><span
+class="header-section-number">13.19</span> Row-Level Metadata
+Columns</h2>
+<p>Sail reserves internal column names for row-level operations:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">const</span> MERGE_FILE_COLUMN<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">=</span> <span class="st">&quot;__sail_file_path&quot;</span><span class="op">;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">const</span> MERGE_ROW_INDEX_COLUMN<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">=</span> <span class="st">&quot;__sail_file_row_index&quot;</span><span class="op">;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">const</span> OPERATION_COLUMN<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">=</span> <span class="st">&quot;__sail_operation_type&quot;</span><span class="op">;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">const</span> MERGE_SOURCE_METRIC_COLUMN<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">=</span> <span class="st">&quot;__sail_merge_source_metric&quot;</span><span class="op">;</span></span></code></pre></div>
+<p>These columns are not user data. They are execution metadata used to
+track:</p>
+<ul>
+<li>which file a target row came from,</li>
+<li>which row inside that file was touched,</li>
+<li>what operation should happen to the row,</li>
+<li>source-side merge metrics.</li>
+</ul>
+<p><code>MergeCapableSource</code> exposes hooks for sources that can
+add file and row-index columns:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> MergeCapableSource <span class="op">{</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> file_column_name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;&amp;</span><span class="dt">str</span><span class="op">&gt;;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> with_file_column(<span class="kw">self</span><span class="op">,</span> name<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="dt">Self</span><span class="op">;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> row_index_column_name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;&amp;</span><span class="dt">str</span><span class="op">&gt;;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> with_row_index_column(<span class="kw">self</span><span class="op">,</span> name<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="dt">Self</span><span class="op">;</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is a tiny interface with large implications. A row-level command
+can only be planned safely if the scan can identify the physical rows or
+files that must be rewritten or deleted.</p>
+<h2 data-number="13.20" id="python-data-sources-1"><span
+class="header-section-number">13.20</span> Python Data Sources</h2>
+<p>Python data sources are registered into the same
+<code>TableFormatRegistry</code> as Parquet, Delta, and Iceberg.</p>
+<p><code>PythonTableFormat</code> in
+<code>crates/sail-data-source/src/formats/python/table_format.rs</code>
+can represent:</p>
+<ul>
+<li>an entry-point discovered data source,</li>
+<li>a session-registered data source with embedded pickled class
+bytes.</li>
+</ul>
+<p>For reads, it:</p>
+<ol type="1">
+<li>merges option layers into opaque Python options,</li>
+<li>unpickles and instantiates the Python data source class,</li>
+<li>obtains or discovers an Arrow schema,</li>
+<li>builds a <code>PythonTableProvider</code>,</li>
+<li>returns it as a DataFusion <code>TableSource</code>.</li>
+</ol>
+<p>For writes, it:</p>
+<ol type="1">
+<li>maps Spark save modes to a Python <code>overwrite</code> boolean and
+a <code>mode</code> option,</li>
+<li>asks the Python executor for a writer,</li>
+<li>builds <code>PythonDataSourceWriteExec</code>,</li>
+<li>wraps it in <code>PythonDataSourceWriteCommitExec</code>.</li>
+</ol>
+<p>This is one of Sail’s most concrete extension prototypes. A Python
+package can provide a data source, and Sail can expose it through
+ordinary Spark syntax:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> spark.read.<span class="bu">format</span>(<span class="st">&quot;my_source&quot;</span>).option(<span class="st">&quot;k&quot;</span>, <span class="st">&quot;v&quot;</span>).load()</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>df.write.<span class="bu">format</span>(<span class="st">&quot;my_source&quot;</span>).mode(<span class="st">&quot;overwrite&quot;</span>).save()</span></code></pre></div>
+<p>The extension challenge is that Python data sources currently plug
+into one registry. Discussion #2001 asks for a broader version of that
+idea across DataFusion integrations.</p>
+<h2 data-number="13.21" id="example-parquet-read"><span
+class="header-section-number">13.21</span> Example: Parquet Read</h2>
+<p>A PySpark user writes:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> spark.read.<span class="bu">format</span>(<span class="st">&quot;parquet&quot;</span>).load(<span class="st">&quot;/tmp/orders&quot;</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>df.select(<span class="st">&quot;order_id&quot;</span>, <span class="st">&quot;total&quot;</span>).show()</span></code></pre></div>
+<p>Conceptually, Sail does this:</p>
+<pre class="text"><code>ReadDataSource(format = &quot;parquet&quot;, paths = [&quot;/tmp/orders&quot;])
+  -&gt; SourceInfo
+  -&gt; TableFormatRegistry[&quot;parquet&quot;]
+  -&gt; ListingTableFormat&lt;ParquetFormatFactory&gt;::create_source
+  -&gt; DataFusion ListingTable
+  -&gt; LogicalPlan::TableScan</code></pre>
+<p>The Arrow schema comes either from the user’s explicit schema or from
+DataFusion’s Parquet schema inference.</p>
+<h2 data-number="13.22" id="example-delta-ctas"><span
+class="header-section-number">13.22</span> Example: Delta CTAS</h2>
+<p>A user writes:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> lake.<span class="kw">events</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">USING</span> delta</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>LOCATION <span class="st">&#39;/lake/events&#39;</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="kw">AS</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> raw_events</span></code></pre></div>
+<p>Sail needs two effects:</p>
+<ol type="1">
+<li>create catalog metadata for <code>lake.events</code>;</li>
+<li>write the selected rows to a Delta table.</li>
+</ol>
+<p>The logical shape is:</p>
+<pre class="text"><code>BarrierNode
+  precondition: CatalogCommandNode(CreateTable)
+  plan: FileWriteNode(format = &quot;delta&quot;, mode = ErrorIfExists, path = &quot;/lake/events&quot;)</code></pre>
+<p>At physical planning time:</p>
+<pre class="text"><code>CatalogCommandNode -&gt; CatalogCommandExec
+FileWriteNode      -&gt; DeltaTableFormat.create_writer(...)
+BarrierNode        -&gt; BarrierExec(preconditions, write_plan)</code></pre>
+<p>The barrier keeps the command sequencing explicit.</p>
+<h2 data-number="13.23" id="example-delta-merge"><span
+class="header-section-number">13.23</span> Example: Delta MERGE</h2>
+<p>A MERGE starts as a Spark command:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">MERGE</span> <span class="kw">INTO</span> target t</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="kw">USING</span> <span class="kw">source</span> s</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> t.<span class="kw">id</span> <span class="op">=</span> s.<span class="kw">id</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> MATCHED <span class="cf">THEN</span> <span class="kw">UPDATE</span> <span class="kw">SET</span> <span class="fu">value</span> <span class="op">=</span> s.<span class="fu">value</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> <span class="kw">NOT</span> MATCHED <span class="cf">THEN</span> <span class="kw">INSERT</span> <span class="op">*</span></span></code></pre></div>
+<p>For a lakehouse table, Sail’s planner must do more than create a
+writer:</p>
+<ul>
+<li>resolve the target table,</li>
+<li>scan target rows with file path and row index metadata,</li>
+<li>join source and target rows,</li>
+<li>classify each row into an operation,</li>
+<li>check merge cardinality,</li>
+<li>hand row-level write info to the table format,</li>
+<li>let Delta commit the final file and log changes.</li>
+</ul>
+<p>That path is why <code>RowLevelWriteInfo</code> carries so much
+context:</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> RowLevelWriteInfo <span class="op">{</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> command<span class="op">:</span> RowLevelCommand<span class="op">,</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> target<span class="op">:</span> RowLevelTargetInfo<span class="op">,</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> condition<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>ExprWithSource<span class="op">&gt;,</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> expanded_input<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;,</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> touched_file_plan<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;,</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> deletion_vector_plan<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;,</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> with_schema_evolution<span class="op">:</span> <span class="dt">bool</span><span class="op">,</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> operation_override<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>RowLevelOperationType<span class="op">&gt;,</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> merge_strategy<span class="op">:</span> MergeStrategy<span class="op">,</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is storage-aware distributed query processing. The query engine
+supplies the relational work; the table format supplies the commit
+protocol.</p>
+<h2 data-number="13.24" id="extension-lessons"><span
+class="header-section-number">13.24</span> Extension Lessons</h2>
+<p>The catalog and table format code already demonstrates several
+extension principles that matter for the final chapter:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Principle</th>
+<th>Storage example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Use session registries</td>
+<td><code>TableFormatRegistry</code> is installed as a session
+extension.</td>
+</tr>
+<tr>
+<td>Keep traits small</td>
+<td><code>TableFormat</code> has focused read/write/row-level
+hooks.</td>
+</tr>
+<tr>
+<td>Preserve layered semantics</td>
+<td><code>OptionLayer</code> avoids flattening every option too
+early.</td>
+</tr>
+<tr>
+<td>Separate metadata from execution</td>
+<td><code>CatalogManager</code> resolves names; table formats build
+execution plans.</td>
+</tr>
+<tr>
+<td>Let specialized planners intercept early</td>
+<td>Lakehouse planners run before the general extension planner.</td>
+</tr>
+<tr>
+<td>Carry distributed requirements explicitly</td>
+<td>row-level columns and <code>RowLevelWriteInfo</code> encode what
+workers need.</td>
+</tr>
+<tr>
+<td>Return DataFusion objects</td>
+<td>sources and writers integrate with DataFusion rather than bypassing
+it.</td>
+</tr>
+</tbody>
+</table>
+<p>For discussion #2001, this suggests a useful design direction:</p>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SailExtension <span class="op">{</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_table_formats(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span>TableFormatRegistry) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_catalogs(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> builder<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> CatalogRegistryBuilder) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> FunctionRegistry) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> optimizer_rules(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> OptimizerRule<span class="op">&gt;&gt;</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> physical_planners(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> codecs(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> PhysicalPlanCodecExtension<span class="op">&gt;&gt;</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The exact API may differ, but the storage layer gives us the
+template: register capabilities into session-owned registries, keep
+DataFusion as the execution kernel, and make distributed serialization a
+first-class part of the contract.</p>
+<h2 data-number="13.25" id="reading-exercises-3"><span
+class="header-section-number">13.25</span> Reading Exercises</h2>
+<ol type="1">
+<li>Trace <code>spark.read.format("parquet").load(path)</code> through
+<code>resolve_query_read_data_source()</code> and
+<code>ListingTableFormat::create_source()</code>.</li>
+<li>Trace a catalog table read through
+<code>CatalogManager.get_table_or_view()</code> and
+<code>resolve_query_read_named_table()</code>.</li>
+<li>Compare <code>DeltaTableFormat::create_writer()</code> and
+<code>IcebergTableFormat::create_writer()</code>. Note which checks are
+generic and which are table-format-specific.</li>
+<li>Find where <code>FileWriteNode</code> becomes an
+<code>ExecutionPlan</code>.</li>
+<li>Read <code>PythonTableFormat</code> as a miniature extension
+system.</li>
+</ol>
+<h2 data-number="13.26" id="key-takeaways"><span
+class="header-section-number">13.26</span> Key Takeaways</h2>
+<p>Catalogs and table formats are the storage-facing half of Sail’s
+architecture. The catalog answers what a name means. The table format
+answers how to read or write the underlying data. The planner glues both
+to DataFusion.</p>
+<p>Ordinary files mostly adapt DataFusion listing tables. Lakehouse
+formats add transaction logs, table protocols, schema evolution,
+generated columns, row-level metadata, and commit strategies. Python
+data sources prove that Sail can already discover third-party data
+providers and expose them through Spark syntax.</p>
+<p>The final chapter will connect all of this back to the extension
+proposal: how to turn these local patterns into a coherent extension
+architecture for Sail.</p>
+</body>
+</html>

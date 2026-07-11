@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Reader Guide: How This Book Builds</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-002.html" accesskey="n" rel="next">Chapter 1: Architecture Overview</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="index.html" accesskey="p" rel="previous">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+</nav>
+<h1 data-number="1" id="chapter-00"><span
+class="header-section-number">1</span> Reader Guide: How This Book
+Builds</h1>
+<p>This book is mostly meant to be read in order, but it is also a code
+companion. Chapters 1-13 walk the core system from architecture through
+extension design. Chapters 14-19 are definitive-guide companion
+chapters: they fill protocol, optimizer, streaming, testing,
+contribution, and navigation coverage that readers will want after the
+main pass.</p>
+<h2 data-number="1.1" id="chapter-links"><span
+class="header-section-number">1.1</span> Chapter Links</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Part</th>
+<th>Chapters</th>
+<th>What They Establish</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>System shape</td>
+<td><a href="chapter-002.html#chapter-01">1. Architecture Overview</a>,
+<a href="chapter-003.html#chapter-02">2. Rust Foundations</a></td>
+<td>The full query pipeline and the Rust patterns that make it
+possible.</td>
+</tr>
+<tr>
+<td>Front doors</td>
+<td><a href="chapter-004.html#chapter-03">3. Spark Connect</a>, <a
+href="chapter-005.html#chapter-04">4. PySpark and pysail</a>, <a
+href="chapter-015.html#chapter-14">14. Arrow Flight SQL</a></td>
+<td>How user intent enters Sail through PySpark, Spark Connect, SQL,
+Flight SQL, gRPC, protobufs, and Python packaging.</td>
+</tr>
+<tr>
+<td>Columnar runtime</td>
+<td><a href="chapter-006.html#chapter-05">5. Apache Arrow</a>, <a
+href="chapter-007.html#chapter-06">6. Apache DataFusion</a></td>
+<td>The data model and query engine Sail builds on.</td>
+</tr>
+<tr>
+<td>Distribution</td>
+<td><a href="chapter-008.html#chapter-07">7. Physical Plan to Job
+Graph</a>, <a href="chapter-009.html#chapter-08">8. Drivers, Workers,
+Tasks, and Streams</a>, <a href="chapter-010.html#chapter-09">9. Shuffle
+and Data Movement</a>, <a href="chapter-017.html#chapter-16">16. Local
+and Streaming Execution</a></td>
+<td>How one DataFusion plan becomes local execution, streaming
+execution, distributed tasks, and Arrow stream movement.</td>
+</tr>
+<tr>
+<td>Spark semantics</td>
+<td><a href="chapter-011.html#chapter-10">10. Sail Spec and Plan
+Resolver</a>, <a href="chapter-012.html#chapter-11">11. Functions, UDFs,
+and Codecs</a>, <a href="chapter-013.html#chapter-12">12. Catalogs,
+Lakehouse Tables, and File Formats</a>, <a
+href="chapter-016.html#chapter-15">15. Custom Nodes and
+Optimizers</a></td>
+<td>How Spark-compatible names, expressions, functions, commands,
+tables, writes, custom logical nodes, and optimizer rules become
+executable DataFusion objects.</td>
+</tr>
+<tr>
+<td>Extension design</td>
+<td><a href="chapter-014.html#chapter-13">13. Extension
+Architecture</a></td>
+<td>How the previous patterns become a proposed extension architecture
+for discussion #2001.</td>
+</tr>
+<tr>
+<td>Practice and navigation</td>
+<td><a href="chapter-018.html#chapter-17">17. Testing Spark
+Compatibility</a>, <a href="chapter-019.html#chapter-18">18. Feature
+Playbooks</a>, <a href="chapter-020.html#chapter-19">19. Roadmap and
+Codebase Navigation</a></td>
+<td>How to verify behavior, add features without missing layers, and
+navigate the codebase as it evolves.</td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="1.2" id="concept-progression"><span
+class="header-section-number">1.2</span> Concept Progression</h2>
+<p>The chapters deliberately introduce concepts before relying on
+them:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Introduced</th>
+<th>Elaborated</th>
+<th>Used For Extensions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spark Connect unresolved plans</td>
+<td>Chapter 3</td>
+<td>Chapters 4 and 10</td>
+<td>Chapter 13, where extensions must preserve Spark-facing
+behavior.</td>
+</tr>
+<tr>
+<td>Spark Connect extension messages</td>
+<td>Chapter 3</td>
+<td>Chapter 10</td>
+<td>Chapter 13, where <code>Relation.extension</code>,
+<code>Command.extension</code>, and <code>Expression.extension</code>
+become the plan-time extension ABI.</td>
+</tr>
+<tr>
+<td>Flight SQL as a second front door</td>
+<td>Chapter 14</td>
+<td>Chapters 6 and 10</td>
+<td>Chapter 13, where protocol-independent registration becomes
+necessary.</td>
+</tr>
+<tr>
+<td>Rust trait objects and <code>Arc</code></td>
+<td>Chapter 2</td>
+<td>Chapters 6, 8, 11, 12, and 16</td>
+<td>Chapter 13, where execution-time extension capabilities are
+trait-object contributions.</td>
+</tr>
+<tr>
+<td>Arrow <code>RecordBatch</code> streams</td>
+<td>Chapter 5</td>
+<td>Chapters 8, 9, 14, and 16</td>
+<td>Chapters 11 and 13, where UDFs and custom operators must execute on
+Arrow batches.</td>
+</tr>
+<tr>
+<td>DataFusion logical and physical plans</td>
+<td>Chapter 6</td>
+<td>Chapters 7, 10, and 15</td>
+<td>Chapter 13, where extensions add optimizer rules and physical
+planners.</td>
+</tr>
+<tr>
+<td>Job graphs and stages</td>
+<td>Chapter 7</td>
+<td>Chapters 8 and 9</td>
+<td>Chapters 13 and 18, where extension plans must survive distributed
+execution.</td>
+</tr>
+<tr>
+<td>Streaming flow events</td>
+<td>Chapter 16</td>
+<td>Chapters 5 and 15</td>
+<td>Chapter 18, where streaming sources must emit the right event
+schema.</td>
+</tr>
+<tr>
+<td>Typed session extensions</td>
+<td>Chapter 2</td>
+<td>Chapters 6, 11, 12, 14, and 16</td>
+<td>Chapter 13, where the extension registry is proposed as a session
+service.</td>
+</tr>
+<tr>
+<td>Function resolution and codecs</td>
+<td>Chapter 11</td>
+<td>Chapters 17 and 18</td>
+<td>The core reason the execution-time extension boundary needs
+worker-side registration and serialization.</td>
+</tr>
+<tr>
+<td>Table format registry</td>
+<td>Chapter 12</td>
+<td>Chapter 18</td>
+<td>The strongest existing model for extension registration.</td>
+</tr>
+<tr>
+<td>Two extension boundaries</td>
+<td>Chapter 1</td>
+<td>Chapters 3, 10, 11, 13, and 18</td>
+<td>Chapter 13, where plan-time and execution-time contributions are
+designed separately.</td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="1.3" id="code-reading-strategy"><span
+class="header-section-number">1.3</span> Code Reading Strategy</h2>
+<p>Each chapter has a code map, but these are the highest-leverage
+excerpts to read first:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Question</th>
+<th>Best Code To Read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>How does a Spark Connect request enter Sail?</td>
+<td><code>crates/sail-spark-connect/src/service/plan_executor.rs</code>
+and <code>crates/sail-spark-connect/src/server.rs</code></td>
+</tr>
+<tr>
+<td>How does Sail create a session?</td>
+<td><code>crates/sail-session/src/session_factory/server.rs</code></td>
+</tr>
+<tr>
+<td>How does Sail customize DataFusion planning?</td>
+<td><code>crates/sail-session/src/planner.rs</code></td>
+</tr>
+<tr>
+<td>How does a physical plan become distributed work?</td>
+<td><code>crates/sail-execution/src/job_graph/planner.rs</code> and
+<code>crates/sail-execution/src/job_runner.rs</code></td>
+</tr>
+<tr>
+<td>How do tasks run on workers?</td>
+<td><code>crates/sail-execution/src/task_runner/core.rs</code></td>
+</tr>
+<tr>
+<td>How does shuffle move Arrow batches?</td>
+<td><code>crates/sail-execution/src/plan/shuffle_write.rs</code>,
+<code>crates/sail-execution/src/plan/shuffle_read.rs</code>, and
+<code>crates/sail-execution/src/stream/</code></td>
+</tr>
+<tr>
+<td>How do Spark functions become DataFusion functions?</td>
+<td><code>crates/sail-plan/src/resolver/expression/function.rs</code>
+and <code>crates/sail-plan/src/function/</code></td>
+</tr>
+<tr>
+<td>How do Python UDFs execute?</td>
+<td><code>crates/sail-python-udf/src/udf/</code> and
+<code>crates/sail-python-udf/src/stream.rs</code></td>
+</tr>
+<tr>
+<td>How do custom functions and plans reach workers?</td>
+<td><code>crates/sail-execution/src/codec.rs</code></td>
+</tr>
+<tr>
+<td>How do catalogs and file formats plug in?</td>
+<td><code>crates/sail-catalog/src/manager/mod.rs</code>,
+<code>crates/sail-common-datafusion/src/datasource.rs</code>, and
+<code>crates/sail-session/src/formats.rs</code></td>
+</tr>
+<tr>
+<td>How do lakehouse row-level operations work?</td>
+<td><code>crates/sail-plan-lakehouse/src/lib.rs</code>,
+<code>crates/sail-delta-lake/src/table_format.rs</code>, and
+<code>crates/sail-logical-plan/src/merge.rs</code></td>
+</tr>
+<tr>
+<td>How does Flight SQL enter the same engine?</td>
+<td><code>crates/sail-flight/src/service.rs</code></td>
+</tr>
+<tr>
+<td>Where are custom logical nodes planned physically?</td>
+<td><code>crates/sail-session/src/planner.rs</code></td>
+</tr>
+<tr>
+<td>Where are optimizer rules registered?</td>
+<td><code>crates/sail-session/src/session_factory/server.rs</code> and
+<code>crates/sail-physical-optimizer/src/lib.rs</code></td>
+</tr>
+<tr>
+<td>How does structured streaming change a plan?</td>
+<td><code>crates/sail-plan/src/streaming/rewriter.rs</code> and
+<code>crates/sail-common-datafusion/src/streaming/event/schema.rs</code></td>
+</tr>
+<tr>
+<td>How should I add a feature safely?</td>
+<td><a href="chapter-019.html#chapter-18">18. Feature Playbooks</a></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="1.4" id="what-to-look-for-in-code-excerpts"><span
+class="header-section-number">1.4</span> What To Look For In Code
+Excerpts</h2>
+<p>The best excerpts in this book are not chosen because they are short.
+They are chosen because they reveal a boundary:</p>
+<ul>
+<li>a protobuf boundary,</li>
+<li>a Python/Rust boundary,</li>
+<li>a Spark/DataFusion semantic boundary,</li>
+<li>a local/distributed execution boundary,</li>
+<li>a driver/worker serialization boundary,</li>
+<li>a catalog/table-format boundary,</li>
+<li>or an extension registration boundary.</li>
+</ul>
+<p>When reading a snippet, ask what it converts from and what it
+converts to. Sail’s architecture is mostly a sequence of careful
+conversions.</p>
+<p>Navigation: <a href="chapter-002.html#chapter-01">Start Chapter 1:
+Architecture Overview</a></p>
+</body>
+</html>

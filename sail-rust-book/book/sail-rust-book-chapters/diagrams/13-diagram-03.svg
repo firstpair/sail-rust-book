@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="446" viewBox="0 0 1618 802">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1618" height="802" fill="white"/>
+
+<line x1="302" y1="99" x2="384" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="622" y1="99" x2="697" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="949" y1="99" x2="1038" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1248" y1="99" x2="1344" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1582" y1="99" x2="36" y2="354" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="330" y1="354" x2="356" y2="354" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="650" y1="354" x2="704" y2="354" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="942" y1="354" x2="64" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="64" y="52" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">PySpark / SQL</tspan><tspan x="183" dy="32">client</tspan></text>
+<rect x="384" y="52" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="503" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="503" dy="0">Spark Connect</tspan><tspan x="503" dy="32">(Ch 3, 4)</tspan></text>
+<rect x="697" y="36" width="252" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="823" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="823" dy="0">PlanResolver /</tspan><tspan x="823" dy="32">spec</tspan><tspan x="823" dy="32">(Ch 10)</tspan></text>
+<rect x="1038" y="36" width="210" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1143" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1143" dy="0">DataFusion</tspan><tspan x="1143" dy="32">LogicalPlan</tspan><tspan x="1143" dy="32">(Ch 6)</tspan></text>
+<rect x="1344" y="36" width="238" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1463" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1463" dy="0">DataFusion</tspan><tspan x="1463" dy="32">ExecutionPlan</tspan><tspan x="1463" dy="32">(Ch 6, 7)</tspan></text>
+<rect x="36" y="307" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="338" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">JobGraph &amp; stages</tspan><tspan x="183" dy="32">(Ch 7)</tspan></text>
+<rect x="356" y="291" width="294" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="503" y="322" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="503" dy="0">Drivers, workers,</tspan><tspan x="503" dy="32">shuffle</tspan><tspan x="503" dy="32">(Ch 8, 9)</tspan></text>
+<rect x="704" y="291" width="238" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="823" y="322" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="823" dy="0">Arrow</tspan><tspan x="823" dy="32">RecordBatches</tspan><tspan x="823" dy="32">(Ch 5)</tspan></text>
+<rect x="64" y="223" width="238" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="254" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">SailExtension</tspan></text>
+<rect x="43" y="346" width="280" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">Functions, UDFs,</tspan><tspan x="183" dy="32">codecs</tspan><tspan x="183" dy="32">(Ch 11)</tspan></text>
+<rect x="36" y="517" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="548" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">Catalogs, formats</tspan><tspan x="183" dy="32">(Ch 12)</tspan></text>
+<rect x="64" y="672" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="703" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">Rust patterns</tspan><tspan x="183" dy="32">(Ch 2)</tspan></text>
+</svg>

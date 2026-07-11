@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 9: Shuffle And Data Movement</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-011.html" accesskey="n" rel="next">Chapter 10: The Sail Spec And Plan Resolver</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-009.html" accesskey="p" rel="previous">Chapter 8: Drivers, Workers, Tasks, And Streams</a>
+</span>
+</div>
+</nav>
+<h1 data-number="10" id="chapter-09"><span
+class="header-section-number">10</span> Chapter 9: Shuffle And Data
+Movement</h1>
+<p>Shuffle is where a distributed query engine proves that it is
+actually distributed.</p>
+<p>Up to this point, the book has followed Sail from the front door
+through logical plans, DataFusion physical plans, stage graphs, drivers,
+workers, and task execution. This chapter zooms in on the data plane:
+how a <code>RecordBatch</code> produced by one task becomes input to
+another task, possibly on another worker, under a distribution chosen by
+the query plan.</p>
+<p>In Sail, this movement is expressed in a compact set of ideas:</p>
+<ul>
+<li>Data moves as Arrow <code>RecordBatch</code> streams.</li>
+<li>A stage boundary is represented in the physical plan by
+<code>StageInputExec</code>.</li>
+<li>At task runtime, <code>StageInputExec</code> is rewritten into
+<code>ShuffleReadExec</code>.</li>
+<li>The task’s final physical plan is wrapped in
+<code>ShuffleWriteExec</code>.</li>
+<li>The driver assigns stream keys, channel numbers, and read/write
+locations.</li>
+<li>The stream subsystem moves batches through local memory today, with
+Arrow Flight as the remote transport shape.</li>
+</ul>
+<p>That last phrase is important: Sail already has the architecture of a
+networked shuffle service, but some remote and blocking pieces are
+intentionally not finished. This makes the codebase unusually good for
+learning. You can see the shape of a distributed engine without getting
+lost in years of accumulated production machinery.</p>
+<h2 data-number="10.1" id="code-map"><span
+class="header-section-number">10.1</span> Code Map</h2>
+<p>The core shuffle code lives in these files:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Physical shuffle writer</td>
+<td><code>crates/sail-execution/src/plan/shuffle_write.rs</code></td>
+</tr>
+<tr>
+<td>Physical shuffle reader</td>
+<td><code>crates/sail-execution/src/plan/shuffle_read.rs</code></td>
+</tr>
+<tr>
+<td>Merging task streams</td>
+<td><code>crates/sail-execution/src/stream/merge.rs</code></td>
+</tr>
+<tr>
+<td>Round-robin partitioning</td>
+<td><code>crates/sail-physical-plan/src/repartition.rs</code></td>
+</tr>
+<tr>
+<td>Task input/output definitions</td>
+<td><code>crates/sail-execution/src/task/definition.rs</code></td>
+</tr>
+<tr>
+<td>Scheduler input/output placement</td>
+<td><code>crates/sail-execution/src/driver/job_scheduler/core.rs</code></td>
+</tr>
+<tr>
+<td>Runtime shuffle rewrite</td>
+<td><code>crates/sail-execution/src/task_runner/core.rs</code></td>
+</tr>
+<tr>
+<td>Stream reader and writer traits</td>
+<td><code>crates/sail-execution/src/stream/reader.rs</code>,
+<code>crates/sail-execution/src/stream/writer.rs</code></td>
+</tr>
+<tr>
+<td>Actor bridge to stream manager</td>
+<td><code>crates/sail-execution/src/stream_accessor/core.rs</code></td>
+</tr>
+<tr>
+<td>Local stream manager</td>
+<td><code>crates/sail-execution/src/stream_manager/core.rs</code></td>
+</tr>
+<tr>
+<td>In-memory stream replicas</td>
+<td><code>crates/sail-execution/src/stream_manager/local.rs</code></td>
+</tr>
+<tr>
+<td>Arrow Flight stream service</td>
+<td><code>crates/sail-execution/src/stream_service/server.rs</code>,
+<code>crates/sail-execution/src/stream_service/client.rs</code></td>
+</tr>
+</tbody>
+</table>
+<p>If Chapter 8 was about who runs the work, this chapter is about how
+the work’s bytes find the next consumer.</p>
+<h2 data-number="10.2" id="the-vocabulary-of-movement"><span
+class="header-section-number">10.2</span> The Vocabulary Of
+Movement</h2>
+<p>Sail’s shuffle layer uses a small vocabulary. Once these terms are
+clear, the rest of the code becomes much easier to read.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stage</td>
+<td>A group of physical operators that can run without needing data from
+a later exchange.</td>
+</tr>
+<tr>
+<td>Task</td>
+<td>One partition of a stage, executed as one attempt.</td>
+</tr>
+<tr>
+<td>Partition</td>
+<td>A task-level unit of parallelism within a stage.</td>
+</tr>
+<tr>
+<td>Channel</td>
+<td>A logical output lane from a producer stage to a consumer
+stage.</td>
+</tr>
+<tr>
+<td>Attempt</td>
+<td>A retry number for a task. Attempts are part of stream keys.</td>
+</tr>
+<tr>
+<td>Task input</td>
+<td>A set of stream locations that a task should read.</td>
+</tr>
+<tr>
+<td>Task output</td>
+<td>A distribution and locator that describe where a task should
+write.</td>
+</tr>
+<tr>
+<td>Stream key</td>
+<td>The stable identity of a task stream: job, stage, partition,
+attempt, channel.</td>
+</tr>
+<tr>
+<td>Location</td>
+<td>Where the stream lives: driver, worker, or remote URI for reads;
+local or remote for writes.</td>
+</tr>
+</tbody>
+</table>
+<p>The central identity is <code>TaskStreamKey</code>. Conceptually, it
+looks like this:</p>
+<pre class="text"><code>TaskStreamKey {
+  job_id,
+  stage,
+  partition,
+  attempt,
+  channel,
+}</code></pre>
+<p>The <code>channel</code> field is the part that turns one task output
+into many possible inputs. If a producer stage has four upstream
+partitions and eight shuffle channels, each producer task may write
+eight streams. A downstream task then reads the channel or channels
+assigned to it from all relevant producer partitions.</p>
+<p>That gives Sail the basic distributed exchange shape:</p>
+<figure>
+<img src="diagrams/09-diagram-01.svg" alt="Flowchart 09.1" />
+<figcaption aria-hidden="true">Flowchart 09.1</figcaption>
+</figure>
+<p>For a hash shuffle, “channel 1” means “rows whose hash maps to bucket
+1.” For a round-robin shuffle, it means “the next row assigned to lane
+1.” For a broadcast-like movement, the scheduler may arrange the input
+keys so multiple consumers can read the same producer output.</p>
+<h2 data-number="10.3" id="from-job-graph-to-task-definition"><span
+class="header-section-number">10.3</span> From Job Graph To Task
+Definition</h2>
+<p>The job graph knows that one stage depends on another. It does not
+directly contain open streams. Before a worker can execute a task, the
+driver must turn graph edges into concrete task inputs and outputs.</p>
+<p>That happens in <code>JobScheduler::get_task_input()</code> and
+<code>JobScheduler::get_task_output()</code> in
+<code>crates/sail-execution/src/driver/job_scheduler/core.rs</code>.</p>
+<p>For task inputs, the scheduler:</p>
+<ol type="1">
+<li>Finds the producer stage for the input.</li>
+<li>Determines the producer partition count and channel count.</li>
+<li>Computes the <code>TaskInputKey</code> values that this consumer
+task should read.</li>
+<li>Finds the latest successful or assigned attempt for each producer
+partition.</li>
+<li>Turns those keys into a <code>TaskInputLocator</code>.</li>
+</ol>
+<p>The input locator records where the consumer should fetch streams
+from:</p>
+<pre class="text"><code>TaskInputLocator::Driver { keys }
+TaskInputLocator::Worker { worker_id, keys }
+TaskInputLocator::Remote { uri, keys }</code></pre>
+<p>For task outputs, the scheduler:</p>
+<ol type="1">
+<li>Reads the output distribution from the job graph.</li>
+<li>Serializes hash expressions if the output is hash-partitioned.</li>
+<li>Chooses the output locator.</li>
+<li>Returns a <code>TaskOutput</code>.</li>
+</ol>
+<p>Today, pipelined output is local:</p>
+<pre class="text"><code>TaskOutputLocator::Local { replicas }</code></pre>
+<p>The remote and blocking-output branches are present as design points,
+but blocking output placement still has <code>todo!()</code> markers.
+That is one of the places where the extensions proposal can hook into
+the architecture later.</p>
+<p>The result is not an open socket or a live stream. It is a
+serializable task definition: inputs, outputs, partition numbers,
+attempts, and encoded expressions. That definition can be sent to a
+worker.</p>
+<h2 data-number="10.4" id="the-runtime-rewrite"><span
+class="header-section-number">10.4</span> The Runtime Rewrite</h2>
+<p>The most important shuffle transition happens inside
+<code>TaskRunner::rewrite_shuffle()</code> in
+<code>crates/sail-execution/src/task_runner/core.rs</code>.</p>
+<p>The stage-level physical plan contains placeholders:</p>
+<pre class="text"><code>StageInputExec&lt;usize&gt;</code></pre>
+<p>Those placeholders are not executable by themselves. They say, “this
+is where this stage reads from an upstream stage.” When the task runner
+receives the concrete <code>TaskInput</code> values from the driver, it
+rewrites each placeholder into a real reader:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>StageInputExec<span class="op">&lt;</span><span class="dt">usize</span><span class="op">&gt;</span> <span class="op">-&gt;</span> ShuffleReadExec</span></code></pre></div>
+<p>Then the task runner wraps the whole plan with a writer:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plan <span class="op">-&gt;</span> ShuffleWriteExec(plan)</span></code></pre></div>
+<p>The shape is:</p>
+<figure>
+<img src="diagrams/09-diagram-02.svg" alt="Flowchart 09.2" />
+<figcaption aria-hidden="true">Flowchart 09.2</figcaption>
+</figure>
+<p>That rewrite is the bridge between planning and execution:</p>
+<ul>
+<li>Planning says which stages depend on which other stages.</li>
+<li>Scheduling says where the task’s input and output streams live.</li>
+<li>Runtime rewriting turns those locations into physical execution
+nodes.</li>
+</ul>
+<p>This is a powerful Rust pattern in miniature. The stage plan is
+generic and reusable. The task plan is concrete and contextual. Sail
+uses a tree transform to keep those concerns separated until the last
+responsible moment.</p>
+<h2 data-number="10.5" id="writing-shuffle-output"><span
+class="header-section-number">10.5</span> Writing Shuffle Output</h2>
+<p><code>ShuffleWriteExec</code> is a DataFusion
+<code>ExecutionPlan</code> implementation, but it behaves a little
+differently from ordinary relational operators. It does not produce
+meaningful rows downstream. Its job is to consume its child plan,
+partition the child batches, and write the resulting batches into task
+streams.</p>
+<p>Its main fields are:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> ShuffleWriteExec <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    plan<span class="op">:</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    shuffle_partitioning<span class="op">:</span> Partitioning<span class="op">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    locations<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span>TaskWriteLocation<span class="op">&gt;&gt;,</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    properties<span class="op">:</span> Arc<span class="op">&lt;</span>PlanProperties<span class="op">&gt;,</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    writer<span class="op">:</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> TaskStreamWriter<span class="op">&gt;,</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Read those fields as a sentence:</p>
+<p>“Run this child <code>plan</code>, partition its output according to
+<code>shuffle_partitioning</code>, and write this task partition’s
+output to the given <code>locations</code> using a
+<code>TaskStreamWriter</code>.”</p>
+<p>The <code>locations</code> field is a two-dimensional vector:</p>
+<pre class="text"><code>locations[input_partition][channel]</code></pre>
+<p>During <code>rewrite_shuffle()</code>, Sail creates a vector with one
+outer entry per output partition and fills only the current task
+partition:</p>
+<pre class="text"><code>locations[key.partition].extend(output.locations(key))</code></pre>
+<p>That means <code>ShuffleWriteExec::execute(partition, context)</code>
+can look up the exact write locations for the partition DataFusion is
+asking it to execute.</p>
+<h3 data-number="10.5.1" id="partitioning"><span
+class="header-section-number">10.5.1</span> Partitioning</h3>
+<p>Sail supports two writer-side partitioning modes here:</p>
+<pre class="text"><code>Partitioning::Hash(keys, channels)
+Partitioning::RoundRobinBatch(channels)</code></pre>
+<p>There is also <code>UnknownPartitioning</code>, which Sail treats
+like round-robin for write purposes.</p>
+<p>Hash partitioning uses DataFusion’s <code>BatchPartitioner</code>.
+This is the natural choice because DataFusion already knows how to
+evaluate physical expressions against Arrow batches and assign rows to
+hash buckets.</p>
+<p>Round-robin partitioning uses Sail’s own
+<code>RowRoundRobinPartitioner</code> in
+<code>crates/sail-physical-plan/src/repartition.rs</code>. It is
+intentionally Arrow-native:</p>
+<ol type="1">
+<li>Build row-index arrays for each destination partition.</li>
+<li>Use Arrow’s <code>take_arrays()</code> compute kernel to select the
+rows for each partition.</li>
+<li>Construct new <code>RecordBatch</code> values with the same
+schema.</li>
+</ol>
+<p>That avoids converting rows into Rust structs or ad hoc values. The
+shuffle layer stays columnar.</p>
+<figure>
+<img src="diagrams/09-diagram-03.svg" alt="Flowchart 09.3" />
+<figcaption aria-hidden="true">Flowchart 09.3</figcaption>
+</figure>
+<p>The start index for round-robin is derived from the input
+partition:</p>
+<pre class="text"><code>start = (input_partition * num_partitions) / num_input_partitions</code></pre>
+<p>That small detail helps distribute initial rows across output
+channels when multiple input partitions are writing at once.</p>
+<h3 data-number="10.5.2" id="sinks-and-side-effects"><span
+class="header-section-number">10.5.2</span> Sinks And Side Effects</h3>
+<p>The heart of shuffle writing is the <code>shuffle_write()</code>
+helper:</p>
+<ol type="1">
+<li>Open one sink per write location.</li>
+<li>Pull batches from the child plan stream.</li>
+<li>Partition each batch into per-channel batches.</li>
+<li>Write each per-channel batch to its sink.</li>
+<li>Close remaining sinks when input is exhausted.</li>
+</ol>
+<p>A simplified sketch:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="kw">mut</span> sinks <span class="op">=</span> locations</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>into_iter()</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>map(<span class="op">|</span>location<span class="op">|</span> writer<span class="op">.</span>open(location<span class="op">,</span> schema<span class="op">.</span>clone()))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="pp">collect::</span><span class="op">&lt;</span>FuturesOrdered<span class="op">&lt;</span>_<span class="op">&gt;&gt;</span>()<span class="op">;</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="kw">let</span> <span class="cn">Some</span>(batch) <span class="op">=</span> stream<span class="op">.</span>next()<span class="op">.</span><span class="kw">await</span><span class="op">.</span>transpose()<span class="op">?</span> <span class="op">{</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> partitions <span class="op">=</span> partitioner<span class="op">.</span>partition(<span class="op">&amp;</span>batch)<span class="op">?;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (sink<span class="op">,</span> maybe_batch) <span class="kw">in</span> sinks<span class="op">.</span>iter_mut()<span class="op">.</span>zip(partitions) <span class="op">{</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(batch) <span class="op">=</span> maybe_batch <span class="op">{</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            sink<span class="op">.</span>write(batch)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sink <span class="kw">in</span> sinks <span class="op">{</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    sink<span class="op">.</span>close()<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The actual code tracks sink state:</p>
+<pre class="text"><code>TaskStreamSinkState::Ok
+TaskStreamSinkState::Error
+TaskStreamSinkState::Closed</code></pre>
+<p>This matters because a downstream consumer may stop early. A
+<code>LIMIT</code> query is the classic example: once the driver has
+enough rows, some readers may close. Sail treats closed sinks
+differently from failed sinks so that early termination does not
+necessarily become a query failure.</p>
+<p><code>ShuffleWriteExec::execute()</code> returns a stream, because
+DataFusion expects every physical operator to return a
+<code>SendableRecordBatchStream</code>. But the useful work happens as a
+side effect: writing to task streams. After writing, the operator emits
+an empty <code>RecordBatch</code>.</p>
+<p>That makes <code>ShuffleWriteExec</code> a boundary operator. It
+turns a normal DataFusion stream into Sail task output.</p>
+<h2 data-number="10.6" id="reading-shuffle-input"><span
+class="header-section-number">10.6</span> Reading Shuffle Input</h2>
+<p><code>ShuffleReadExec</code> is the mirror image. Its fields are:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> ShuffleReadExec <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    locations<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span>TaskReadLocation<span class="op">&gt;&gt;,</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    properties<span class="op">:</span> Arc<span class="op">&lt;</span>PlanProperties<span class="op">&gt;,</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    reader<span class="op">:</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> TaskStreamReader<span class="op">&gt;,</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Again, read the fields as a sentence:</p>
+<p>“For this output partition, open these task stream locations using
+this reader, then merge the resulting Arrow streams.”</p>
+<p><code>execute(partition, context)</code>:</p>
+<ol type="1">
+<li>Looks up <code>locations[partition]</code>.</li>
+<li>Opens each location with
+<code>reader.open(location, schema.clone())</code>.</li>
+<li>Merges all opened streams into one
+<code>RecordBatchStream</code>.</li>
+</ol>
+<p>The merge is handled by <code>MergedRecordBatchStream</code> in
+<code>crates/sail-execution/src/stream/merge.rs</code>. Internally, it
+uses a <code>SelectAll</code> over the task streams. That means batches
+are yielded as upstream streams become ready, not by fully draining one
+producer before reading the next.</p>
+<figure>
+<img src="diagrams/09-diagram-04.svg" alt="Flowchart 09.4" />
+<figcaption aria-hidden="true">Flowchart 09.4</figcaption>
+</figure>
+<p>This is why a consumer task can start processing a pipelined shuffle
+before every producer has finished, as long as its input streams are
+available.</p>
+<h2 data-number="10.7" id="locations-become-streams"><span
+class="header-section-number">10.7</span> Locations Become Streams</h2>
+<p><code>ShuffleReadExec</code> and <code>ShuffleWriteExec</code> do not
+know whether a stream is in process, on another worker, or behind an
+Arrow Flight endpoint. They depend on two traits:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> TaskStreamReader <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> open(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        location<span class="op">:</span> TaskReadLocation<span class="op">,</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        schema<span class="op">:</span> SchemaRef<span class="op">,</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>TaskStreamSource<span class="op">&gt;;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> TaskStreamWriter <span class="op">{</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> open(</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        location<span class="op">:</span> TaskWriteLocation<span class="op">,</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        schema<span class="op">:</span> SchemaRef<span class="op">,</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> TaskStreamSink<span class="op">&gt;&gt;;</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The concrete implementation used by tasks is
+<code>StreamAccessor</code>. It sends actor messages to the stream
+manager:</p>
+<pre class="text"><code>ShuffleReadExec
+  -&gt; TaskStreamReader::open
+  -&gt; StreamAccessor
+  -&gt; actor message
+  -&gt; StreamManager
+
+ShuffleWriteExec
+  -&gt; TaskStreamWriter::open
+  -&gt; StreamAccessor
+  -&gt; actor message
+  -&gt; StreamManager</code></pre>
+<p>This is a nice example of Rust interface design in Sail:</p>
+<ul>
+<li>The execution plans depend on small async traits.</li>
+<li>The actor system stays outside the DataFusion operator
+implementation.</li>
+<li>Local and remote stream mechanisms can evolve behind the accessor
+boundary.</li>
+</ul>
+<h2 data-number="10.8" id="local-memory-streams"><span
+class="header-section-number">10.8</span> Local Memory Streams</h2>
+<p>The local stream manager has three visible states for local
+streams:</p>
+<pre class="text"><code>Pending
+Created
+Failed</code></pre>
+<p>This solves a real scheduling race. A consumer may ask for a stream
+before the producer has created it. Rather than fail immediately, the
+manager can register that the stream is pending and wake the reader when
+the producer creates it. If creation never happens, the pending stream
+eventually times out.</p>
+<p>For in-memory streams, Sail uses replicas. A local output location
+includes:</p>
+<pre class="text"><code>LocalStreamStorage::Memory { replicas }</code></pre>
+<p>The producer writes each batch to the active replica senders. This
+supports multiple readers for the same produced stream, which is useful
+for broadcast-like movement and for cases where more than one consumer
+needs the same task output.</p>
+<p>The memory stream implementation also handles closed receivers. If a
+receiver is closed, the producer can keep writing to remaining active
+replicas. Once no active replicas remain, the sink can report
+<code>Closed</code>.</p>
+<p>That behavior is one of the quiet but important pieces of distributed
+query execution: the data plane must distinguish “nobody needs this
+anymore” from “the query is broken.”</p>
+<h2 data-number="10.9" id="arrow-flight-as-the-remote-shape"><span
+class="header-section-number">10.9</span> Arrow Flight As The Remote
+Shape</h2>
+<p>Local streams are the implemented fast path, but Sail’s stream
+service shows the remote transport shape: Arrow Flight.</p>
+<p>On the server side, <code>do_get</code>:</p>
+<ol type="1">
+<li>Decodes a <code>TaskStreamTicket</code>.</li>
+<li>Fetches the requested task stream.</li>
+<li>Encodes <code>RecordBatch</code> values as Flight data.</li>
+<li>Returns a Flight stream.</li>
+</ol>
+<p>On the client side,
+<code>TaskStreamFlightClient::fetch_task_stream()</code>:</p>
+<ol type="1">
+<li>Builds a ticket for the requested task stream.</li>
+<li>Calls Flight <code>do_get</code>.</li>
+<li>Wraps the returned Flight data as a <code>RecordBatch</code>
+stream.</li>
+</ol>
+<p>The important architecture point is that Flight does not replace
+Arrow batches. It transports them. Sail’s task operators still speak in
+<code>RecordBatch</code> streams on both sides of the network
+boundary.</p>
+<figure>
+<img src="diagrams/09-diagram-05.svg" alt="Sequence diagram 09.5" />
+<figcaption aria-hidden="true">Sequence diagram 09.5</figcaption>
+</figure>
+<p>This is the main reason Arrow Flight fits a system like Sail so well.
+It lets the engine preserve its columnar execution model while crossing
+process and machine boundaries.</p>
+<h2 data-number="10.10" id="a-hash-shuffle-walkthrough"><span
+class="header-section-number">10.10</span> A Hash Shuffle
+Walkthrough</h2>
+<p>Imagine a query like:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> customer_id, <span class="fu">COUNT</span>(<span class="op">*</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> orders</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> customer_id</span></code></pre></div>
+<p>At scale, each worker can scan a subset of <code>orders</code>, but
+final groups must be brought together by <code>customer_id</code>. Rows
+with the same <code>customer_id</code> need to land in the same
+downstream partition.</p>
+<p>The high-level plan is:</p>
+<figure>
+<img src="diagrams/09-diagram-06.svg" alt="Flowchart 09.6" />
+<figcaption aria-hidden="true">Flowchart 09.6</figcaption>
+</figure>
+<p>In Sail terms:</p>
+<ol type="1">
+<li>The planner inserts a stage boundary at the exchange.</li>
+<li>The producer stage output distribution is <code>Hash</code>.</li>
+<li>The scheduler serializes the hash expression into
+<code>TaskOutputDistribution::Hash</code>.</li>
+<li>The task runner decodes that expression back into DataFusion
+physical expressions.</li>
+<li><code>ShuffleWriteExec</code> uses DataFusion’s
+<code>BatchPartitioner</code>.</li>
+<li>Each producer task writes one stream per hash channel.</li>
+<li>Each consumer task opens the producer streams for its assigned
+channel.</li>
+<li><code>ShuffleReadExec</code> merges those streams.</li>
+<li>The final aggregate sees a normal input stream of Arrow
+batches.</li>
+</ol>
+<p>The row movement looks like this:</p>
+<figure>
+<img src="diagrams/09-diagram-07.svg" alt="Flowchart 09.7" />
+<figcaption aria-hidden="true">Flowchart 09.7</figcaption>
+</figure>
+<p>Notice what does not happen:</p>
+<ul>
+<li>Sail does not serialize rows into a custom row format at the shuffle
+boundary.</li>
+<li>Sail does not make <code>ShuffleReadExec</code> understand hash
+expressions.</li>
+<li>Sail does not make the scheduler evaluate data.</li>
+</ul>
+<p>Each layer keeps a narrow job.</p>
+<h2 data-number="10.11" id="other-movement-patterns"><span
+class="header-section-number">10.11</span> Other Movement Patterns</h2>
+<p>Hash shuffle is the easiest to visualize, but Sail’s input-key
+construction can represent several movement patterns.</p>
+<h3 data-number="10.11.1" id="one-to-one"><span
+class="header-section-number">10.11.1</span> One-To-One</h3>
+<p>A downstream partition reads the corresponding upstream partition.
+This is the cheapest movement pattern and is useful when partitioning is
+already compatible.</p>
+<pre class="text"><code>producer partition 0 -&gt; consumer partition 0
+producer partition 1 -&gt; consumer partition 1</code></pre>
+<h3 data-number="10.11.2" id="hash"><span
+class="header-section-number">10.11.2</span> Hash</h3>
+<p>Every producer may write every channel. Each consumer reads the
+channel or channels assigned to it.</p>
+<pre class="text"><code>producer partition N, channel C -&gt; consumer partition C</code></pre>
+<h3 data-number="10.11.3" id="round-robin"><span
+class="header-section-number">10.11.3</span> Round Robin</h3>
+<p>Rows are spread across output channels without using data values as
+keys. Sail’s round-robin partitioner uses Arrow <code>take</code>
+kernels to construct the destination batches.</p>
+<h3 data-number="10.11.4" id="broadcast"><span
+class="header-section-number">10.11.4</span> Broadcast</h3>
+<p>The same upstream output is made readable by multiple downstream
+consumers. Local memory stream replicas are the stream-level mechanism
+that makes this possible.</p>
+<h3 data-number="10.11.5" id="merge"><span
+class="header-section-number">10.11.5</span> Merge</h3>
+<p>Many upstream streams are merged into one downstream stream.
+<code>MergedRecordBatchStream</code> is the simple core abstraction
+here.</p>
+<h3 data-number="10.11.6" id="rescale"><span
+class="header-section-number">10.11.6</span> Rescale</h3>
+<p>Producer and consumer partition counts may differ. The scheduler’s
+input-key builder can assign groups of producer streams to consumer
+partitions.</p>
+<p>The exact key-building logic belongs to the scheduler, not the stream
+operators. This is another example of Sail’s separation between control
+plane and data plane.</p>
+<h2 data-number="10.12"
+id="failure-attempts-and-early-termination"><span
+class="header-section-number">10.12</span> Failure, Attempts, And Early
+Termination</h2>
+<p>Distributed data movement needs identity. Without identity, retries
+are dangerous: a consumer might accidentally read data from an old
+failed attempt.</p>
+<p>Sail includes <code>attempt</code> in every task stream key:</p>
+<pre class="text"><code>job_id / stage / partition / attempt / channel</code></pre>
+<p>The scheduler chooses the latest attempt when building task input
+keys. That lets the system distinguish replacement work from old
+work.</p>
+<p>There are also several important runtime behaviors:</p>
+<ul>
+<li>Pending streams allow consumers and producers to start in either
+order.</li>
+<li>Pending stream timeouts prevent consumers from waiting forever.</li>
+<li>Closed sinks can be normal if downstream no longer needs the
+data.</li>
+<li>Failed streams are distinct from closed streams.</li>
+<li>Stream errors are mapped back into DataFusion errors at the merge
+boundary.</li>
+</ul>
+<p>These are small details, but they are the difference between a toy
+exchange and an engine that can tolerate real distributed timing.</p>
+<h2 data-number="10.13" id="what-is-still-open"><span
+class="header-section-number">10.13</span> What Is Still Open</h2>
+<p>Sail’s shuffle architecture is intentionally extensible, but several
+pieces are still not complete:</p>
+<ul>
+<li>Blocking shuffle output placement is not implemented.</li>
+<li>Remote stream creation and fetch paths are design points rather than
+complete production paths.</li>
+<li>Disk-backed local shuffle storage exists in the type model, but
+memory is the main implemented path.</li>
+<li>More sophisticated backpressure, spill, and shuffle cleanup policies
+would be needed for a large production deployment.</li>
+</ul>
+<p>For the purposes of this book, that is a feature. The code shows the
+essential shape: plans, task definitions, stream keys, local memory
+streams, and Arrow Flight transport. The missing pieces are exactly
+where extension proposals can become concrete.</p>
+<h2 data-number="10.14" id="extension-hooks"><span
+class="header-section-number">10.14</span> Extension Hooks</h2>
+<p>Shuffle is one of the most important places for extensions because it
+sits between query semantics and physical deployment.</p>
+<p>A Sail extension that wants to influence data movement could attach
+at several levels:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Extension goal</th>
+<th>Likely hook</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New partitioning strategy</td>
+<td>Job graph output distribution and
+<code>TaskOutput::partitioning()</code></td>
+</tr>
+<tr>
+<td>Custom hash expression support</td>
+<td>Physical expression serialization and parsing</td>
+</tr>
+<tr>
+<td>Alternative shuffle transport</td>
+<td><code>TaskStreamReader</code>, <code>TaskStreamWriter</code>, and
+<code>StreamAccessor</code></td>
+</tr>
+<tr>
+<td>External shuffle service</td>
+<td><code>TaskReadLocation::Remote</code>,
+<code>TaskWriteLocation::Remote</code>, Arrow Flight service</td>
+</tr>
+<tr>
+<td>Disk or object-store shuffle</td>
+<td><code>LocalStreamStorage</code>, remote locators, blocking output
+placement</td>
+</tr>
+<tr>
+<td>Adaptive repartitioning</td>
+<td>Scheduler key construction and stage output metadata</td>
+</tr>
+<tr>
+<td>Broadcast optimization</td>
+<td>Replica planning and input-key construction</td>
+</tr>
+</tbody>
+</table>
+<p>This gives us a preview of the final chapter. The extensions proposal
+should not be treated as a plugin system floating above the engine. For
+distributed query processing, extensions need to meet Sail at the same
+boundaries Sail already uses internally:</p>
+<ul>
+<li>plan nodes,</li>
+<li>physical expressions,</li>
+<li>task definitions,</li>
+<li>stream locations,</li>
+<li>shuffle distributions,</li>
+<li>catalog and function registries,</li>
+<li>and execution services.</li>
+</ul>
+<p>The cleanest extension architecture will preserve those boundaries
+rather than bypass them.</p>
+<h2 data-number="10.15" id="reading-exercise"><span
+class="header-section-number">10.15</span> Reading Exercise</h2>
+<p>Trace one hash-shuffled row through the code:</p>
+<ol type="1">
+<li>Start in <code>TaskRunner::rewrite_shuffle()</code>.</li>
+<li>Find where <code>TaskOutput::partitioning()</code> converts task
+output metadata into <code>Partitioning::Hash</code>.</li>
+<li>Open <code>ShuffleWriteExec::execute()</code> and follow the
+creation of the partitioner.</li>
+<li>Follow <code>shuffle_write()</code> until it calls
+<code>sink.write(batch)</code>.</li>
+<li>Open <code>StreamAccessor</code> and see how the write location
+becomes a stream-manager message.</li>
+<li>Then reverse direction through
+<code>ShuffleReadExec::execute()</code>.</li>
+<li>End in <code>MergedRecordBatchStream::poll_next()</code>.</li>
+</ol>
+<p>The important question to ask at every step is: “Is this layer
+deciding where data should go, or only carrying out a decision made
+earlier?”</p>
+<p>That question is the key to reading distributed query engines.</p>
+<h2 data-number="10.16" id="takeaways-4"><span
+class="header-section-number">10.16</span> Takeaways</h2>
+<p>Sail’s shuffle layer is small enough to study and rich enough to
+teach the real ideas:</p>
+<ul>
+<li>Shuffle is expressed as Arrow <code>RecordBatch</code> streams, not
+row objects.</li>
+<li>The scheduler chooses keys, attempts, channels, and locations.</li>
+<li>The task runner rewrites stage placeholders into concrete shuffle
+operators.</li>
+<li><code>ShuffleWriteExec</code> partitions and writes batches as a
+side effect.</li>
+<li><code>ShuffleReadExec</code> opens task streams and merges
+them.</li>
+<li>Local memory streams support pending readers and replicas.</li>
+<li>Arrow Flight provides the natural shape for remote batch
+transport.</li>
+<li>The open areas around remote, blocking, disk, and adaptive shuffle
+are prime extension points.</li>
+</ul>
+<p>The next chapter moves from movement to memory and execution
+behavior: how Arrow batch size, streaming, boundedness, and operator
+properties influence distributed execution.</p>
+</body>
+</html>

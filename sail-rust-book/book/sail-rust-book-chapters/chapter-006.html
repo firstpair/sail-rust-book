@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 5: Apache Arrow</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-007.html" accesskey="n" rel="next">Chapter 6: Apache DataFusion</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-005.html" accesskey="p" rel="previous">Chapter 4: PySpark and pysail</a>
+</span>
+</div>
+</nav>
+<h1 data-number="6" id="chapter-05"><span
+class="header-section-number">6</span> Chapter 5: Apache Arrow</h1>
+<p>Apache Arrow is the data plane hiding in plain sight throughout
+Sail.</p>
+<p>Spark Connect gives Sail a protocol for receiving unresolved Spark
+plans and returning results to Spark clients. DataFusion gives Sail an
+optimizer and an execution engine. PySpark compatibility gives Sail a
+Python surface area. The distributed runtime gives Sail a way to split
+work across workers. Arrow is the format that lets those pieces hand
+data to each other without constantly reinterpreting rows.</p>
+<p>In Sail, Arrow is not merely an output serialization format. It is
+the shape of execution itself:</p>
+<ul>
+<li>DataFusion physical plans produce <code>RecordBatch</code>
+streams.</li>
+<li>Spark Connect responses carry Arrow IPC payloads.</li>
+<li>Python UDFs convert Rust Arrow arrays to PyArrow arrays and
+back.</li>
+<li>Shuffle partitions batches into per-task streams.</li>
+<li>Flight SQL encodes <code>SendableRecordBatchStream</code> as Arrow
+Flight data.</li>
+<li>Extension types preserve domain semantics such as geometry,
+geography, and variants.</li>
+</ul>
+<p>This chapter is about learning Arrow through Sail’s code. We will use
+the official Arrow documentation as the reference vocabulary, then map
+that vocabulary to the concrete Rust modules that make Sail work.</p>
+<h2 data-number="6.1" id="definitive-references"><span
+class="header-section-number">6.1</span> Definitive References</h2>
+<p>Keep these open while reading the chapter:</p>
+<ul>
+<li><a href="https://arrow.apache.org/docs/format/Columnar.html">Apache
+Arrow Columnar Format</a></li>
+<li><a href="https://arrow.apache.org/docs/format/Flight.html">Arrow
+Flight RPC protocol</a></li>
+<li><a href="https://arrow.apache.org/docs/python/">PyArrow
+documentation</a></li>
+<li><a
+href="https://arrow.apache.org/docs/python/generated/pyarrow.RecordBatch.html">PyArrow
+RecordBatch API</a></li>
+<li><a
+href="https://datafusion.apache.org/user-guide/arrow-introduction.html">DataFusion
+gentle Arrow introduction</a></li>
+</ul>
+<p>The Arrow columnar format specification is the most important one. It
+defines the memory layout, data types, schemas, record batches, and IPC
+messages. The Flight specification explains the network layer built on
+Arrow IPC and gRPC. The PyArrow documentation matters because Sail
+crosses the Rust/Python boundary for PySpark UDFs.</p>
+<h2 data-number="6.2" id="where-arrow-lives-in-sail"><span
+class="header-section-number">6.2</span> Where Arrow Lives In Sail</h2>
+<p>Here are the main code paths for this chapter:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Area</th>
+<th>Files</th>
+<th>Arrow role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spark Connect result streaming</td>
+<td><code>crates/sail-spark-connect/src/executor.rs</code></td>
+<td>Converts <code>RecordBatch</code> values into Spark Connect
+<code>ArrowBatch</code> messages using Arrow IPC</td>
+</tr>
+<tr>
+<td>Spark schema conversion</td>
+<td><code>crates/sail-spark-connect/src/proto/data_type_arrow.rs</code></td>
+<td>Maps Arrow fields and data types back to Spark Connect data
+types</td>
+</tr>
+<tr>
+<td>Python UDF conversion</td>
+<td><code>crates/sail-python-udf/src/conversion.rs</code></td>
+<td>Converts Rust Arrow objects to/from PyArrow objects</td>
+</tr>
+<tr>
+<td>PySpark UDF execution</td>
+<td><code>crates/sail-python-udf/src/udf/pyspark_udf.rs</code></td>
+<td>Invokes Python functions with Arrow arrays and receives Arrow
+data</td>
+</tr>
+<tr>
+<td>Distributed shuffle write</td>
+<td><code>crates/sail-execution/src/plan/shuffle_write.rs</code></td>
+<td>Partitions <code>RecordBatch</code> streams into shuffle
+outputs</td>
+</tr>
+<tr>
+<td>Distributed shuffle read</td>
+<td><code>crates/sail-execution/src/plan/shuffle_read.rs</code></td>
+<td>Opens shuffle locations and merges <code>RecordBatch</code>
+streams</td>
+</tr>
+<tr>
+<td>Arrow Flight SQL</td>
+<td><code>crates/sail-flight/src/service.rs</code></td>
+<td>Serves DataFusion output streams over Flight SQL</td>
+</tr>
+<tr>
+<td>Physical plan examples</td>
+<td><code>crates/sail-physical-plan/src/range.rs</code></td>
+<td>Builds batches from Arrow arrays</td>
+</tr>
+<tr>
+<td>Row round-robin repartition</td>
+<td><code>crates/sail-physical-plan/src/repartition.rs</code></td>
+<td>Uses Arrow compute kernels to split batches</td>
+</tr>
+<tr>
+<td>GeoArrow extension type</td>
+<td><code>crates/sail-common/src/geoarrow/extension.rs</code></td>
+<td>Defines Arrow extension metadata for WKB geometry/geography</td>
+</tr>
+</tbody>
+</table>
+<p>The short version is:</p>
+<figure>
+<img src="diagrams/05-diagram-01.svg" alt="Flowchart 05.1" />
+<figcaption aria-hidden="true">Flowchart 05.1</figcaption>
+</figure>
+<p>Arrow is the contract between almost every box in that diagram.</p>
+<h2 data-number="6.3" id="the-arrow-mental-model"><span
+class="header-section-number">6.3</span> The Arrow Mental Model</h2>
+<p>Arrow is a columnar memory format. A table is not stored as a
+sequence of row objects. It is stored as arrays, one array per column,
+with a schema describing the column names, logical types, nullability,
+metadata, and nested structure.</p>
+<p>The key types you see in Sail are:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Rust type</th>
+<th>Meaning in Sail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ArrayRef</code></td>
+<td>Shared reference to an immutable Arrow array</td>
+</tr>
+<tr>
+<td><code>ArrayData</code></td>
+<td>Low-level array buffers and metadata, useful at FFI boundaries</td>
+</tr>
+<tr>
+<td><code>DataType</code></td>
+<td>Arrow logical type such as <code>Int64</code>, <code>Utf8</code>,
+<code>Struct</code>, <code>Map</code>, <code>Timestamp</code></td>
+</tr>
+<tr>
+<td><code>Field</code></td>
+<td>One named column, including data type, nullability, and
+metadata</td>
+</tr>
+<tr>
+<td><code>Schema</code></td>
+<td>Ordered collection of fields plus schema metadata</td>
+</tr>
+<tr>
+<td><code>SchemaRef</code></td>
+<td>Shared <code>Arc&lt;Schema&gt;</code></td>
+</tr>
+<tr>
+<td><code>RecordBatch</code></td>
+<td>Equal-length arrays plus a schema; the basic execution unit</td>
+</tr>
+<tr>
+<td><code>RecordBatchStream</code></td>
+<td>Async stream of <code>RecordBatch</code> values</td>
+</tr>
+<tr>
+<td><code>SendableRecordBatchStream</code></td>
+<td>Boxed, pinned, sendable DataFusion batch stream</td>
+</tr>
+</tbody>
+</table>
+<p>The official Arrow format documentation describes a record batch as
+an ordered collection of arrays with the same length, described by a
+schema. DataFusion’s Arrow introduction adds the execution intuition: a
+<code>RecordBatch</code> is columnar inside, but externally it behaves
+like a row chunk that can be streamed, partitioned, and scheduled.</p>
+<p>That dual nature explains why Arrow fits distributed query processing
+so well:</p>
+<ul>
+<li>Vectorized operators can process contiguous column arrays.</li>
+<li>The scheduler can move work in batch-sized units.</li>
+<li>Network protocols can serialize batches without inventing a new row
+format.</li>
+<li>Python UDFs can receive arrays instead of per-row Python
+objects.</li>
+<li>Metadata can carry logical semantics beyond the physical storage
+type.</li>
+</ul>
+<h2 data-number="6.4" id="why-arc-shows-up-everywhere"><span
+class="header-section-number">6.4</span> Why <code>Arc</code> Shows Up
+Everywhere</h2>
+<p>In Sail’s Rust code, Arrow objects are usually wrapped in
+<code>Arc</code>.</p>
+<p>For example, <code>SchemaRef</code> is an
+<code>Arc&lt;Schema&gt;</code>, and <code>ArrayRef</code> is an
+<code>Arc&lt;dyn Array&gt;</code>. This reflects the Arrow memory model:
+arrays are immutable once built, so it is cheap and safe to share them
+across operators, streams, and async tasks.</p>
+<p>When a physical operator needs to produce a new batch, it usually
+creates new array references and a shared schema:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> id_array<span class="op">:</span> ArrayRef <span class="op">=</span> <span class="pp">Arc::</span>new(<span class="pp">Int64Array::</span>from(x))<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> batch <span class="op">=</span> <span class="pp">RecordBatch::</span>try_new(projected_schema<span class="op">.</span>clone()<span class="op">,</span> <span class="pp">vec!</span>[id_array])<span class="op">?;</span></span></code></pre></div>
+<p>That pattern appears in <code>RangeExec</code> in
+<code>crates/sail-physical-plan/src/range.rs</code>. The range source
+partitions a numeric range, builds an <code>Int64Array</code> for each
+chunk, then wraps the chunks in <code>RecordBatch</code> values.</p>
+<p>The important lesson is that Sail does not need an internal row
+object for this operator. The execution unit is already
+Arrow-native:</p>
+<figure>
+<img src="diagrams/05-diagram-02.svg" alt="Flowchart 05.2" />
+<figcaption aria-hidden="true">Flowchart 05.2</figcaption>
+</figure>
+<h2 data-number="6.5" id="recordbatch-as-the-unit-of-execution"><span
+class="header-section-number">6.5</span> RecordBatch As The Unit Of
+Execution</h2>
+<p>Most query engines have a concept like “a batch of rows.” In Sail,
+that concept is concretely Arrow’s <code>RecordBatch</code>.</p>
+<p>Look at the signature of DataFusion physical execution:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> execute(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    partition<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    context<span class="op">:</span> Arc<span class="op">&lt;</span>TaskContext<span class="op">&gt;,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SendableRecordBatchStream<span class="op">&gt;</span></span></code></pre></div>
+<p>This shape appears across Sail physical plan nodes. A plan node is
+executed for one output partition, and the result is a stream of Arrow
+batches. Sail can then compose operators by chaining streams.</p>
+<p><code>RangeExec</code> is a good first example:</p>
+<ol type="1">
+<li>Validate the requested partition.</li>
+<li>Compute that partition’s range values.</li>
+<li>Chunk values into <code>RANGE_BATCH_SIZE</code>.</li>
+<li>Build Arrow arrays.</li>
+<li>Build <code>RecordBatch</code> values.</li>
+<li>Return a <code>RecordBatchStreamAdapter</code>.</li>
+</ol>
+<p>The same type shows up at much larger boundaries:</p>
+<ul>
+<li>Spark Connect’s <code>ExecutorTaskContext</code> owns a
+<code>SendableRecordBatchStream</code>.</li>
+<li>Shuffle write consumes a
+<code>SendableRecordBatchStream</code>.</li>
+<li>Shuffle read returns a <code>SendableRecordBatchStream</code>.</li>
+<li>Flight SQL stores and later encodes a
+<code>SendableRecordBatchStream</code>.</li>
+<li>Python UDF execution turns <code>ColumnarValue</code> values into
+Arrow arrays.</li>
+</ul>
+<p>Once you learn to recognize <code>SendableRecordBatchStream</code>,
+you can follow data through Sail.</p>
+<h2 data-number="6.6"
+id="spark-connect-output-arrow-ipc-in-protobuf-clothing"><span
+class="header-section-number">6.6</span> Spark Connect Output: Arrow IPC
+In Protobuf Clothing</h2>
+<p>Spark Connect uses Protobuf messages for the control protocol, but
+tabular results are encoded as Arrow batches.</p>
+<p>In <code>crates/sail-spark-connect/src/executor.rs</code>, the
+executor has this batch enum:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> ExecutorBatch <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    ArrowBatch(ArrowBatch)<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    SqlCommandResult(<span class="dt">Box</span><span class="op">&lt;</span>SqlCommandResult<span class="op">&gt;</span>)<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    Schema(<span class="dt">Box</span><span class="op">&lt;</span>DataType<span class="op">&gt;</span>)<span class="op">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    Complete<span class="op">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>For query output, the important variants are:</p>
+<ul>
+<li><code>Schema(Box&lt;DataType&gt;)</code></li>
+<li><code>ArrowBatch(ArrowBatch)</code></li>
+<li><code>Complete</code></li>
+</ul>
+<p>The executor first converts the DataFusion stream schema into a Spark
+schema:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> schema <span class="op">=</span> to_spark_schema(context<span class="op">.</span>stream<span class="op">.</span>schema())<span class="op">?;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> out <span class="op">=</span> <span class="pp">ExecutorOutput::</span>new(<span class="pp">ExecutorBatch::</span>Schema(<span class="dt">Box</span><span class="pp">::</span>new(schema)))<span class="op">;</span></span></code></pre></div>
+<p>Then it repeatedly reads Arrow <code>RecordBatch</code> values from
+the stream:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="kw">let</span> <span class="cn">Some</span>(batch) <span class="op">=</span> context<span class="op">.</span>next()<span class="op">.</span><span class="kw">await</span><span class="op">?</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> batch <span class="op">=</span> to_arrow_batch(<span class="op">&amp;</span>batch)<span class="op">?;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> out <span class="op">=</span> <span class="pp">ExecutorOutput::</span>new(<span class="pp">ExecutorBatch::</span>ArrowBatch(batch))<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    tx<span class="op">.</span>send(out)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The conversion to Spark Connect’s <code>ArrowBatch</code> is
+compact:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> to_arrow_batch(batch<span class="op">:</span> <span class="op">&amp;</span>RecordBatch) <span class="op">-&gt;</span> SparkResult<span class="op">&lt;</span>ArrowBatch<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> output <span class="op">=</span> <span class="pp">ArrowBatch::</span><span class="kw">default</span>()<span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> cursor <span class="op">=</span> <span class="pp">Cursor::</span>new(<span class="op">&amp;</span><span class="kw">mut</span> output<span class="op">.</span>data)<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="kw">mut</span> writer <span class="op">=</span> <span class="pp">StreamWriter::</span>try_new(cursor<span class="op">,</span> batch<span class="op">.</span>schema()<span class="op">.</span>as_ref())<span class="op">?;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        writer<span class="op">.</span>write(batch)<span class="op">?;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        output<span class="op">.</span>row_count <span class="op">+=</span> batch<span class="op">.</span>num_rows() <span class="kw">as</span> <span class="dt">i64</span><span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        writer<span class="op">.</span>finish()<span class="op">?;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(output)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is Arrow IPC streaming format. The official Arrow columnar
+documentation describes IPC streams as schema followed by record batch
+messages and optional dictionary batches. Sail uses
+<code>StreamWriter</code> to produce that payload and stores the bytes
+inside Spark Connect’s <code>ArrowBatch.data</code>.</p>
+<p>The relationship looks like this:</p>
+<figure>
+<img src="diagrams/05-diagram-03.svg" alt="Sequence diagram 05.3" />
+<figcaption aria-hidden="true">Sequence diagram 05.3</figcaption>
+</figure>
+<p>The executor also sends empty batches in two cases:</p>
+<ul>
+<li>As a heartbeat when no batch arrives before the configured
+interval.</li>
+<li>As an output placeholder when a query produces no rows.</li>
+</ul>
+<p>That is why <code>ExecutorTaskContext::next</code> can return
+<code>RecordBatch::new_empty(self.stream.schema())</code>. The stream
+contract remains Arrow-shaped even when the batch contains zero
+rows.</p>
+<h2 data-number="6.7"
+id="schema-conversion-arrow-back-to-spark-types"><span
+class="header-section-number">6.7</span> Schema Conversion: Arrow Back
+To Spark Types</h2>
+<p>Sail must speak Arrow internally and Spark externally. The conversion
+from Arrow types to Spark Connect types lives in
+<code>crates/sail-spark-connect/src/proto/data_type_arrow.rs</code>.</p>
+<p>The central conversion is:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> <span class="bu">TryFrom</span><span class="op">&lt;</span><span class="pp">adt::</span>DataType<span class="op">&gt;</span> <span class="cf">for</span> DataType</span></code></pre></div>
+<p>It maps Arrow types such as:</p>
+<ul>
+<li><code>adt::DataType::Boolean</code> -&gt; Spark
+<code>Boolean</code></li>
+<li><code>adt::DataType::Int32</code> -&gt; Spark
+<code>Integer</code></li>
+<li><code>adt::DataType::Int64</code> -&gt; Spark <code>Long</code></li>
+<li><code>adt::DataType::Utf8</code> -&gt; Spark
+<code>String</code></li>
+<li><code>adt::DataType::Date32</code> -&gt; Spark
+<code>Date</code></li>
+<li><code>adt::DataType::Struct(fields)</code> -&gt; Spark
+<code>Struct</code></li>
+<li><code>adt::DataType::List(field)</code> -&gt; Spark
+<code>Array</code></li>
+<li><code>adt::DataType::Map(field, _)</code> -&gt; Spark
+<code>Map</code></li>
+</ul>
+<p>The code also documents where the mapping is lossy or constrained.
+For example, Spark <code>Char</code> or <code>VarChar</code> may become
+Arrow string-like data and then come back as Spark <code>String</code>.
+Timestamp precision is another important compatibility choice: the
+conversion accepts microsecond timestamps and rejects other timestamp
+units in several branches.</p>
+<p>This is a crucial extension lesson. Arrow is a strong physical and
+logical format, but it is not identical to Spark’s type system. If an
+extension needs Spark-specific semantics, it must preserve them
+deliberately, often through:</p>
+<ul>
+<li>logical plan metadata,</li>
+<li>Arrow field metadata,</li>
+<li>Arrow extension types,</li>
+<li>or explicit conversion rules.</li>
+</ul>
+<h2 data-number="6.8" id="extension-types-geoarrow-and-variant"><span
+class="header-section-number">6.8</span> Extension Types: GeoArrow And
+Variant</h2>
+<p>Arrow supports extension types: a field can have a physical storage
+type plus metadata that names a higher-level logical meaning.</p>
+<p>Sail already uses this idea in
+<code>crates/sail-common/src/geoarrow/extension.rs</code>:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> GeoArrowWkbType <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> metadata<span class="op">:</span> GeoArrowMetadata<span class="op">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> GeoArrowWkbType <span class="op">{</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">const</span> NAME<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span> <span class="op">=</span> <span class="st">&quot;geoarrow.wkb&quot;</span><span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The extension stores geometry/geography values as binary WKB, while
+metadata captures CRS and edge semantics:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> GeoArrowMetadata <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> edges<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>GeoArrowEdges<span class="op">&gt;,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> crs<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>GeoArrowCrs<span class="op">&gt;,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The storage type check is strict:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">match</span> data_type <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">DataType::</span><span class="bu">Binary</span> <span class="op">|</span> <span class="pp">DataType::</span>LargeBinary <span class="op">|</span> <span class="pp">DataType::</span>BinaryView <span class="op">=&gt;</span> <span class="cn">Ok</span>(())<span class="op">,</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    data_type <span class="op">=&gt;</span> <span class="cn">Err</span>(<span class="op">...</span>)<span class="op">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Then the Spark Connect type conversion recognizes this extension:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> extension_type_name <span class="op">==</span> <span class="cn">Some</span>(<span class="pp">GeoArrowWkbType::</span>NAME) <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> ext <span class="op">=</span> field<span class="op">.</span><span class="pp">try_extension_type::</span><span class="op">&lt;</span>GeoArrowWkbType<span class="op">&gt;</span>()<span class="op">?;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> meta<span class="op">:</span> SparkGeoMetadata <span class="op">=</span> ext<span class="op">.</span>metadata<span class="op">.</span>try_into()<span class="op">?;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Sail maps GeoArrow metadata to Spark geometry or geography. If
+<code>edges</code> is present, Sail treats the value as geography. If
+<code>edges</code> is absent, it treats the value as geometry. CRS
+metadata becomes Spark SRID values for supported CRS strings.</p>
+<p>The same file recognizes
+<code>parquet_variant_compute::VariantType</code>, mapping that Arrow
+extension to Spark <code>Variant</code>.</p>
+<p>This is the most concrete preview of the final extensions chapter. An
+extension does not have to invent a new internal data plane. It can
+often use Arrow’s existing storage plus extension metadata:</p>
+<figure>
+<img src="diagrams/05-diagram-04.svg" alt="Flowchart 05.4" />
+<figcaption aria-hidden="true">Flowchart 05.4</figcaption>
+</figure>
+<p>That architecture keeps data compatible with Arrow tooling while
+preserving domain meaning.</p>
+<h2 data-number="6.9" id="pyarrow-the-python-boundary"><span
+class="header-section-number">6.9</span> PyArrow: The Python
+Boundary</h2>
+<p>The Python side of Sail depends heavily on Arrow because PySpark UDFs
+should not have to receive rows one Python object at a time.</p>
+<p>The conversion layer in
+<code>crates/sail-python-udf/src/conversion.rs</code> uses the
+<code>arrow_pyarrow</code> crate:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">arrow_pyarrow::</span><span class="op">{</span>FromPyArrow<span class="op">,</span> ToPyArrow<span class="op">};</span></span></code></pre></div>
+<p>Sail implements <code>TryToPy</code> for:</p>
+<ul>
+<li><code>&amp;DataType</code></li>
+<li>slices of <code>DataType</code></li>
+<li>slices of <code>ArrayRef</code></li>
+<li><code>Vec&lt;ArrayRef&gt;</code></li>
+<li><code>&amp;Schema</code></li>
+<li><code>SchemaRef</code></li>
+<li><code>RecordBatch</code></li>
+</ul>
+<p>And it implements <code>TryFromPy</code> for:</p>
+<ul>
+<li><code>ArrayData</code></li>
+<li><code>RecordBatch</code></li>
+</ul>
+<p>For arrays, the conversion uses the underlying Arrow
+<code>ArrayData</code>:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>iter()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>map(<span class="op">|</span>x<span class="op">|</span> x<span class="op">.</span>into_data()<span class="op">.</span>to_pyarrow(py))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="pp">collect::</span><span class="op">&lt;</span>PyResult<span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span>_<span class="op">&gt;&gt;&gt;</span>()</span></code></pre></div>
+<p>That is a big deal. It means Sail is intentionally crossing the
+language boundary with Arrow arrays, not with ad hoc serialized Python
+values.</p>
+<p>The UDF invocation path in
+<code>crates/sail-python-udf/src/udf/pyspark_udf.rs</code> makes that
+practical:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> args<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>ArrayRef<span class="op">&gt;</span> <span class="op">=</span> <span class="pp">ColumnarValue::</span>values_to_arrays(<span class="op">&amp;</span>args)<span class="op">?;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> output <span class="op">=</span> udf<span class="op">.</span>call1(py<span class="op">,</span> (args<span class="op">.</span>try_to_py(py)<span class="op">?,</span> number_rows))<span class="op">?;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> data <span class="op">=</span> <span class="pp">ArrayData::</span>try_from_py(py<span class="op">,</span> <span class="op">&amp;</span>output)<span class="op">?;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> array <span class="op">=</span> cast(<span class="op">&amp;</span>make_array(data)<span class="op">,</span> <span class="op">&amp;</span><span class="kw">self</span><span class="op">.</span>output_type)<span class="op">?;</span></span></code></pre></div>
+<p>The steps are:</p>
+<ol type="1">
+<li>Convert DataFusion <code>ColumnarValue</code> arguments to Arrow
+arrays.</li>
+<li>Convert those Arrow arrays into PyArrow objects.</li>
+<li>Call the Python function.</li>
+<li>Convert the returned PyArrow object back into Arrow
+<code>ArrayData</code>.</li>
+<li>Wrap it as an Arrow array.</li>
+<li>Cast it to the declared output type.</li>
+</ol>
+<p>The official PyArrow <code>RecordBatch</code> API is useful for
+understanding the Python objects Sail is interoperating with. PyArrow
+exposes schemas, columns, row counts, zero-copy slices, filters,
+<code>take</code>, conversion from arrays, and IPC serialization
+methods. Sail’s Rust side uses the same conceptual model, but with Rust
+ownership and type checks.</p>
+<h2 data-number="6.10" id="udf-kinds-and-arrow-native-execution"><span
+class="header-section-number">6.10</span> UDF Kinds And Arrow-Native
+Execution</h2>
+<p>The PySpark UDF kind enum includes several execution modes:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> PySparkUdfKind <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    Batch<span class="op">,</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    ArrowBatch<span class="op">,</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    ScalarPandas<span class="op">,</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    ScalarPandasIter<span class="op">,</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    ScalarArrow<span class="op">,</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    ScalarArrowIter<span class="op">,</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The comment in the code calls out Spark 4.0 Arrow-native scalar UDF
+types. The important distinction is:</p>
+<ul>
+<li>Pandas UDFs use Arrow as an efficient transport to and from
+Pandas.</li>
+<li>Arrow-native UDFs can pass Arrow arrays more directly.</li>
+</ul>
+<p>From an engine architecture perspective, this is exactly the
+direction Sail wants. Every conversion into Python objects costs time
+and memory. Every operator that can remain Arrow-native preserves
+vectorization and avoids unnecessary row materialization.</p>
+<p>The performance guide at <code>docs/guide/udf/performance.md</code>
+makes the same point: Arrow UDFs avoid copying data into row-oriented
+Python objects and let the Rust engine and Python function share Arrow
+data through the Arrow/PyArrow boundary.</p>
+<h2 data-number="6.11"
+id="distributed-shuffle-arrow-as-the-exchange-unit"><span
+class="header-section-number">6.11</span> Distributed Shuffle: Arrow As
+The Exchange Unit</h2>
+<p>Distributed query processing needs exchanges. A join, aggregation,
+sort, or repartition may require data from one set of workers to move to
+another set of workers.</p>
+<p>In Sail, the exchange unit is still <code>RecordBatch</code>.</p>
+<p>The write side is
+<code>crates/sail-execution/src/plan/shuffle_write.rs</code>.
+<code>ShuffleWriteExec</code> wraps an input physical plan and a desired
+output partitioning. When <code>execute</code> is called for an input
+partition, it:</p>
+<ol type="1">
+<li>Opens one sink per shuffle output location.</li>
+<li>Executes the child plan for the input partition.</li>
+<li>Reads <code>RecordBatch</code> values from the child stream.</li>
+<li>Partitions each batch by hash or row round-robin.</li>
+<li>Writes partitioned batches to the corresponding sinks.</li>
+<li>Closes the sinks.</li>
+<li>Returns an empty batch stream as the execution result.</li>
+</ol>
+<p>The core loop is:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="kw">let</span> <span class="cn">Some</span>(batch) <span class="op">=</span> stream<span class="op">.</span>next()<span class="op">.</span><span class="kw">await</span> <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> batch <span class="op">=</span> batch<span class="op">?;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> partitions<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">Option</span><span class="op">&lt;</span>RecordBatch<span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="pp">vec!</span>[<span class="cn">None</span><span class="op">;</span> partition_sinks<span class="op">.</span>len()]<span class="op">;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    partitioner<span class="op">.</span>partition(batch<span class="op">,</span> <span class="op">|</span>p<span class="op">,</span> batch<span class="op">|</span> <span class="op">{</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        partitions[p] <span class="op">=</span> <span class="cn">Some</span>(batch)<span class="op">;</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Ok</span>(())</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span>)<span class="op">?;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The read side is
+<code>crates/sail-execution/src/plan/shuffle_read.rs</code>.
+<code>ShuffleReadExec</code> has a set of read locations for each output
+partition. When executed, it opens all relevant task streams and merges
+them:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> futures <span class="op">=</span> locations</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>iter()</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>map(<span class="op">|</span>location<span class="op">|</span> reader<span class="op">.</span>open(location<span class="op">,</span> schema<span class="op">.</span>clone()))<span class="op">;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> streams <span class="op">=</span> try_join_all(futures)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="cn">Ok</span>(<span class="dt">Box</span><span class="pp">::</span>pin(<span class="pp">MergedRecordBatchStream::</span>new(schema<span class="op">,</span> streams)))</span></code></pre></div>
+<p>That gives downstream operators a normal
+<code>SendableRecordBatchStream</code> again. The shuffle itself is an
+implementation detail hidden between write and read nodes.</p>
+<figure>
+<img src="diagrams/05-diagram-05.svg" alt="Flowchart 05.5" />
+<figcaption aria-hidden="true">Flowchart 05.5</figcaption>
+</figure>
+<p>Notice the absence of a Sail-specific row format. The shuffle API
+talks in task stream locations, but the payload remains Arrow
+batches.</p>
+<h2 data-number="6.12" id="row-round-robin-repartition"><span
+class="header-section-number">6.12</span> Row Round-Robin
+Repartition</h2>
+<p>Hash partitioning can delegate to DataFusion’s
+<code>BatchPartitioner</code>. Sail also has a row round-robin
+partitioner in
+<code>crates/sail-physical-plan/src/repartition.rs</code>.</p>
+<p>The logic is a useful Arrow lesson:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> schema <span class="op">=</span> batch<span class="op">.</span>schema()<span class="op">;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="kw">mut</span> indices <span class="op">=</span> <span class="pp">vec!</span>[<span class="dt">Vec</span><span class="pp">::</span>new()<span class="op">;</span> <span class="kw">self</span><span class="op">.</span>num_partitions]<span class="op">;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> row_index <span class="kw">in</span> <span class="dv">0</span><span class="op">..</span>batch<span class="op">.</span>num_rows() <span class="op">{</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> partition <span class="op">=</span> (<span class="kw">self</span><span class="op">.</span>next_idx <span class="op">+</span> row_index) <span class="op">%</span> <span class="kw">self</span><span class="op">.</span>num_partitions<span class="op">;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    indices[partition]<span class="op">.</span>push(row_index <span class="kw">as</span> <span class="dt">u32</span>)<span class="op">;</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> indices_array<span class="op">:</span> PrimitiveArray<span class="op">&lt;</span>UInt32Type<span class="op">&gt;</span> <span class="op">=</span> partition_indices<span class="op">.</span>into()<span class="op">;</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> columns <span class="op">=</span> take_arrays(batch<span class="op">.</span>columns()<span class="op">,</span> <span class="op">&amp;</span>indices_array<span class="op">,</span> <span class="cn">None</span>)<span class="op">?;</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> partition_batch <span class="op">=</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="pp">RecordBatch::</span>try_new_with_options(schema<span class="op">.</span>clone()<span class="op">,</span> columns<span class="op">,</span> <span class="op">&amp;</span>options)<span class="op">?;</span></span></code></pre></div>
+<p>Sail does not loop over cells and rebuild rows. It builds an Arrow
+array of row indices and uses Arrow compute’s <code>take_arrays</code>
+to select rows from every column. The output is one
+<code>RecordBatch</code> per non-empty destination partition.</p>
+<p>This is the practical meaning of vectorized execution: even
+operations that are row-directed can often be implemented as array
+operations.</p>
+<h2 data-number="6.13" id="flight-sql-arrow-on-the-network"><span
+class="header-section-number">6.13</span> Flight SQL: Arrow On The
+Network</h2>
+<p>Sail also exposes a Flight SQL service in
+<code>crates/sail-flight/src/service.rs</code>. The official Arrow
+Flight protocol describes Flight as an RPC framework for
+high-performance Arrow data services, built on gRPC and Arrow IPC. It is
+organized around streams of Arrow record batches, with metadata methods
+for discovering and retrieving streams.</p>
+<p>That maps cleanly to Sail’s service.</p>
+<p>For a SQL statement, <code>get_flight_info_statement</code>:</p>
+<ol type="1">
+<li>Parses the SQL string.</li>
+<li>Converts it to Sail’s plan representation.</li>
+<li>Resolves and executes the plan.</li>
+<li>Gets a <code>SendableRecordBatchStream</code>.</li>
+<li>Stores the stream under a query handle.</li>
+<li>Returns <code>FlightInfo</code> with a ticket.</li>
+</ol>
+<p>Then <code>do_get_statement</code>:</p>
+<ol type="1">
+<li>Decodes the ticket into a query handle.</li>
+<li>Removes the stored stream from state.</li>
+<li>Reads the stream schema.</li>
+<li>Encodes the stream with <code>FlightDataEncoderBuilder</code>.</li>
+<li>Returns the encoded Flight data stream.</li>
+</ol>
+<p>The encoding step is:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> output <span class="op">=</span> <span class="pp">FlightDataEncoderBuilder::</span>new()</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_schema(schema)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>build(output)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>map(<span class="op">|</span>result<span class="op">|</span> result<span class="op">.</span>map_err(<span class="op">|</span>e<span class="op">|</span> <span class="pp">Status::</span>internal(<span class="pp">format!</span>(<span class="st">&quot;encoding error: {e}&quot;</span>))))<span class="op">;</span></span></code></pre></div>
+<p>The same DataFusion output can therefore leave Sail through two
+different protocol doors:</p>
+<figure>
+<img src="diagrams/05-diagram-06.svg" alt="Flowchart 05.6" />
+<figcaption aria-hidden="true">Flowchart 05.6</figcaption>
+</figure>
+<p>This is a powerful architectural property. Sail’s execution engine
+does not need separate data representations for Spark Connect and Flight
+SQL. Protocols wrap the same Arrow stream abstraction.</p>
+<h2 data-number="6.14" id="arrow-ipc-versus-flight"><span
+class="header-section-number">6.14</span> Arrow IPC Versus Flight</h2>
+<p>It is easy to blur Arrow IPC and Arrow Flight. Sail uses both, so it
+helps to separate them:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concept</th>
+<th>In Arrow</th>
+<th>In Sail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>In-memory format</td>
+<td>Column buffers, validity bitmaps, offsets, schemas</td>
+<td><code>ArrayRef</code>, <code>SchemaRef</code>,
+<code>RecordBatch</code></td>
+</tr>
+<tr>
+<td>IPC stream/file format</td>
+<td>Serialized schema, dictionaries, record batches</td>
+<td>Spark Connect <code>ArrowBatch.data</code> via
+<code>StreamWriter</code></td>
+</tr>
+<tr>
+<td>Flight</td>
+<td>gRPC service protocol carrying Arrow data streams</td>
+<td><code>SailFlightSqlService</code> with
+<code>FlightDataEncoderBuilder</code></td>
+</tr>
+<tr>
+<td>PyArrow bridge</td>
+<td>Python implementation of Arrow data structures</td>
+<td><code>arrow_pyarrow</code> conversions for UDFs</td>
+</tr>
+</tbody>
+</table>
+<p>Think of it this way:</p>
+<ul>
+<li>Arrow memory format is how data exists while operators work.</li>
+<li>Arrow IPC is how batches are serialized.</li>
+<li>Arrow Flight is a service protocol for discovering and transferring
+streams.</li>
+<li>PyArrow is Python’s Arrow implementation and API surface.</li>
+</ul>
+<p>Sail benefits because these layers are designed to compose.</p>
+<h2 data-number="6.15" id="a-small-end-to-end-example-1"><span
+class="header-section-number">6.15</span> A Small End-To-End
+Example</h2>
+<p>Imagine a PySpark client runs:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>spark.<span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">5</span>).selectExpr(<span class="st">&quot;id + 10 as value&quot;</span>).collect()</span></code></pre></div>
+<p>The high-level flow is:</p>
+<ol type="1">
+<li>PySpark builds an unresolved Spark Connect plan.</li>
+<li>Spark Connect sends that plan to Sail.</li>
+<li>Sail resolves it into its internal plan representation.</li>
+<li>DataFusion physical execution creates a
+<code>SendableRecordBatchStream</code>.</li>
+<li>A source such as <code>RangeExec</code> produces an Arrow
+<code>Int64Array</code>.</li>
+<li>Projection produces another Arrow array for <code>value</code>.</li>
+<li>The executor reads each <code>RecordBatch</code>.</li>
+<li><code>StreamWriter</code> encodes each batch as Arrow IPC
+bytes.</li>
+<li>Spark Connect returns <code>ArrowBatch</code> messages to the
+client.</li>
+<li>The client decodes Arrow batches into Spark result rows.</li>
+</ol>
+<p>The data path can be described without a single row class:</p>
+<figure>
+<img src="diagrams/05-diagram-07.svg" alt="Sequence diagram 05.7" />
+<figcaption aria-hidden="true">Sequence diagram 05.7</figcaption>
+</figure>
+<p>That is the central architecture of Sail result execution.</p>
+<h2 data-number="6.16" id="what-arrow-does-not-solve-by-itself"><span
+class="header-section-number">6.16</span> What Arrow Does Not Solve By
+Itself</h2>
+<p>Arrow gives Sail a powerful data representation, but it does not
+solve every problem.</p>
+<p>Arrow does not decide:</p>
+<ul>
+<li>how Spark logical plans should map to DataFusion plans,</li>
+<li>how distributed tasks should be scheduled,</li>
+<li>how shuffle locations should be assigned,</li>
+<li>how Python worker lifetimes should be managed,</li>
+<li>how Spark-only semantics should survive type conversion,</li>
+<li>how extension packages should be loaded,</li>
+<li>how security and sandboxing should work for user code.</li>
+</ul>
+<p>Those are Sail architecture problems. Arrow is the shared data
+language that makes the solutions simpler and faster.</p>
+<p>This distinction matters for extensions. An extension proposal should
+not merely say “use Arrow.” It should identify:</p>
+<ul>
+<li>the Arrow storage type,</li>
+<li>the Arrow metadata or extension name,</li>
+<li>the DataFusion logical and physical expressions,</li>
+<li>the Spark Connect type mapping,</li>
+<li>the PyArrow/Python behavior,</li>
+<li>the distributed shuffle compatibility story,</li>
+<li>and the protocol boundary behavior.</li>
+</ul>
+<h2 data-number="6.17"
+id="extension-design-pattern-arrow-first-semantics"><span
+class="header-section-number">6.17</span> Extension Design Pattern:
+Arrow-First Semantics</h2>
+<p>The GeoArrow code suggests a reusable pattern for future
+extensions:</p>
+<ol type="1">
+<li>Choose an Arrow physical representation.</li>
+<li>Define metadata that captures the logical semantics.</li>
+<li>Implement validation for allowed storage types.</li>
+<li>Teach Spark Connect schema conversion to recognize the
+extension.</li>
+<li>Add DataFusion expressions and functions that operate on the Arrow
+layout.</li>
+<li>Preserve metadata through projections, UDFs, shuffle, and output
+protocols.</li>
+<li>Add Python wrappers that expose the same semantics through
+PyArrow.</li>
+</ol>
+<p>For example, a geospatial extension can store WKB as
+<code>Binary</code> and use <code>geoarrow.wkb</code> metadata for CRS
+and edge semantics. A variant extension can store variant-encoded bytes
+and preserve logical type identity with an Arrow extension name. A
+machine-learning vector extension might store
+<code>FixedSizeList&lt;Float32&gt;</code> plus metadata for dimension
+and metric assumptions.</p>
+<p>The best extensions feel native to Arrow rather than bolted onto
+it.</p>
+<h2 data-number="6.18"
+id="common-mistakes-when-learning-arrow-in-sail"><span
+class="header-section-number">6.18</span> Common Mistakes When Learning
+Arrow In Sail</h2>
+<h3 data-number="6.18.1"
+id="mistake-1-thinking-recordbatch-means-row-oriented"><span
+class="header-section-number">6.18.1</span> Mistake 1: Thinking
+<code>RecordBatch</code> Means Row-Oriented</h3>
+<p>A <code>RecordBatch</code> is a batch of rows from the outside, but
+internally it is columnar. Operators should usually work
+column-by-column.</p>
+<h3 data-number="6.18.2"
+id="mistake-2-treating-schema-metadata-as-decoration"><span
+class="header-section-number">6.18.2</span> Mistake 2: Treating Schema
+Metadata As Decoration</h3>
+<p>Schema and field metadata can carry compatibility-critical
+information. Sail’s UDT and GeoArrow conversions depend on metadata to
+recover Spark semantics.</p>
+<h3 data-number="6.18.3"
+id="mistake-3-copying-data-at-language-boundaries"><span
+class="header-section-number">6.18.3</span> Mistake 3: Copying Data At
+Language Boundaries</h3>
+<p>Python integration should use PyArrow whenever possible. Converting
+every row into Python objects defeats the point of using a columnar
+engine.</p>
+<h3 data-number="6.18.4" id="mistake-4-forgetting-empty-batches"><span
+class="header-section-number">6.18.4</span> Mistake 4: Forgetting Empty
+Batches</h3>
+<p>Empty batches are still meaningful. They carry schema, heartbeats,
+and protocol state. Sail’s Spark Connect executor intentionally emits
+empty batches in some cases.</p>
+<h3 data-number="6.18.5"
+id="mistake-5-ignoring-unsupported-type-mappings"><span
+class="header-section-number">6.18.5</span> Mistake 5: Ignoring
+Unsupported Type Mappings</h3>
+<p>Arrow and Spark type systems overlap but are not identical.
+Unsupported units, dictionary encodings, unions, and lossy string-like
+conversions must be handled explicitly.</p>
+<h2 data-number="6.19" id="reading-exercise-follow-one-batch"><span
+class="header-section-number">6.19</span> Reading Exercise: Follow One
+Batch</h2>
+<p>To build intuition, trace one <code>RecordBatch</code> through the
+code:</p>
+<ol type="1">
+<li>Start in <code>crates/sail-physical-plan/src/range.rs</code>.</li>
+<li>Find the <code>Int64Array::from(x)</code> call.</li>
+<li>Follow the <code>RecordBatch::try_new</code> call.</li>
+<li>Find where plan execution returns
+<code>SendableRecordBatchStream</code>.</li>
+<li>Jump to <code>crates/sail-spark-connect/src/executor.rs</code>.</li>
+<li>Find
+<code>while let Some(batch) = context.next().await?</code>.</li>
+<li>Follow <code>to_arrow_batch</code>.</li>
+<li>Look at <code>StreamWriter::try_new</code>,
+<code>writer.write</code>, and <code>writer.finish</code>.</li>
+</ol>
+<p>Then repeat the exercise for Flight SQL:</p>
+<ol type="1">
+<li>Start in <code>crates/sail-flight/src/service.rs</code>.</li>
+<li>Find <code>service.runner().execute(&amp;ctx, plan)</code>.</li>
+<li>Follow the stored stream into <code>SailFlightSqlState</code>.</li>
+<li>Find <code>do_get_statement</code>.</li>
+<li>Follow <code>FlightDataEncoderBuilder</code>.</li>
+</ol>
+<p>After these two traces, you will understand the two biggest Arrow
+output paths in Sail.</p>
+<h2 data-number="6.20" id="reading-exercise-follow-one-python-udf"><span
+class="header-section-number">6.20</span> Reading Exercise: Follow One
+Python UDF</h2>
+<p>For Python UDFs:</p>
+<ol type="1">
+<li>Start in
+<code>crates/sail-python-udf/src/udf/pyspark_udf.rs</code>.</li>
+<li>Find <code>ColumnarValue::values_to_arrays</code>.</li>
+<li>Follow <code>args.try_to_py(py)</code>.</li>
+<li>Jump to <code>crates/sail-python-udf/src/conversion.rs</code>.</li>
+<li>Find the <code>TryToPy</code> implementation for
+<code>&amp;[ArrayRef]</code>.</li>
+<li>Follow <code>into_data().to_pyarrow(py)</code>.</li>
+<li>Return to <code>invoke_with_args</code>.</li>
+<li>Follow <code>ArrayData::try_from_py</code>.</li>
+<li>Observe the final
+<code>cast(&amp;make_array(data), &amp;self.output_type)</code>.</li>
+</ol>
+<p>This is the Arrow/PyArrow bridge in miniature.</p>
+<h2 data-number="6.21" id="how-this-prepares-us-for-datafusion"><span
+class="header-section-number">6.21</span> How This Prepares Us For
+DataFusion</h2>
+<p>The next chapter can now talk about DataFusion with the right
+foundation. DataFusion is not just a planner that happens to use Arrow.
+Its physical operators, stream interfaces, expression evaluation,
+partitioning, and UDF APIs are designed around Arrow batches.</p>
+<p>When Sail adds Spark compatibility on top of DataFusion, it
+repeatedly answers one question:</p>
+<blockquote>
+<p>How do we preserve Spark semantics while keeping the data path
+Arrow-native?</p>
+</blockquote>
+<p>That question appears in:</p>
+<ul>
+<li>schema conversion,</li>
+<li>physical plan construction,</li>
+<li>Spark-specific expressions,</li>
+<li>Python UDF execution,</li>
+<li>shuffle exchanges,</li>
+<li>and future extension APIs.</li>
+</ul>
+<h2 data-number="6.22" id="takeaways"><span
+class="header-section-number">6.22</span> Takeaways</h2>
+<p>Apache Arrow is Sail’s data plane. The most important concrete type
+is <code>RecordBatch</code>, and the most important execution
+abstraction is <code>SendableRecordBatchStream</code>.</p>
+<p>Spark Connect wraps Arrow IPC bytes in Protobuf responses. Flight SQL
+wraps Arrow streams in the Flight protocol. PySpark UDFs cross the
+Rust/Python boundary through PyArrow. Distributed shuffle partitions and
+merges Arrow batch streams. Extension types use Arrow metadata to carry
+domain-specific logical meaning without abandoning Arrow
+compatibility.</p>
+<p>Once you see Sail as a system that plans Spark-compatible queries but
+executes Arrow-native streams, the architecture becomes much easier to
+reason about.</p>
+</body>
+</html>

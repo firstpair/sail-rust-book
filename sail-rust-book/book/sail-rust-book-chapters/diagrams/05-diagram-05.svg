@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="345" viewBox="0 0 1604 615">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1604" height="615" fill="white"/>
+
+<line x1="330" y1="83" x2="363" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="330" y1="238" x2="363" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="643" y1="83" x2="690" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="643" y1="83" x2="690" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="643" y1="238" x2="690" y2="393" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="643" y1="238" x2="690" y2="548" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="956" y1="83" x2="1010" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="956" y1="393" x2="1010" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="956" y1="238" x2="1010" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="956" y1="548" x2="1010" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1276" y1="83" x2="1358" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1276" y1="238" x2="1358" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">Input partition 0</tspan><tspan x="183" dy="32">stream</tspan></text>
+<rect x="36" y="191" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">Input partition 1</tspan><tspan x="183" dy="32">stream</tspan></text>
+<rect x="363" y="36" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="503" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="503" dy="0">ShuffleWriteExec</tspan><tspan x="503" dy="32">p0</tspan></text>
+<rect x="363" y="191" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="503" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="503" dy="0">ShuffleWriteExec</tspan><tspan x="503" dy="32">p1</tspan></text>
+<rect x="690" y="52" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="823" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="823" dy="0">Output bucket 0</tspan></text>
+<rect x="690" y="207" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="823" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="823" dy="0">Output bucket 1</tspan></text>
+<rect x="690" y="362" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="823" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="823" dy="0">Output bucket 0</tspan></text>
+<rect x="690" y="517" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="823" y="548" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="823" dy="0">Output bucket 1</tspan></text>
+<rect x="1010" y="36" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1143" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1143" dy="0">ShuffleReadExec</tspan><tspan x="1143" dy="32">output 0</tspan></text>
+<rect x="1010" y="191" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1143" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1143" dy="0">ShuffleReadExec</tspan><tspan x="1143" dy="32">output 1</tspan></text>
+<rect x="1358" y="36" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1463" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1463" dy="0">Downstream</tspan><tspan x="1463" dy="32">partition 0</tspan></text>
+<rect x="1358" y="191" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1463" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1463" dy="0">Downstream</tspan><tspan x="1463" dy="32">partition 1</tspan></text>
+</svg>

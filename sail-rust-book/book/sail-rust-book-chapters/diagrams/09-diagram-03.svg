@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="337" viewBox="0 0 1270 476">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1270" height="476" fill="white"/>
+
+<line x1="246" y1="83" x2="328" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="594" y1="83" x2="634" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="928" y1="83" x2="968" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="928" y1="83" x2="968" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="928" y1="83" x2="968" y2="393" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="52" width="210" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="141" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="141" dy="0">RecordBatch</tspan></text>
+<rect x="328" y="36" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="461" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="461" dy="0">row indices per</tspan><tspan x="461" dy="32">channel</tspan></text>
+<rect x="634" y="52" width="294" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="781" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="781" dy="0">Arrow take_arrays</tspan></text>
+<rect x="968" y="36" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1101" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1101" dy="0">RecordBatch for</tspan><tspan x="1101" dy="32">channel 0</tspan></text>
+<rect x="968" y="191" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1101" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1101" dy="0">RecordBatch for</tspan><tspan x="1101" dy="32">channel 1</tspan></text>
+<rect x="968" y="346" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1101" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1101" dy="0">RecordBatch for</tspan><tspan x="1101" dy="32">channel 2</tspan></text>
+</svg>

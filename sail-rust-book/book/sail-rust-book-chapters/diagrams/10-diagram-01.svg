@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="422" height="1390" viewBox="0 0 422 1390">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="422" height="1390" fill="white"/>
+
+<line x1="211" y1="98" x2="211" y2="191" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="211" y1="253" x2="211" y2="330" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="211" y1="424" x2="211" y2="485" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="211" y1="579" x2="211" y2="640" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="211" y1="734" x2="211" y2="795" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="211" y1="889" x2="211" y2="966" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="211" y1="1028" x2="211" y2="1121" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="211" y1="1183" x2="211" y2="1260" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="113" y="36" width="196" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="211" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="211" dy="0">spec::Plan</tspan></text>
+<rect x="99" y="191" width="224" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="211" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="211" dy="0">PlanResolver</tspan></text>
+<rect x="106" y="330" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="211" y="361" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="211" dy="0">DataFusion</tspan><tspan x="211" dy="32">LogicalPlan</tspan></text>
+<rect x="43" y="485" width="336" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="211" y="516" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="211" dy="0">SessionContext</tspan><tspan x="211" dy="32">execute_logical_plan</tspan></text>
+<rect x="113" y="640" width="196" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="211" y="671" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="211" dy="0">DataFusion</tspan><tspan x="211" dy="32">optimizer</tspan></text>
+<rect x="57" y="795" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="211" y="826" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="211" dy="0">Sail streaming</tspan><tspan x="211" dy="32">rewrite, if needed</tspan></text>
+<rect x="36" y="966" width="350" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="211" y="997" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="211" dy="0">ExtensionQueryPlanner</tspan></text>
+<rect x="92" y="1121" width="238" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="211" y="1152" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="211" dy="0">ExecutionPlan</tspan></text>
+<rect x="78" y="1260" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="211" y="1291" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="211" dy="0">rename physical</tspan><tspan x="211" dy="32">output fields</tspan></text>
+</svg>

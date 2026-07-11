@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 11: Functions, UDFs, And Codecs</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-013.html" accesskey="n" rel="next">Chapter 12: Catalogs, Lakehouse Tables, And File Formats</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-011.html" accesskey="p" rel="previous">Chapter 10: The Sail Spec And Plan Resolver</a>
+</span>
+</div>
+</nav>
+<h1 data-number="12" id="chapter-11"><span
+class="header-section-number">12</span> Chapter 11: Functions, UDFs, And
+Codecs</h1>
+<p>A function call looks small in a query:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">lower</span>(name), my_python_udf(amount)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> orders</span></code></pre></div>
+<p>Inside a distributed engine, that little expression is a
+contract.</p>
+<p>The driver must resolve the function name. The logical plan must
+carry the right DataFusion expression. The physical plan must know how
+to execute it. If the query runs on workers, the function implementation
+and all of its parameters must survive serialization. If the function is
+a Python UDF, the worker must also reconstruct a PySpark-compatible
+payload and call Python with Arrow data in the right shape.</p>
+<p>This chapter is about that contract.</p>
+<p>Sail’s function architecture spans four layers:</p>
+<pre class="text"><code>spec::Expr / spec::CommandNode
+  -&gt; PlanResolver function logic
+  -&gt; DataFusion UDF/UDAF/window/stream objects
+  -&gt; RemoteExecutionCodec for worker execution</code></pre>
+<p>That makes functions one of the best places to understand why
+extension proposal #2001 is not just about registering names.
+Distributed extensions must be resolvable, plannable, serializable,
+decodable, and executable everywhere the query can run.</p>
+<h2 data-number="12.1" id="code-map-2"><span
+class="header-section-number">12.1</span> Code Map</h2>
+<p>The main files for this chapter are:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spec representation of UDFs and UDTFs</td>
+<td><code>crates/sail-common/src/spec/expression.rs</code></td>
+</tr>
+<tr>
+<td>Built-in function registry</td>
+<td><code>crates/sail-plan/src/function/mod.rs</code></td>
+</tr>
+<tr>
+<td>Built-in scalar groups</td>
+<td><code>crates/sail-plan/src/function/scalar/mod.rs</code></td>
+</tr>
+<tr>
+<td>Built-in aggregate functions</td>
+<td><code>crates/sail-plan/src/function/aggregate.rs</code></td>
+</tr>
+<tr>
+<td>Built-in table functions</td>
+<td><code>crates/sail-plan/src/function/table/mod.rs</code></td>
+</tr>
+<tr>
+<td>Function expression resolution</td>
+<td><code>crates/sail-plan/src/resolver/expression/function.rs</code></td>
+</tr>
+<tr>
+<td>Inline Python UDF resolution</td>
+<td><code>crates/sail-plan/src/resolver/expression/udf.rs</code></td>
+</tr>
+<tr>
+<td>Function registration commands</td>
+<td><code>crates/sail-plan/src/resolver/command/function.rs</code></td>
+</tr>
+<tr>
+<td>UDTF resolution</td>
+<td><code>crates/sail-plan/src/resolver/query/udtf.rs</code></td>
+</tr>
+<tr>
+<td>Catalog function storage</td>
+<td><code>crates/sail-catalog/src/manager/function.rs</code></td>
+</tr>
+<tr>
+<td>Stream UDF trait</td>
+<td><code>crates/sail-common-datafusion/src/udf.rs</code></td>
+</tr>
+<tr>
+<td>Map partitions physical operator</td>
+<td><code>crates/sail-physical-plan/src/map_partitions.rs</code></td>
+</tr>
+<tr>
+<td>PySpark scalar UDF implementation</td>
+<td><code>crates/sail-python-udf/src/udf/pyspark_udf.rs</code></td>
+</tr>
+<tr>
+<td>PySpark aggregate UDF implementation</td>
+<td><code>crates/sail-python-udf/src/udf/pyspark_udaf.rs</code></td>
+</tr>
+<tr>
+<td>PySpark UDTF implementation</td>
+<td><code>crates/sail-python-udf/src/udf/pyspark_udtf.rs</code></td>
+</tr>
+<tr>
+<td>PySpark payload building</td>
+<td><code>crates/sail-python-udf/src/cereal/pyspark_udf.rs</code></td>
+</tr>
+<tr>
+<td>PySpark stream bridge</td>
+<td><code>crates/sail-python-udf/src/stream.rs</code></td>
+</tr>
+<tr>
+<td>Remote execution codec</td>
+<td><code>crates/sail-execution/src/codec.rs</code></td>
+</tr>
+<tr>
+<td>Codec protobuf schema</td>
+<td><code>crates/sail-execution/proto/sail/plan/physical.proto</code></td>
+</tr>
+<tr>
+<td>Server session setup</td>
+<td><code>crates/sail-session/src/session_factory/server.rs</code></td>
+</tr>
+<tr>
+<td>Worker session setup</td>
+<td><code>crates/sail-session/src/session_factory/worker.rs</code></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="12.2" id="the-function-lifecycle"><span
+class="header-section-number">12.2</span> The Function Lifecycle</h2>
+<p>A function in Sail can enter from several front doors:</p>
+<ul>
+<li>a Spark Connect <code>UnresolvedFunction</code>,</li>
+<li>a SQL function call,</li>
+<li>a Spark Connect inline Python UDF expression,</li>
+<li>a function registration command,</li>
+<li>a table-valued function relation,</li>
+<li>an internal rewrite that inserts a helper UDF.</li>
+</ul>
+<p>All of those eventually need to become DataFusion expressions or Sail
+physical operators.</p>
+<p>The lifecycle looks like this:</p>
+<figure>
+<img src="diagrams/11-diagram-01.svg" alt="Flowchart 11.1" />
+<figcaption aria-hidden="true">Flowchart 11.1</figcaption>
+</figure>
+<p>The key point is that the resolver does not execute functions. It
+builds objects that DataFusion and Sail can execute later.</p>
+<h2 data-number="12.3" id="spec-representation"><span
+class="header-section-number">12.3</span> Spec Representation</h2>
+<p>The spec layer models inline user-defined functions in
+<code>crates/sail-common/src/spec/expression.rs</code>.</p>
+<p>Scalar UDFs use:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> CommonInlineUserDefinedFunction <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> function_name<span class="op">:</span> Identifier<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> deterministic<span class="op">:</span> <span class="dt">bool</span><span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> is_distinct<span class="op">:</span> <span class="dt">bool</span><span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> arguments<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Expr<span class="op">&gt;,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> function<span class="op">:</span> FunctionDefinition<span class="op">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The function definition can be:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> FunctionDefinition <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    PythonUdf <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        output_type<span class="op">:</span> DataType<span class="op">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        eval_type<span class="op">:</span> PySparkUdfType<span class="op">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        command<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        python_version<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        additional_includes<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">},</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    ScalarScalaUdf <span class="op">{</span> <span class="op">...</span> <span class="op">},</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    JavaUdf <span class="op">{</span> <span class="op">...</span> <span class="op">},</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Table functions use:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> CommonInlineUserDefinedTableFunction <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> function_name<span class="op">:</span> Identifier<span class="op">,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> deterministic<span class="op">:</span> <span class="dt">bool</span><span class="op">,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> arguments<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Expr<span class="op">&gt;,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> function<span class="op">:</span> TableFunctionDefinition<span class="op">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Today, the table function definition is Python-specific:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> TableFunctionDefinition <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    PythonUdtf <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        return_type<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>DataType<span class="op">&gt;,</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        eval_type<span class="op">:</span> PySparkUdfType<span class="op">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        command<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;,</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        python_version<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">},</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The <code>command: Vec&lt;u8&gt;</code> field is the serialized
+Python payload from PySpark. Sail treats it as opaque bytes until it is
+time to construct a PySpark worker-compatible payload.</p>
+<p>The <code>PySparkUdfType</code> enum mirrors PySpark evaluation
+modes:</p>
+<pre class="text"><code>Batched
+ArrowBatched
+ScalarPandas
+GroupedAggPandas
+ScalarPandasIter
+ScalarArrow
+ScalarArrowIter
+GroupedAggArrow
+Table
+ArrowTable
+ArrowUdtf
+...</code></pre>
+<p>Different evaluation types imply different execution shapes:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Eval type family</th>
+<th>Sail execution shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scalar batch UDF</td>
+<td>DataFusion <code>ScalarUDFImpl</code></td>
+</tr>
+<tr>
+<td>Scalar Pandas or Arrow UDF</td>
+<td>DataFusion <code>ScalarUDFImpl</code> with Python bridge</td>
+</tr>
+<tr>
+<td>Grouped aggregate UDF</td>
+<td>DataFusion <code>AggregateUDFImpl</code></td>
+</tr>
+<tr>
+<td>Map iterator UDF</td>
+<td>Sail <code>StreamUDF</code> through
+<code>MapPartitionsExec</code></td>
+</tr>
+<tr>
+<td>UDTF</td>
+<td>Sail <code>StreamUDF</code> through
+<code>MapPartitionsExec</code></td>
+</tr>
+</tbody>
+</table>
+<p>This is why the function type must be explicit in the spec. The same
+surface concept, “a Python function,” can require very different
+execution machinery.</p>
+<h2 data-number="12.4" id="built-in-function-registry"><span
+class="header-section-number">12.4</span> Built-In Function
+Registry</h2>
+<p>Sail’s built-in Spark-compatible functions are registered in static
+maps in <code>crates/sail-plan/src/function/mod.rs</code>.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="pp">lazy_static!</span> <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw">ref</span> BUILT_IN_SCALAR_FUNCTIONS<span class="op">:</span> HashMap<span class="op">&lt;&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">,</span> ScalarFunction<span class="op">&gt;</span> <span class="op">=</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">HashMap::</span>from_iter(<span class="pp">scalar::</span>list_built_in_scalar_functions())<span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw">ref</span> BUILT_IN_GENERATOR_FUNCTIONS<span class="op">:</span> HashMap<span class="op">&lt;&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">,</span> ScalarFunction<span class="op">&gt;</span> <span class="op">=</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="pp">HashMap::</span>from_iter(<span class="pp">generator::</span>list_built_in_generator_functions())<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw">ref</span> BUILT_IN_TABLE_FUNCTIONS<span class="op">:</span> HashMap<span class="op">&lt;&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">,</span> Arc<span class="op">&lt;</span>TableFunction<span class="op">&gt;&gt;</span> <span class="op">=</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="pp">HashMap::</span>from_iter(<span class="pp">table::</span>list_built_in_table_functions())<span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The scalar registry is assembled from many focused modules:</p>
+<pre class="text"><code>array
+bitwise
+collection
+conditional
+conversion
+csv
+datetime
+geo
+hash
+json
+lambda
+map
+math
+misc
+predicate
+string
+struct
+url
+variant
+xml</code></pre>
+<p>This layout is worth copying in your mental model. There is no single
+monstrous function resolver where every implementation lives.
+Instead:</p>
+<ul>
+<li><code>sail-plan</code> maps Spark-compatible names to expression
+builders.</li>
+<li><code>sail-function</code> implements many custom DataFusion UDFs
+and UDAFs.</li>
+<li><code>datafusion-spark</code> and DataFusion built-ins provide
+additional behavior.</li>
+<li><code>sail-python-udf</code> implements Python-backed
+functions.</li>
+</ul>
+<p>The aggregate registry works similarly, but aggregate functions often
+have to adapt Spark syntax to DataFusion’s expected function shape.</p>
+<p>For example, Spark’s ordered-set syntax:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">percentile_cont</span>(<span class="fl">0.5</span>) WITHIN <span class="kw">GROUP</span> (<span class="kw">ORDER</span> <span class="kw">BY</span> col)</span></code></pre></div>
+<p>does not arrive in the same argument order DataFusion expects. Sail’s
+aggregate resolver extracts the ordered column and percentile argument,
+then builds the DataFusion aggregate expression.</p>
+<p>That pattern is common: Sail preserves Spark semantics while
+targeting DataFusion’s execution model.</p>
+<h2 data-number="12.5" id="function-resolution-order"><span
+class="header-section-number">12.5</span> Function Resolution Order</h2>
+<p>Function calls are resolved in:</p>
+<pre class="text"><code>crates/sail-plan/src/resolver/expression/function.rs</code></pre>
+<p>The core method is:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>resolve_expression_function(<span class="op">...</span>)</span></code></pre></div>
+<p>The resolution order is deliberate:</p>
+<ol type="1">
+<li>Normalize the function name.</li>
+<li>Extract keyword arguments from <code>NamedArgument</code>
+expressions.</li>
+<li>Merge named arguments from SQL analyzer paths.</li>
+<li>Reject duplicate keyword arguments.</li>
+<li>Check the <code>CatalogManager</code> for registered functions.</li>
+<li>Resolve and type-check arguments.</li>
+<li>If a registered PySpark UDF exists, build a Python UDF
+expression.</li>
+<li>Otherwise try Sail built-in scalar or generator functions.</li>
+<li>Otherwise try Sail built-in aggregate functions.</li>
+<li>Format the output expression name with
+<code>PlanService</code>.</li>
+</ol>
+<p>The catalog check happens before built-ins because Spark Connect does
+not reliably set the <code>is_user_defined_function</code> flag. Sail
+chooses the behavior users expect: if a function was registered by name,
+it should be found.</p>
+<figure>
+<img src="diagrams/11-diagram-02.svg" alt="Flowchart 11.2" />
+<figcaption aria-hidden="true">Flowchart 11.2</figcaption>
+</figure>
+<p>This is also where Sail handles Spark-specific display names. The
+expression object is DataFusion-compatible, but the output name should
+still look like Spark.</p>
+<h2 data-number="12.6" id="registered-pyspark-udfs"><span
+class="header-section-number">12.6</span> Registered PySpark UDFs</h2>
+<p>Registration commands are handled in:</p>
+<pre class="text"><code>crates/sail-plan/src/resolver/command/function.rs</code></pre>
+<p>For a scalar Python UDF registration, Sail:</p>
+<ol type="1">
+<li>Enters a resolver config scope.</li>
+<li>Enables large Arrow variable types for UDF resolution.</li>
+<li>Resolves the Python UDF definition and output type.</li>
+<li>Wraps the unresolved Python function in
+<code>PySparkUnresolvedUDF</code>.</li>
+<li>Tracks the function in <code>CatalogManager</code>.</li>
+<li>Creates a catalog command logical plan.</li>
+</ol>
+<p>Conceptually:</p>
+<pre class="text"><code>RegisterFunction command
+  -&gt; PySparkUnresolvedUDF
+  -&gt; CatalogManager::track_function
+  -&gt; CatalogCommand::RegisterFunction</code></pre>
+<p><code>CatalogManager</code> stores functions case-insensitively:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> canonical_function_name(name<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>) <span class="op">-&gt;</span> Arc<span class="op">&lt;</span><span class="dt">str</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    name<span class="op">.</span>to_ascii_lowercase()<span class="op">.</span>into()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>When the query later calls that name, the expression resolver finds
+it in the catalog and creates the real executable UDF expression with
+the correct input types.</p>
+<p>That two-step model matters:</p>
+<ul>
+<li>Registration knows the Python command bytes and declared return
+type.</li>
+<li>Call-site resolution knows the actual argument expressions and input
+types.</li>
+</ul>
+<p>You need both to build the runtime payload.</p>
+<h2 data-number="12.7" id="inline-pyspark-udfs"><span
+class="header-section-number">12.7</span> Inline PySpark UDFs</h2>
+<p>Spark Connect can also carry a UDF inline inside an expression:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="pp">spec::Expr::</span>CommonInlineUserDefinedFunction</span></code></pre></div>
+<p>That path is handled by:</p>
+<pre class="text"><code>crates/sail-plan/src/resolver/expression/udf.rs</code></pre>
+<p>The resolver:</p>
+<ol type="1">
+<li>Extracts positional and keyword arguments.</li>
+<li>Rejects duplicate kwargs.</li>
+<li>Rejects positional arguments after keyword arguments.</li>
+<li>Resolves argument expressions and display names.</li>
+<li>Resolves the Python UDF definition.</li>
+<li>Computes input Arrow data types from the resolved arguments.</li>
+<li>Builds a PySpark worker-compatible payload.</li>
+<li>Creates a DataFusion scalar or aggregate UDF expression.</li>
+</ol>
+<p>The payload build step is the heart of the integration:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> payload <span class="op">=</span> <span class="pp">PySparkUdfPayload::</span>build(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span>function<span class="op">.</span>python_version<span class="op">,</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span>function<span class="op">.</span>command<span class="op">,</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    function<span class="op">.</span>eval_type<span class="op">,</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span>arg_offsets<span class="op">,</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span>input_types<span class="op">,</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    kwarg_names<span class="op">,</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span><span class="kw">self</span><span class="op">.</span>config<span class="op">.</span>pyspark_udf_config<span class="op">,</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>)<span class="op">?;</span></span></code></pre></div>
+<p>The output depends on the PySpark eval type.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>PySpark eval type</th>
+<th>Sail object</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Batched</code></td>
+<td><code>PySparkUDF</code> with <code>PySparkUdfKind::Batch</code></td>
+</tr>
+<tr>
+<td><code>ArrowBatched</code></td>
+<td><code>PySparkUDF</code> with
+<code>PySparkUdfKind::ArrowBatch</code></td>
+</tr>
+<tr>
+<td><code>ScalarPandas</code></td>
+<td><code>PySparkUDF</code> with
+<code>PySparkUdfKind::ScalarPandas</code></td>
+</tr>
+<tr>
+<td><code>ScalarPandasIter</code></td>
+<td><code>PySparkUDF</code> with
+<code>PySparkUdfKind::ScalarPandasIter</code></td>
+</tr>
+<tr>
+<td><code>ScalarArrow</code></td>
+<td><code>PySparkUDF</code> with
+<code>PySparkUdfKind::ScalarArrow</code></td>
+</tr>
+<tr>
+<td><code>ScalarArrowIter</code></td>
+<td><code>PySparkUDF</code> with
+<code>PySparkUdfKind::ScalarArrowIter</code></td>
+</tr>
+<tr>
+<td><code>GroupedAggPandas</code></td>
+<td><code>PySparkGroupAggregateUDF</code> with Pandas mode</td>
+</tr>
+<tr>
+<td><code>GroupedAggArrow</code></td>
+<td><code>PySparkGroupAggregateUDF</code> with Arrow mode</td>
+</tr>
+</tbody>
+</table>
+<p>Unsupported eval types are rejected early if they do not make sense
+for a scalar inline UDF.</p>
+<h2 data-number="12.8" id="scalar-python-execution"><span
+class="header-section-number">12.8</span> Scalar Python Execution</h2>
+<p>The executable scalar UDF object is <code>PySparkUDF</code> in:</p>
+<pre class="text"><code>crates/sail-python-udf/src/udf/pyspark_udf.rs</code></pre>
+<p>It implements DataFusion’s <code>ScalarUDFImpl</code>.</p>
+<p>Its fields include:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>kind<span class="op">:</span> PySparkUdfKind<span class="op">,</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>name<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>payload<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;,</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>deterministic<span class="op">:</span> <span class="dt">bool</span><span class="op">,</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>input_types<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>DataType<span class="op">&gt;,</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>output_type<span class="op">:</span> DataType<span class="op">,</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>config<span class="op">:</span> Arc<span class="op">&lt;</span>PySparkUdfConfig<span class="op">&gt;,</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>udf<span class="op">:</span> LazyPyObject<span class="op">,</span></span></code></pre></div>
+<p>The <code>LazyPyObject</code> is important. The Python callable is
+not eagerly loaded when the plan is built. It is loaded when the UDF is
+invoked:</p>
+<pre class="text"><code>payload bytes
+  -&gt; PySparkUdfPayload::load
+  -&gt; PySpark read_udfs
+  -&gt; PySpark wrapper function</code></pre>
+<p>At execution time, <code>invoke_with_args()</code>:</p>
+<ol type="1">
+<li>Converts DataFusion <code>ColumnarValue</code> inputs into Arrow
+arrays.</li>
+<li>Converts those arrays into Python/PyArrow values.</li>
+<li>Calls the Python wrapper.</li>
+<li>Converts returned Python data back into Arrow
+<code>ArrayData</code>.</li>
+<li>Casts the result to the declared output type.</li>
+<li>Returns a DataFusion <code>ColumnarValue::Array</code>.</li>
+</ol>
+<figure>
+<img src="diagrams/11-diagram-03.svg" alt="Flowchart 11.3" />
+<figcaption aria-hidden="true">Flowchart 11.3</figcaption>
+</figure>
+<p>This is the practical meaning of “Arrow UDF” in Sail. Arrow is the
+boundary format between Rust execution and Python execution.</p>
+<h2 data-number="12.9" id="grouped-aggregate-python-udfs"><span
+class="header-section-number">12.9</span> Grouped Aggregate Python
+UDFs</h2>
+<p>Grouped aggregate UDFs use:</p>
+<pre class="text"><code>crates/sail-python-udf/src/udf/pyspark_udaf.rs</code></pre>
+<p>The central object is <code>PySparkGroupAggregateUDF</code>, which
+implements <code>AggregateUDFImpl</code>.</p>
+<p>It supports two modes:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> PySparkGroupAggKind <span class="op">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    Pandas<span class="op">,</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    Arrow<span class="op">,</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The accumulator path is important. DataFusion aggregate functions do
+not call a scalar function once per input batch. They create
+accumulators. Sail uses <code>BatchAggregateAccumulator</code> with a
+<code>BatchAggregator</code> implementation that calls Python over
+collected Arrow arrays.</p>
+<p>The resolver also enforces a Spark analysis rule: aggregate UDF
+arguments cannot contain nested aggregate functions.</p>
+<p>There is another small but revealing workaround: DataFusion requires
+at least one input to an aggregate function. For a zero-argument Python
+aggregate UDF, Sail injects a dummy <code>Int64</code> literal and
+records the actual argument count separately so the Python function
+still receives the right argument list.</p>
+<p>That is the kind of adapter code a compatibility engine accumulates.
+DataFusion and Spark are close enough to compose, but not identical.</p>
+<h2 data-number="12.10" id="udtfs-and-stream-udfs"><span
+class="header-section-number">12.10</span> UDTFs And Stream UDFs</h2>
+<p>Python table functions are not scalar expressions. They take input
+rows or batches and emit zero or more output rows. Sail models them as
+stream transformations.</p>
+<p>The common trait is:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> StreamUDF<span class="op">:</span> DynObject <span class="op">+</span> <span class="bu">Debug</span> <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> output_schema(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> SchemaRef<span class="op">;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> invoke(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> input<span class="op">:</span> SendableRecordBatchStream) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SendableRecordBatchStream<span class="op">&gt;;</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That trait lives in:</p>
+<pre class="text"><code>crates/sail-common-datafusion/src/udf.rs</code></pre>
+<p><code>PySparkUDTF</code> implements <code>StreamUDF</code> in:</p>
+<pre class="text"><code>crates/sail-python-udf/src/udf/pyspark_udtf.rs</code></pre>
+<p>The resolver creates a <code>MapPartitionsNode</code>, which the
+physical planner turns into <code>MapPartitionsExec</code>.</p>
+<figure>
+<img src="diagrams/11-diagram-04.svg" alt="Flowchart 11.4" />
+<figcaption aria-hidden="true">Flowchart 11.4</figcaption>
+</figure>
+<p><code>MapPartitionsExec</code> is simple:</p>
+<ol type="1">
+<li>Execute the input physical plan for one partition.</li>
+<li>Pass the resulting <code>RecordBatch</code> stream to the
+<code>StreamUDF</code>.</li>
+<li>Wrap the output stream with the expected schema.</li>
+</ol>
+<p>That is exactly the right abstraction for UDTFs. A UDTF is not “one
+input value -&gt; one output value.” It is “one stream partition -&gt;
+another stream partition.”</p>
+<h2 data-number="12.11" id="the-python-stream-bridge"><span
+class="header-section-number">12.11</span> The Python Stream Bridge</h2>
+<p>The stream bridge lives in:</p>
+<pre class="text"><code>crates/sail-python-udf/src/stream.rs</code></pre>
+<p><code>PyMapStream</code> converts a Rust <code>RecordBatch</code>
+stream into a Python iterator of PyArrow batches, then converts the
+Python output iterator back into a Rust <code>RecordBatch</code>
+stream.</p>
+<p>The bridge uses a separate thread:</p>
+<pre class="text"><code>Rust input stream
+  -&gt; PyInputStream.__next__
+  -&gt; Python function iterator
+  -&gt; output channel
+  -&gt; Rust RecordBatchStream</code></pre>
+<p>The separate thread exists because the Python iterator performs
+blocking calls into a Tokio stream. The bridge uses a stop signal so the
+Rust side can tell the Python input iterator to stop.</p>
+<p>The output path:</p>
+<ol type="1">
+<li>Calls the Python function with the input iterator.</li>
+<li>Iterates over Python output batches.</li>
+<li>Ignores empty batches in compatibility-sensitive cases.</li>
+<li>Converts PyArrow batches to Arrow <code>RecordBatch</code>.</li>
+<li>Casts batches positionally to the declared output schema.</li>
+<li>Sends them through a channel to the Rust stream.</li>
+</ol>
+<p>This is a useful pattern for any extension that needs to cross a
+runtime boundary: make the boundary stream-shaped, schema-aware, and
+cancellation-aware.</p>
+<h2 data-number="12.12" id="the-remote-execution-codec"><span
+class="header-section-number">12.12</span> The Remote Execution
+Codec</h2>
+<p>So far, we have talked about resolving and executing functions in one
+process. But Sail has a distributed runtime. The driver builds a
+physical plan. Workers execute tasks. Workers must reconstruct every
+custom physical plan node and every custom function that appears inside
+physical expressions.</p>
+<p>That is the job of <code>RemoteExecutionCodec</code>:</p>
+<pre class="text"><code>crates/sail-execution/src/codec.rs</code></pre>
+<p>It implements DataFusion’s <code>PhysicalExtensionCodec</code>.</p>
+<p>The codec handles:</p>
+<ul>
+<li>extended physical plan nodes,</li>
+<li>extended physical expressions,</li>
+<li>scalar UDFs,</li>
+<li>aggregate UDFs,</li>
+<li>window UDFs,</li>
+<li>stream UDFs,</li>
+<li>schemas,</li>
+<li>data types,</li>
+<li>scalar values,</li>
+<li>partitioning,</li>
+<li>statistics,</li>
+<li>file scan configs,</li>
+<li>Sail lakehouse execution nodes,</li>
+<li>Python UDF configuration and payloads.</li>
+</ul>
+<p>The protobuf definitions live in:</p>
+<pre class="text"><code>crates/sail-execution/proto/sail/plan/physical.proto</code></pre>
+<p>The file starts with a telling comment: DataFusion data structures
+are often stored as opaque bytes because DataFusion’s protobuf
+definitions can change. Sail uses its own extended protobuf messages for
+Sail-specific nodes and wraps DataFusion’s protobuf encoding where
+needed.</p>
+<h2 data-number="12.13" id="encoding-scalar-udfs"><span
+class="header-section-number">12.13</span> Encoding Scalar UDFs</h2>
+<p>Scalar UDF encoding happens in <code>try_encode_udf()</code>.</p>
+<p>The current design has two broad paths:</p>
+<ol type="1">
+<li>If the UDF is a known Sail/DataFusion built-in that the worker can
+reconstruct by name, encode it as <code>StandardUdf</code>.</li>
+<li>If the UDF carries state or custom configuration, encode the
+required fields into a specific protobuf variant.</li>
+</ol>
+<p>Examples of stateful scalar UDF variants:</p>
+<pre class="text"><code>PySparkUdf
+PySparkCoGroupMapUdf
+DropStructFieldUdf
+ExplodeUdf
+SparkUnixTimestampUdf
+StructFunctionUdf
+ArraysZipUdf
+UpdateStructFieldUdf
+TimestampNowUdf
+SparkTimestampUdf
+SparkDateUdf
+SparkFromCsvUdf
+SparkFromJsonUdf
+...</code></pre>
+<p>For <code>PySparkUDF</code>, the codec stores:</p>
+<pre class="text"><code>kind
+name
+payload
+deterministic
+input_types
+output_type
+config</code></pre>
+<p>That is enough for a worker to reconstruct:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="pp">PySparkUDF::</span>new(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    kind<span class="op">,</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    name<span class="op">,</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    payload<span class="op">,</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    deterministic<span class="op">,</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    input_types<span class="op">,</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    output_type<span class="op">,</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(config)<span class="op">,</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>For a UDF like <code>StructFunction</code>, the codec only needs the
+field names. For a UDF like <code>SparkTimestamp</code>, it needs
+timezone and <code>is_try</code>. The encoding shape follows the state
+needed to reconstruct the function.</p>
+<h2 data-number="12.14" id="decoding-scalar-udfs"><span
+class="header-section-number">12.14</span> Decoding Scalar UDFs</h2>
+<p>Decoding happens in <code>try_decode_udf()</code>.</p>
+<p>The codec receives a function name and an extension buffer. If the
+extension buffer is <code>StandardUdf</code>, it reconstructs the
+function by matching on the name:</p>
+<pre class="text"><code>&quot;spark_array&quot; -&gt; SparkArray::new()
+&quot;spark_split&quot; -&gt; SparkSplit::new()
+&quot;spark_xxhash64&quot; -&gt; SparkXxhash64::new()
+...</code></pre>
+<p>If the buffer contains a richer variant, the codec decodes the fields
+and constructs the object directly.</p>
+<p>That distinction is a bit manual today. The code even has a TODO:</p>
+<pre class="text"><code>Implement custom registry to avoid codec for built-in functions</code></pre>
+<p>This is another bright signpost for discussion #2001. A third-party
+extension should not need to patch a giant match statement in
+<code>RemoteExecutionCodec</code> just to make a custom function work on
+workers.</p>
+<h2 data-number="12.15" id="encoding-aggregate-and-window-udfs"><span
+class="header-section-number">12.15</span> Encoding Aggregate And Window
+UDFs</h2>
+<p>Aggregate UDFs follow the same idea.</p>
+<p>Known standard aggregate UDFs encode as:</p>
+<pre class="text"><code>StandardUdaf</code></pre>
+<p>Then the worker decodes by name:</p>
+<pre class="text"><code>bitmap_and_agg
+histogram_numeric
+kurtosis
+max_by
+mode
+percentile
+product
+try_avg
+try_sum
+...</code></pre>
+<p>Python grouped aggregate UDFs carry their payload, input names, input
+types, output type, deterministic flag, kind, config, and actual
+argument count.</p>
+<p>Window UDF support is narrower. The codec has
+<code>ExtendedWindowUdf</code>, and currently the standard custom path
+includes <code>ntile</code> through <code>SparkNtile</code>.</p>
+<p>The broader lesson is the same: every non-standard callable object
+needs a worker-side reconstruction story.</p>
+<h2 data-number="12.16" id="encoding-stream-udfs"><span
+class="header-section-number">12.16</span> Encoding Stream UDFs</h2>
+<p>Stream UDFs are not DataFusion scalar expressions, so they have their
+own codec path:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> try_encode_stream_udf(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> udf<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> StreamUDF) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>ExtendedStreamUdf<span class="op">&gt;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> try_decode_stream_udf(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> udf<span class="op">:</span> ExtendedStreamUdf) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> StreamUDF<span class="op">&gt;&gt;</span></span></code></pre></div>
+<p>The current variants include:</p>
+<pre class="text"><code>PySparkMapIterUdf
+PySparkUdtf</code></pre>
+<p>For <code>PySparkUDTF</code>, the codec stores:</p>
+<pre class="text"><code>kind
+name
+payload
+input_names
+input_types
+passthrough_columns
+function_return_type
+function_output_names
+deterministic
+config</code></pre>
+<p>That mirrors the constructor for
+<code>PySparkUDTF::try_new()</code>.</p>
+<p>This design is clean in one important way: stream UDFs are encoded
+with the physical operator that uses them.
+<code>MapPartitionsExec</code> does not need to know how a Python UDTF
+works. It only needs a <code>StreamUDF</code>.</p>
+<h2 data-number="12.17" id="worker-sessions-and-built-ins"><span
+class="header-section-number">12.17</span> Worker Sessions And
+Built-Ins</h2>
+<p>The server session factory deliberately does not add all DataFusion
+default features:</p>
+<pre class="text"><code>We do not add default features to the session state,
+since we manage table formats and functions ourselves.</code></pre>
+<p>But the worker session factory does add default features:</p>
+<pre class="text"><code>We still add default features for the worker session
+since we need built-in functions to be available for the codec
+when decoding the execution plan.</code></pre>
+<p>That comment is small but important. It tells us that decoding a
+physical plan is not only a bytes-to-struct operation. It may depend on
+what functions and features are registered in the worker’s
+<code>SessionState</code>.</p>
+<p>This is one of the hard requirements for extensions:</p>
+<pre class="text"><code>The driver and every worker must agree on the callable universe.</code></pre>
+<p>If the driver can plan a function the worker cannot decode, the query
+fails at task startup. If the worker can decode but not execute the
+function, the query fails during batch execution.</p>
+<h2 data-number="12.18" id="distributed-example-built-in-function"><span
+class="header-section-number">12.18</span> Distributed Example: Built-In
+Function</h2>
+<p>Consider:</p>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> xxhash64(customer_id)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> orders</span></code></pre></div>
+<p>The path is:</p>
+<ol type="1">
+<li>Spark Connect or SQL creates
+<code>spec::Expr::UnresolvedFunction</code>.</li>
+<li>The resolver normalizes the function name.</li>
+<li>The built-in scalar function registry maps it to a Spark-compatible
+expression.</li>
+<li>DataFusion physical planning creates a physical expression
+containing a UDF.</li>
+<li>The job graph planner splits the plan into distributed stages if
+needed.</li>
+<li>The task definition serializes the physical plan with
+<code>RemoteExecutionCodec</code>.</li>
+<li>The worker decodes the UDF as a known standard UDF by name.</li>
+<li>The worker executes the function against Arrow arrays.</li>
+</ol>
+<p>The function itself may feel local, but in cluster mode it has to
+survive this trip:</p>
+<figure>
+<img src="diagrams/11-diagram-05.svg" alt="Sequence diagram 11.5" />
+<figcaption aria-hidden="true">Sequence diagram 11.5</figcaption>
+</figure>
+<h2 data-number="12.19" id="distributed-example-python-scalar-udf"><span
+class="header-section-number">12.19</span> Distributed Example: Python
+Scalar UDF</h2>
+<p>Now consider:</p>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="at">@udf</span>(<span class="st">&quot;long&quot;</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plus_one(x):</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>df.select(plus_one(<span class="st">&quot;amount&quot;</span>))</span></code></pre></div>
+<p>The path is richer:</p>
+<ol type="1">
+<li>PySpark serializes the Python function command.</li>
+<li>Spark Connect sends the UDF information to Sail.</li>
+<li>Sail stores or resolves the UDF as
+<code>CommonInlineUserDefinedFunction</code>.</li>
+<li>The resolver computes input Arrow types from the call site.</li>
+<li><code>PySparkUdfPayload::build()</code> writes a PySpark-compatible
+payload:
+<ul>
+<li>eval type,</li>
+<li>config,</li>
+<li>optional input type JSON for certain PySpark versions,</li>
+<li>profiling flag for PySpark 4,</li>
+<li>argument offsets,</li>
+<li>keyword argument names,</li>
+<li>serialized command bytes.</li>
+</ul></li>
+<li>Sail creates <code>PySparkUDF</code>.</li>
+<li>The physical plan is encoded.</li>
+<li>The codec encodes kind, payload, input types, output type, and
+config.</li>
+<li>The worker decodes <code>PySparkUDF</code>.</li>
+<li>At execution time, the UDF loads the Python callable lazily.</li>
+<li>Arrow arrays cross into Python.</li>
+<li>Python returns Arrow-compatible data.</li>
+<li>Sail casts the result to the declared output type.</li>
+</ol>
+<p>That is a lot of machinery, but each part has a job:</p>
+<pre class="text"><code>spec       -&gt; preserve user intent and Python command
+resolver   -&gt; bind arguments and types
+UDF object -&gt; implement DataFusion execution
+codec      -&gt; move the object to workers
+Python     -&gt; run user code over Arrow-shaped data</code></pre>
+<h2 data-number="12.20" id="distributed-example-python-udtf"><span
+class="header-section-number">12.20</span> Distributed Example: Python
+UDTF</h2>
+<p>A UDTF is stream-shaped:</p>
+<div class="sourceCode" id="cb47"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SplitWords:</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="bu">eval</span>(<span class="va">self</span>, text):</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> word <span class="kw">in</span> text.split():</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">yield</span> (word,)</span></code></pre></div>
+<p>The Sail path is:</p>
+<ol type="1">
+<li>Resolve the UDTF definition and arguments.</li>
+<li>Determine the return type. If no static return type exists, call the
+Python <code>analyze</code> method during query analysis.</li>
+<li>Build a <code>PySparkUdtfPayload</code>.</li>
+<li>Create a <code>PySparkUDTF</code> stream UDF.</li>
+<li>Build a <code>MapPartitionsNode</code>.</li>
+<li>Physical planning creates <code>MapPartitionsExec</code>.</li>
+<li>The codec encodes both the physical operator and its stream
+UDF.</li>
+<li>The worker decodes <code>MapPartitionsExec</code> and
+<code>PySparkUDTF</code>.</li>
+<li>At runtime, the input partition stream is passed into Python.</li>
+<li>Python yields output batches, and Rust turns them back into
+<code>RecordBatch</code> streams.</li>
+</ol>
+<p>Diagram:</p>
+<figure>
+<img src="diagrams/11-diagram-06.svg" alt="Flowchart 11.6" />
+<figcaption aria-hidden="true">Flowchart 11.6</figcaption>
+</figure>
+<p>This is the same distributed principle again: the operator and the
+callable object must both be serializable.</p>
+<h2 data-number="12.21" id="codec-design-lessons"><span
+class="header-section-number">12.21</span> Codec Design Lessons</h2>
+<p><code>RemoteExecutionCodec</code> is not glamorous code, but it is
+the backbone of cluster execution.</p>
+<p>It teaches several lessons:</p>
+<p>First, function identity is not enough. Some functions need
+state:</p>
+<ul>
+<li>timezone,</li>
+<li>field names,</li>
+<li>ANSI mode,</li>
+<li>safe/try flags,</li>
+<li>input types,</li>
+<li>output types,</li>
+<li>Python payload bytes,</li>
+<li>PySpark config,</li>
+<li>passthrough column counts.</li>
+</ul>
+<p>Second, the worker must reconstruct the same behavior, not merely a
+function with the same name.</p>
+<p>Third, built-ins and extensions need different handling. Built-ins
+can sometimes be reconstructed by name. Extension functions need
+explicit registration and encoding.</p>
+<p>Fourth, codecs are versioned contracts even when no version field is
+visible. If you change a function’s fields, you have changed the bytes a
+worker expects.</p>
+<p>Fifth, DataFusion’s extension codec hooks are exactly the right place
+to integrate custom behavior, but Sail needs a registry around them to
+avoid central matches.</p>
+<h2 data-number="12.22" id="extension-implications-4"><span
+class="header-section-number">12.22</span> Extension Implications</h2>
+<p>For discussion #2001, functions and codecs expose the sharpest edge
+of the design.</p>
+<p>A third-party extension may want to add:</p>
+<ul>
+<li>a scalar UDF,</li>
+<li>an aggregate UDF,</li>
+<li>a window UDF,</li>
+<li>a table function,</li>
+<li>a stream UDF,</li>
+<li>a physical expression,</li>
+<li>a physical operator,</li>
+<li>a logical optimizer rewrite,</li>
+<li>a Spark Connect custom expression,</li>
+<li>a Python package that registers all of the above.</li>
+</ul>
+<p>To work in local mode, registering a DataFusion UDF may be
+enough.</p>
+<p>To work in cluster mode, that is not enough.</p>
+<p>A distributed extension needs:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Need</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logical name registration</td>
+<td>So the resolver can bind function calls.</td>
+</tr>
+<tr>
+<td>Type inference</td>
+<td>So the logical plan can be checked and named.</td>
+</tr>
+<tr>
+<td>Execution implementation</td>
+<td>So DataFusion can evaluate the function.</td>
+</tr>
+<tr>
+<td>Physical encoding</td>
+<td>So the driver can serialize plans.</td>
+</tr>
+<tr>
+<td>Physical decoding</td>
+<td>So workers can reconstruct plans.</td>
+</tr>
+<tr>
+<td>Worker installation</td>
+<td>So the implementation exists in worker processes.</td>
+</tr>
+<tr>
+<td>Version compatibility</td>
+<td>So encoded bytes match decoder expectations.</td>
+</tr>
+<tr>
+<td>Collision policy</td>
+<td>So two extensions cannot silently claim the same name.</td>
+</tr>
+<tr>
+<td>Ordering policy</td>
+<td>So optimizer and planner hooks run deterministically.</td>
+</tr>
+</tbody>
+</table>
+<p>This is the difference between a plugin that works in a notebook and
+an extension that works in a distributed query engine.</p>
+<p>Everything in this section concerns what chapter 13 calls the
+<em>execution-time boundary</em>: the work that happens once per batch
+on a worker. A separate <em>plan-time boundary</em> - how user intent
+enters Sail in the first place - has its own ABI story. Chapter 13
+routes plan-time intent through Spark Connect’s
+<code>Relation.extension</code>, <code>Command.extension</code>, and
+<code>Expression.extension</code> messages and uses the codec mechanism
+below only for execution-time concerns. The two boundaries can ship
+independently, and a Pattern A extension (one that decomposes to
+existing DataFusion operators) skips the codec work entirely.</p>
+<h2 data-number="12.23" id="a-proposed-extension-codec-registry"><span
+class="header-section-number">12.23</span> A Proposed Extension Codec
+Registry</h2>
+<p>The current codec knows about Sail’s built-ins through downcasts and
+name matches. That is fine for core code, but third-party extensions
+need a more open shape.</p>
+<p>One possible design:</p>
+<div class="sourceCode" id="cb48"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> FunctionCodec<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> type_url(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> encode_scalar_udf(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> udf<span class="op">:</span> <span class="op">&amp;</span>ScalarUDF) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span>PlanResult<span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;&gt;&gt;;</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> decode_scalar_udf(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> name<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">,</span> bytes<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span>PlanResult<span class="op">&lt;</span>Arc<span class="op">&lt;</span>ScalarUDF<span class="op">&gt;&gt;&gt;;</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> encode_aggregate_udf(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> udf<span class="op">:</span> <span class="op">&amp;</span>AggregateUDF) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span>PlanResult<span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;&gt;&gt;;</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> decode_aggregate_udf(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> name<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">,</span> bytes<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span>PlanResult<span class="op">&lt;</span>Arc<span class="op">&lt;</span>AggregateUDF<span class="op">&gt;&gt;&gt;;</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> encode_stream_udf(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> udf<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> StreamUDF) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span>PlanResult<span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;&gt;&gt;;</span></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> decode_stream_udf(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> bytes<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span>PlanResult<span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> StreamUDF<span class="op">&gt;&gt;&gt;;</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The actual API could be different, but the design goal is clear:</p>
+<pre class="text"><code>Core codec dispatches to registered extension codecs.
+Extension codecs own their wire format.
+Workers and drivers register the same codecs.</code></pre>
+<p>The protobuf could use a generic extension envelope:</p>
+<pre class="text"><code>message ExtensionFunction {
+  string provider = 1;
+  string name = 2;
+  string version = 3;
+  bytes payload = 4;
+}</code></pre>
+<p>Then an extension like a geospatial package could encode its own UDFs
+without editing Sail’s central codec every time.</p>
+<h2 data-number="12.24"
+id="a-proposed-function-registration-model"><span
+class="header-section-number">12.24</span> A Proposed Function
+Registration Model</h2>
+<p>The function side also wants a registry that separates names from
+implementations:</p>
+<div class="sourceCode" id="cb51"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SailFunctionExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_scalar_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ScalarFunctionRegistry) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>()<span class="op">&gt;;</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_aggregate_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> AggregateFunctionRegistry) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>()<span class="op">&gt;;</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_table_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> TableFunctionRegistry) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>()<span class="op">&gt;;</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_stream_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> StreamFunctionRegistry) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>()<span class="op">&gt;;</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_codecs(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> CodecRegistry) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>()<span class="op">&gt;;</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This lets Sail enforce:</p>
+<ul>
+<li>duplicate-name errors,</li>
+<li>deterministic registration order,</li>
+<li>per-session enablement,</li>
+<li>worker compatibility checks,</li>
+<li>explain output that names which extension supplied a function.</li>
+</ul>
+<p>The key design rule is that registration must happen on both driver
+and worker sessions. Otherwise distributed execution becomes a coin
+toss.</p>
+<h2 data-number="12.25" id="reading-exercise-2"><span
+class="header-section-number">12.25</span> Reading Exercise</h2>
+<p>Trace this query:</p>
+<div class="sourceCode" id="cb52"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>df.select(my_udf(<span class="st">&quot;x&quot;</span>))</span></code></pre></div>
+<p>Suggested path:</p>
+<ol type="1">
+<li>Start with <code>CommonInlineUserDefinedFunction</code> in
+<code>crates/sail-common/src/spec/expression.rs</code>.</li>
+<li>Follow <code>resolve_expression_common_inline_udf()</code> in
+<code>crates/sail-plan/src/resolver/expression/udf.rs</code>.</li>
+<li>Watch how input types are computed from resolved arguments.</li>
+<li>Open <code>PySparkUdfPayload::build()</code> in
+<code>crates/sail-python-udf/src/cereal/pyspark_udf.rs</code>.</li>
+<li>Follow the creation of <code>PySparkUDF</code>.</li>
+<li>Open <code>PySparkUDF::invoke_with_args()</code>.</li>
+<li>Then jump to
+<code>RemoteExecutionCodec::try_encode_udf()</code>.</li>
+<li>Follow <code>UdfKind::PySpark</code>.</li>
+<li>Read <code>RemoteExecutionCodec::try_decode_udf()</code>.</li>
+<li>Confirm that the worker reconstructs the same
+<code>PySparkUDF</code>.</li>
+</ol>
+<p>The key question:</p>
+<pre class="text"><code>What data must cross the driver-worker boundary for this function to behave the same
+on the worker as it did in the driver&#39;s plan?</code></pre>
+<p>That question is the whole chapter in miniature.</p>
+<h2 data-number="12.26" id="takeaways-6"><span
+class="header-section-number">12.26</span> Takeaways</h2>
+<p>Functions in Sail are distributed execution contracts:</p>
+<ul>
+<li>Built-ins are resolved through Sail’s Spark-compatible function
+maps.</li>
+<li>Registered PySpark UDFs are stored in the catalog and materialized
+at call sites.</li>
+<li>Inline PySpark UDFs carry command bytes directly in the spec
+expression.</li>
+<li>Scalar Python UDFs implement DataFusion
+<code>ScalarUDFImpl</code>.</li>
+<li>Grouped Python aggregate UDFs implement DataFusion
+<code>AggregateUDFImpl</code>.</li>
+<li>Python UDTFs use Sail’s <code>StreamUDF</code> abstraction and
+<code>MapPartitionsExec</code>.</li>
+<li>Arrow arrays and record batches are the runtime boundary between
+Rust and Python.</li>
+<li><code>RemoteExecutionCodec</code> makes custom plans and functions
+executable on workers.</li>
+<li>Extension proposal #2001 must include codec, registration, and
+worker compatibility stories, not only a way to add names to a function
+map.</li>
+</ul>
+<p>The next chapter moves from callable behavior to tables: catalogs,
+table formats, lakehouse scans and writes, and how file and table
+providers cross the Sail/DataFusion boundary.</p>
+</body>
+</html>

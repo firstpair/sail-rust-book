@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 1160 747">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1160" height="747" fill="white"/>
+<rect x="5" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="100" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">Python test/user code</text>
+<line x1="100" y1="70" x2="100" y2="692" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="5" y="692" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="100" y="721" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">Python test/user code</text>
+<rect x="245" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="340" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">pysail.spark</text>
+<line x1="340" y1="70" x2="340" y2="692" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="245" y="692" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="340" y="721" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">pysail.spark</text>
+<rect x="485" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="580" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">PyO3 SparkConnectServer</text>
+<line x1="580" y1="70" x2="580" y2="692" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="485" y="692" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="580" y="721" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">PyO3 SparkConnectServer</text>
+<rect x="725" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="820" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">Rust Spark Connect server</text>
+<line x1="820" y1="70" x2="820" y2="692" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="725" y="692" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="820" y="721" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">Rust Spark Connect server</text>
+<rect x="965" y="26" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1060" y="54" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">PySpark SparkSession</text>
+<line x1="1060" y1="70" x2="1060" y2="692" stroke="#b5bdc8" stroke-dasharray="4 4"/>
+<rect x="965" y="692" width="190" height="44" rx="8" fill="#f6f8fb" stroke="#496a9a"/>
+<text x="1060" y="721" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" fill="#1f2937">PySpark SparkSession</text>
+<line x1="112" y1="105" x2="328" y2="105" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="220" y="95" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">SparkConnectServer(&quot;127.0.0.1&quot;, 0)</text>
+<line x1="352" y1="181" x2="568" y2="181" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="460" y="171" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">create native server</text>
+<line x1="112" y1="257" x2="328" y2="257" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="220" y="247" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">start(background=True)</text>
+<line x1="592" y1="333" x2="808" y2="333" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="700" y="323" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">bind listener and serve</text>
+<line x1="112" y1="409" x2="328" y2="409" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="220" y="399" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">listening_address</text>
+<line x1="112" y1="485" x2="1048" y2="485" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="580" y="475" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">SparkSession.builder.remote(&quot;sc://localhost:port&quot;)</text>
+<line x1="1048" y1="561" x2="832" y2="561" stroke="#5f6f85" stroke-width="1.5"  marker-end="url(#arrow)"/>
+<text x="940" y="551" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" fill="#374151">Spark Connect requests</text>
+</svg>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 19: Roadmap And Codebase Navigation</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-019.html" accesskey="p" rel="previous">Chapter 18: Feature Playbooks</a>
+</span>
+</div>
+</nav>
+<h1 data-number="20" id="chapter-19"><span
+class="header-section-number">20</span> Chapter 19: Roadmap And Codebase
+Navigation</h1>
+<p>This final chapter is a field guide. It tells you where to start,
+what is solid, what is evolving, and how to keep your mental model
+synchronized with the code.</p>
+<p>Sail moves quickly, so treat exact capability claims as snapshots.
+The stable part is the architecture: front doors converge to spec, spec
+resolves to DataFusion, DataFusion plans run locally or through the
+distributed job runner, and Arrow batches move through every layer.</p>
+<h2 data-number="20.1" id="start-by-task"><span
+class="header-section-number">20.1</span> Start By Task</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Start here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Understand a PySpark query</td>
+<td><code>crates/sail-spark-connect/src/service/plan_executor.rs</code></td>
+</tr>
+<tr>
+<td>Understand SQL parsing</td>
+<td><code>crates/sail-sql-parser/src/parser.rs</code></td>
+</tr>
+<tr>
+<td>Understand SQL to spec</td>
+<td><code>crates/sail-sql-analyzer/src/statement.rs</code></td>
+</tr>
+<tr>
+<td>Understand spec to logical plan</td>
+<td><code>crates/sail-plan/src/resolver/</code></td>
+</tr>
+<tr>
+<td>Understand session setup</td>
+<td><code>crates/sail-session/src/session_factory/server.rs</code></td>
+</tr>
+<tr>
+<td>Understand physical planning</td>
+<td><code>crates/sail-session/src/planner.rs</code></td>
+</tr>
+<tr>
+<td>Understand local execution</td>
+<td><code>crates/sail-execution/src/job_runner.rs</code></td>
+</tr>
+<tr>
+<td>Understand distributed execution</td>
+<td><code>crates/sail-execution/src/driver/</code></td>
+</tr>
+<tr>
+<td>Understand job graph splitting</td>
+<td><code>crates/sail-execution/src/job_graph/</code></td>
+</tr>
+<tr>
+<td>Understand shuffles</td>
+<td><code>crates/sail-execution/src/plan/shuffle_*.rs</code> and
+<code>crates/sail-execution/src/stream/</code></td>
+</tr>
+<tr>
+<td>Understand Python UDFs</td>
+<td><code>crates/sail-python-udf/src/</code></td>
+</tr>
+<tr>
+<td>Understand catalogs</td>
+<td><code>crates/sail-catalog/</code> and
+<code>crates/sail-session/src/catalog.rs</code></td>
+</tr>
+<tr>
+<td>Understand table formats</td>
+<td><code>crates/sail-common-datafusion/src/datasource.rs</code> and
+<code>crates/sail-session/src/formats.rs</code></td>
+</tr>
+<tr>
+<td>Understand Delta</td>
+<td><code>crates/sail-delta-lake/</code> and
+<code>crates/sail-plan-lakehouse/</code></td>
+</tr>
+<tr>
+<td>Understand extensions</td>
+<td><code>crates/sail-session</code>, <code>crates/sail-plan</code>,
+<code>crates/sail-execution/src/codec.rs</code></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="20.2" id="start-by-symptom"><span
+class="header-section-number">20.2</span> Start By Symptom</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely area</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PySpark API call fails before planning</td>
+<td>Spark Connect service/proto conversion</td>
+</tr>
+<tr>
+<td>SQL text parses incorrectly</td>
+<td>SQL parser or analyzer</td>
+</tr>
+<tr>
+<td>Column cannot be resolved</td>
+<td>resolver state or attribute resolution</td>
+</tr>
+<tr>
+<td>Function gives Spark-incompatible output</td>
+<td>function registry or implementation</td>
+</tr>
+<tr>
+<td>Works in SQL but not DataFrame API</td>
+<td>protocol-to-spec conversion mismatch</td>
+</tr>
+<tr>
+<td>Works locally but not in cluster</td>
+<td>codec, worker session, shuffle, or task execution</td>
+</tr>
+<tr>
+<td>Table name resolves incorrectly</td>
+<td>catalog manager or namespace handling</td>
+</tr>
+<tr>
+<td>File scan has wrong schema</td>
+<td>table format or source option resolution</td>
+</tr>
+<tr>
+<td>Merge/delete fails</td>
+<td>lakehouse optimizer/planner path</td>
+</tr>
+<tr>
+<td>Streaming query starts but never finishes/stops</td>
+<td>streaming query manager or background task</td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="20.3" id="what-is-mature"><span
+class="header-section-number">20.3</span> What Is Mature</h2>
+<p>The following areas are central and well established
+architecturally:</p>
+<ul>
+<li>Spark Connect request handling,</li>
+<li>Sail spec as the internal semantic boundary,</li>
+<li>DataFusion logical and physical planning,</li>
+<li>Arrow <code>RecordBatch</code> execution,</li>
+<li>local <code>JobRunner</code>,</li>
+<li>catalog/table-format separation,</li>
+<li>custom logical/physical node pattern,</li>
+<li>Python UDF architecture,</li>
+<li>distributed job graph architecture.</li>
+</ul>
+<p>Mature does not mean bug-free. It means the architecture is settled
+enough that new work should usually fit into the existing pattern.</p>
+<h2 data-number="20.4" id="what-is-evolving"><span
+class="header-section-number">20.4</span> What Is Evolving</h2>
+<p>Several areas are active design surfaces:</p>
+<ul>
+<li>third-party extension architecture,</li>
+<li>DataFusion FFI or other execution-time plugin boundaries,</li>
+<li>worker-side extension registration and codec negotiation,</li>
+<li>full streaming feature coverage,</li>
+<li>lakehouse write breadth,</li>
+<li>Iceberg writes,</li>
+<li>broader Flight SQL session semantics,</li>
+<li>Kubernetes worker lifecycle and fault tolerance,</li>
+<li>remote stream storage and shuffle spill behavior.</li>
+</ul>
+<p>When working in these areas, prefer small changes that preserve
+future extension options.</p>
+<h2 data-number="20.5" id="capability-snapshot"><span
+class="header-section-number">20.5</span> Capability Snapshot</h2>
+<p>At the time this guide was prepared, the important capability shape
+is:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Area</th>
+<th>Current shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PySpark/DataFrame</td>
+<td>Primary target through Spark Connect</td>
+</tr>
+<tr>
+<td>SQL</td>
+<td>Custom parser/analyzer, Spark syntax focus</td>
+</tr>
+<tr>
+<td>Flight SQL</td>
+<td>Secondary SQL front door</td>
+</tr>
+<tr>
+<td>Arrow</td>
+<td>Core memory and wire model</td>
+</tr>
+<tr>
+<td>DataFusion</td>
+<td>Query kernel</td>
+</tr>
+<tr>
+<td>Local execution</td>
+<td>Direct DataFusion stream execution</td>
+</tr>
+<tr>
+<td>Cluster execution</td>
+<td>Driver/worker/job graph/task stream architecture</td>
+</tr>
+<tr>
+<td>Python UDFs</td>
+<td>Multiple PySpark UDF/UDTF paths</td>
+</tr>
+<tr>
+<td>Catalogs</td>
+<td>Memory, Glue, HMS, Iceberg REST, Unity, OneLake, system</td>
+</tr>
+<tr>
+<td>Formats</td>
+<td>Listing file formats, Delta, Iceberg, Python data sources</td>
+</tr>
+<tr>
+<td>Delta</td>
+<td>Reads, append/overwrite writes, row-level paths for MERGE/DELETE,
+variant-related work</td>
+</tr>
+<tr>
+<td>Iceberg</td>
+<td>Read path, write support evolving</td>
+</tr>
+<tr>
+<td>Streaming</td>
+<td>Architecture present, feature coverage evolving</td>
+</tr>
+</tbody>
+</table>
+<p>Always verify exact support in the current repository before
+documenting a public claim. Capability surfaces move faster than
+architecture chapters.</p>
+<h2 data-number="20.6" id="reading-the-crate-graph"><span
+class="header-section-number">20.6</span> Reading The Crate Graph</h2>
+<p>The crate graph has a useful directional shape:</p>
+<pre class="text"><code>protocol crates
+  -&gt; spec/resolver/session crates
+  -&gt; DataFusion extension crates
+  -&gt; execution/storage/support crates</code></pre>
+<p>The most important rule is separation:</p>
+<ul>
+<li><code>sail-spark-connect</code> should know about Spark
+protobufs.</li>
+<li><code>sail-plan</code> should know about Sail spec and DataFusion
+logical plans.</li>
+<li><code>sail-session</code> should assemble DataFusion session state
+and physical planners.</li>
+<li><code>sail-execution</code> should execute physical plans without
+caring which protocol produced them.</li>
+</ul>
+<p>When a change violates that separation, pause. Sometimes it is
+necessary, but it usually signals that a boundary type or extension
+point is missing.</p>
+<h2 data-number="20.7" id="the-files-worth-bookmarking"><span
+class="header-section-number">20.7</span> The Files Worth
+Bookmarking</h2>
+<p>Bookmark these first:</p>
+<ul>
+<li><code>crates/sail-spark-connect/src/service/plan_executor.rs</code></li>
+<li><code>crates/sail-common/src/spec/plan.rs</code></li>
+<li><code>crates/sail-plan/src/lib.rs</code></li>
+<li><code>crates/sail-plan/src/resolver/plan.rs</code></li>
+<li><code>crates/sail-plan/src/resolver/query/mod.rs</code></li>
+<li><code>crates/sail-session/src/session_factory/server.rs</code></li>
+<li><code>crates/sail-session/src/planner.rs</code></li>
+<li><code>crates/sail-execution/src/job_runner.rs</code></li>
+<li><code>crates/sail-execution/src/job_graph/planner.rs</code></li>
+<li><code>crates/sail-execution/src/codec.rs</code></li>
+<li><code>crates/sail-common-datafusion/src/session/job.rs</code></li>
+<li><code>crates/sail-common-datafusion/src/datasource.rs</code></li>
+</ul>
+<p>These files are not the whole system. They are the quickest route
+back to the architecture when you feel lost.</p>
+<h2 data-number="20.8" id="the-definitive-mental-model"><span
+class="header-section-number">20.8</span> The Definitive Mental
+Model</h2>
+<p>The entire guide can be compressed to one path:</p>
+<pre class="text"><code>client intent
+  -&gt; protocol-specific message or SQL
+  -&gt; Sail spec
+  -&gt; DataFusion logical plan with Sail extensions
+  -&gt; optimized logical plan
+  -&gt; physical plan with Sail extensions
+  -&gt; local stream or distributed job graph
+  -&gt; Arrow RecordBatch stream
+  -&gt; protocol-specific response</code></pre>
+<p>And one warning:</p>
+<pre class="text"><code>If a feature cannot survive every boundary it crosses, it is not complete.</code></pre>
+<h2 data-number="20.9" id="closing"><span
+class="header-section-number">20.9</span> Closing</h2>
+<p>Sail is interesting because it is not merely a Rust rewrite of Spark.
+It is a careful compatibility layer over a modern Rust query stack. The
+best way to learn it is to follow conversions: protobuf to spec, SQL to
+spec, spec to logical plan, logical plan to physical plan, physical plan
+to job graph, job graph to tasks, tasks to Arrow streams, Arrow streams
+back to the client.</p>
+<p>That is the shape to preserve as Sail grows.</p>
+<p>Navigation: <a href="chapter-019.html#chapter-18">Previous: Chapter
+18, Feature Playbooks</a> | <a href="chapter-001.html#chapter-00">Reader
+Guide</a></p>
+</body>
+</html>

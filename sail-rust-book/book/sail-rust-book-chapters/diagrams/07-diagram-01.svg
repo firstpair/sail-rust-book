@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="679" height="925" viewBox="0 0 679 925">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="679" height="925" fill="white"/>
+
+<line x1="183" y1="130" x2="183" y2="207" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="183" y1="269" x2="183" y2="362" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="183" y1="269" x2="503" y2="362" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="183" y1="424" x2="183" y2="501" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="503" y1="424" x2="503" y2="517" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="503" y1="579" x2="183" y2="672" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="183" y1="734" x2="183" y2="827" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="57" y="36" width="252" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">Arc&lt;dyn</tspan><tspan x="183" dy="32">ExecutionPlan&gt;</tspan></text>
+<rect x="88" y="207" width="190" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">JobRunner</tspan></text>
+<rect x="57" y="362" width="252" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">LocalJobRunner</tspan></text>
+<rect x="363" y="362" width="280" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="503" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="503" dy="0">ClusterJobRunner</tspan></text>
+<rect x="57" y="501" width="252" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="532" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">DataFusion</tspan><tspan x="183" dy="32">execute_stream</tspan></text>
+<rect x="398" y="517" width="210" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="503" y="548" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="503" dy="0">DriverActor</tspan></text>
+<rect x="88" y="672" width="190" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="703" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">JobGraph</tspan></text>
+<rect x="36" y="827" width="294" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="858" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">Distributed tasks</tspan></text>
+</svg>

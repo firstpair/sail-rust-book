@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Sail: The Rust, Arrow, and DataFusion Guide</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+</span>
+<span class="navlink">
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-001.html" accesskey="n" rel="next">Reader Guide: How This Book Builds</a>
+</span>
+<span class="navlink">
+</span>
+</div>
+</nav>
+<header id="title-block-header">
+<h1 class="title">Sail: The Rust, Arrow, and DataFusion Guide</h1>
+<p class="subtitle">A Definitive Architecture Book for Spark-Compatible
+Distributed Query Processing</p>
+<p class="author">Alexy Khrabrov (chiefscientist.org)</p>
+<p class="author">Codex ChatGPT 5.5 and Claude Opus 4.7</p>
+<p class="date">2026-07-11</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="chapter-001.html#chapter-00" id="toc-chapter-00"><span
+class="toc-section-number">1</span> Reader Guide: How This Book
+Builds</a>
+<ul>
+<li><a href="chapter-001.html#chapter-links"
+id="toc-chapter-links"><span class="toc-section-number">1.1</span>
+Chapter Links</a></li>
+<li><a href="chapter-001.html#concept-progression"
+id="toc-concept-progression"><span class="toc-section-number">1.2</span>
+Concept Progression</a></li>
+<li><a href="chapter-001.html#code-reading-strategy"
+id="toc-code-reading-strategy"><span
+class="toc-section-number">1.3</span> Code Reading Strategy</a></li>
+<li><a href="chapter-001.html#what-to-look-for-in-code-excerpts"
+id="toc-what-to-look-for-in-code-excerpts"><span
+class="toc-section-number">1.4</span> What To Look For In Code
+Excerpts</a></li>
+</ul></li>
+<li><a href="chapter-002.html#chapter-01" id="toc-chapter-01"><span
+class="toc-section-number">2</span> Chapter 1: Architecture Overview</a>
+<ul>
+<li><a href="chapter-002.html#the-big-pieces"
+id="toc-the-big-pieces"><span class="toc-section-number">2.1</span> The
+Big Pieces</a></li>
+<li><a href="chapter-002.html#spark-connect-is-the-front-door"
+id="toc-spark-connect-is-the-front-door"><span
+class="toc-section-number">2.2</span> Spark Connect Is the Front
+Door</a></li>
+<li><a href="chapter-002.html#pysail-starts-the-rust-server"
+id="toc-pysail-starts-the-rust-server"><span
+class="toc-section-number">2.3</span> pysail Starts the Rust
+Server</a></li>
+<li><a href="chapter-002.html#sail-uses-datafusion-as-the-query-kernel"
+id="toc-sail-uses-datafusion-as-the-query-kernel"><span
+class="toc-section-number">2.4</span> Sail Uses DataFusion as the Query
+Kernel</a></li>
+<li><a
+href="chapter-002.html#local-execution-is-direct-datafusion-execution"
+id="toc-local-execution-is-direct-datafusion-execution"><span
+class="toc-section-number">2.5</span> Local Execution Is Direct
+DataFusion Execution</a></li>
+<li><a
+href="chapter-002.html#cluster-execution-adds-a-driver-workers-stages-and-shuffles"
+id="toc-cluster-execution-adds-a-driver-workers-stages-and-shuffles"><span
+class="toc-section-number">2.6</span> Cluster Execution Adds a Driver,
+Workers, Stages, and Shuffles</a></li>
+<li><a href="chapter-002.html#shuffle-is-arrow-data-movement"
+id="toc-shuffle-is-arrow-data-movement"><span
+class="toc-section-number">2.7</span> Shuffle Is Arrow Data
+Movement</a></li>
+<li><a
+href="chapter-002.html#functions-are-both-planning-time-and-execution-time-concerns"
+id="toc-functions-are-both-planning-time-and-execution-time-concerns"><span
+class="toc-section-number">2.8</span> Functions Are Both Planning-Time
+and Execution-Time Concerns</a></li>
+<li><a href="chapter-002.html#where-extensions-want-to-plug-in"
+id="toc-where-extensions-want-to-plug-in"><span
+class="toc-section-number">2.9</span> Where Extensions Want to Plug
+In</a></li>
+<li><a href="chapter-002.html#a-first-reading-path-through-the-code"
+id="toc-a-first-reading-path-through-the-code"><span
+class="toc-section-number">2.10</span> A First Reading Path Through the
+Code</a></li>
+<li><a href="chapter-002.html#chapter-takeaways"
+id="toc-chapter-takeaways"><span class="toc-section-number">2.11</span>
+Chapter Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-003.html#chapter-02" id="toc-chapter-02"><span
+class="toc-section-number">3</span> Chapter 2: Rust Foundations in
+Sail</a>
+<ul>
+<li><a href="chapter-003.html#the-rust-shape-of-sail"
+id="toc-the-rust-shape-of-sail"><span
+class="toc-section-number">3.1</span> The Rust Shape of Sail</a></li>
+<li><a href="chapter-003.html#shared-ownership-with-arc"
+id="toc-shared-ownership-with-arc"><span
+class="toc-section-number">3.2</span> Shared Ownership With
+<code>Arc</code></a></li>
+<li><a href="chapter-003.html#trait-objects-dyn-trait"
+id="toc-trait-objects-dyn-trait"><span
+class="toc-section-number">3.3</span> Trait Objects:
+<code>dyn Trait</code></a></li>
+<li><a
+href="chapter-003.html#local-and-cluster-runners-share-one-interface"
+id="toc-local-and-cluster-runners-share-one-interface"><span
+class="toc-section-number">3.4</span> Local and Cluster Runners Share
+One Interface</a></li>
+<li><a href="chapter-003.html#send-sync-and-static"
+id="toc-send-sync-and-static"><span
+class="toc-section-number">3.5</span> <code>Send</code>,
+<code>Sync</code>, and <code>'static</code></a></li>
+<li><a href="chapter-003.html#async-traits" id="toc-async-traits"><span
+class="toc-section-number">3.6</span> Async Traits</a></li>
+<li><a href="chapter-003.html#actors-the-control-plane-in-rust"
+id="toc-actors-the-control-plane-in-rust"><span
+class="toc-section-number">3.7</span> Actors: The Control Plane in
+Rust</a></li>
+<li><a href="chapter-003.html#typed-session-extensions"
+id="toc-typed-session-extensions"><span
+class="toc-section-number">3.8</span> Typed Session Extensions</a></li>
+<li><a href="chapter-003.html#builders-and-mutators"
+id="toc-builders-and-mutators"><span
+class="toc-section-number">3.9</span> Builders and Mutators</a></li>
+<li><a href="chapter-003.html#downcasting-extension-nodes"
+id="toc-downcasting-extension-nodes"><span
+class="toc-section-number">3.10</span> Downcasting Extension
+Nodes</a></li>
+<li><a href="chapter-003.html#error-types" id="toc-error-types"><span
+class="toc-section-number">3.11</span> Error Types</a></li>
+<li><a
+href="chapter-003.html#a-mini-example-what-happens-to-a-query-plan-type"
+id="toc-a-mini-example-what-happens-to-a-query-plan-type"><span
+class="toc-section-number">3.12</span> A Mini Example: What Happens to a
+Query Plan Type</a></li>
+<li><a href="chapter-003.html#how-rust-shapes-the-extension-proposal"
+id="toc-how-rust-shapes-the-extension-proposal"><span
+class="toc-section-number">3.13</span> How Rust Shapes the Extension
+Proposal</a></li>
+<li><a href="chapter-003.html#reading-exercises"
+id="toc-reading-exercises"><span class="toc-section-number">3.14</span>
+Reading Exercises</a></li>
+<li><a href="chapter-003.html#chapter-takeaways-1"
+id="toc-chapter-takeaways-1"><span
+class="toc-section-number">3.15</span> Chapter Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-004.html#chapter-03" id="toc-chapter-03"><span
+class="toc-section-number">4</span> Chapter 3: Spark Connect</a>
+<ul>
+<li><a href="chapter-004.html#definitive-spark-connect-references"
+id="toc-definitive-spark-connect-references"><span
+class="toc-section-number">4.1</span> Definitive Spark Connect
+References</a></li>
+<li><a href="chapter-004.html#the-main-files"
+id="toc-the-main-files"><span class="toc-section-number">4.2</span> The
+Main Files</a></li>
+<li><a href="chapter-004.html#the-grpc-service-surface"
+id="toc-the-grpc-service-surface"><span
+class="toc-section-number">4.3</span> The gRPC Service Surface</a></li>
+<li><a
+href="chapter-004.html#sessions-spark-state-inside-datafusion-state"
+id="toc-sessions-spark-state-inside-datafusion-state"><span
+class="toc-section-number">4.4</span> Sessions: Spark State Inside
+DataFusion State</a></li>
+<li><a href="chapter-004.html#relations-become-sail-specs"
+id="toc-relations-become-sail-specs"><span
+class="toc-section-number">4.5</span> Relations Become Sail
+Specs</a></li>
+<li><a href="chapter-004.html#sql-is-also-routed-through-the-front-door"
+id="toc-sql-is-also-routed-through-the-front-door"><span
+class="toc-section-number">4.6</span> SQL Is Also Routed Through the
+Front Door</a></li>
+<li><a href="chapter-004.html#commands" id="toc-commands"><span
+class="toc-section-number">4.7</span> Commands</a></li>
+<li><a href="chapter-004.html#the-core-execution-path"
+id="toc-the-core-execution-path"><span
+class="toc-section-number">4.8</span> The Core Execution Path</a></li>
+<li><a href="chapter-004.html#response-streams-and-arrow-batches"
+id="toc-response-streams-and-arrow-batches"><span
+class="toc-section-number">4.9</span> Response Streams and Arrow
+Batches</a></li>
+<li><a href="chapter-004.html#reattachable-operations"
+id="toc-reattachable-operations"><span
+class="toc-section-number">4.10</span> Reattachable Operations</a></li>
+<li><a href="chapter-004.html#interrupts" id="toc-interrupts"><span
+class="toc-section-number">4.11</span> Interrupts</a></li>
+<li><a href="chapter-004.html#analyze-plan" id="toc-analyze-plan"><span
+class="toc-section-number">4.12</span> Analyze Plan</a></li>
+<li><a href="chapter-004.html#config" id="toc-config"><span
+class="toc-section-number">4.13</span> Config</a></li>
+<li><a href="chapter-004.html#data-types-and-spark-compatibility"
+id="toc-data-types-and-spark-compatibility"><span
+class="toc-section-number">4.14</span> Data Types and Spark
+Compatibility</a></li>
+<li><a href="chapter-004.html#errors-become-spark-exceptions"
+id="toc-errors-become-spark-exceptions"><span
+class="toc-section-number">4.15</span> Errors Become Spark
+Exceptions</a></li>
+<li><a href="chapter-004.html#artifacts-and-python-distribution"
+id="toc-artifacts-and-python-distribution"><span
+class="toc-section-number">4.16</span> Artifacts and Python
+Distribution</a></li>
+<li><a href="chapter-004.html#registering-functions-and-data-sources"
+id="toc-registering-functions-and-data-sources"><span
+class="toc-section-number">4.17</span> Registering Functions and Data
+Sources</a></li>
+<li><a href="chapter-004.html#what-spark-connect-means-for-extensions"
+id="toc-what-spark-connect-means-for-extensions"><span
+class="toc-section-number">4.18</span> What Spark Connect Means for
+Extensions</a></li>
+<li><a href="chapter-004.html#reading-exercises-1"
+id="toc-reading-exercises-1"><span
+class="toc-section-number">4.19</span> Reading Exercises</a></li>
+<li><a href="chapter-004.html#chapter-takeaways-2"
+id="toc-chapter-takeaways-2"><span
+class="toc-section-number">4.20</span> Chapter Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-005.html#chapter-04" id="toc-chapter-04"><span
+class="toc-section-number">5</span> Chapter 4: PySpark and pysail</a>
+<ul>
+<li><a href="chapter-005.html#the-main-files-1"
+id="toc-the-main-files-1"><span class="toc-section-number">5.1</span>
+The Main Files</a></li>
+<li><a href="chapter-005.html#package-shape"
+id="toc-package-shape"><span class="toc-section-number">5.2</span>
+Package Shape</a></li>
+<li><a href="chapter-005.html#starting-sail-from-python"
+id="toc-starting-sail-from-python"><span
+class="toc-section-number">5.3</span> Starting Sail From Python</a></li>
+<li><a href="chapter-005.html#the-global-runtime"
+id="toc-the-global-runtime"><span class="toc-section-number">5.4</span>
+The Global Runtime</a></li>
+<li><a href="chapter-005.html#releasing-the-gil"
+id="toc-releasing-the-gil"><span class="toc-section-number">5.5</span>
+Releasing the GIL</a></li>
+<li><a href="chapter-005.html#connecting-with-pyspark"
+id="toc-connecting-with-pyspark"><span
+class="toc-section-number">5.6</span> Connecting With PySpark</a></li>
+<li><a href="chapter-005.html#pysail-is-not-a-pyspark-fork"
+id="toc-pysail-is-not-a-pyspark-fork"><span
+class="toc-section-number">5.7</span> pysail Is Not a PySpark
+Fork</a></li>
+<li><a href="chapter-005.html#python-udfs-enter-through-spark-connect"
+id="toc-python-udfs-enter-through-spark-connect"><span
+class="toc-section-number">5.8</span> Python UDFs Enter Through Spark
+Connect</a></li>
+<li><a href="chapter-005.html#udf-kinds" id="toc-udf-kinds"><span
+class="toc-section-number">5.9</span> UDF Kinds</a></li>
+<li><a href="chapter-005.html#loading-a-pyspark-udf-payload"
+id="toc-loading-a-pyspark-udf-payload"><span
+class="toc-section-number">5.10</span> Loading a PySpark UDF
+Payload</a></li>
+<li><a href="chapter-005.html#executing-python-udfs-in-process"
+id="toc-executing-python-udfs-in-process"><span
+class="toc-section-number">5.11</span> Executing Python UDFs in
+Process</a></li>
+<li><a href="chapter-005.html#python-conversion-code"
+id="toc-python-conversion-code"><span
+class="toc-section-number">5.12</span> Python Conversion Code</a></li>
+<li><a href="chapter-005.html#config-for-python-udf-behavior"
+id="toc-config-for-python-udf-behavior"><span
+class="toc-section-number">5.13</span> Config for Python UDF
+Behavior</a></li>
+<li><a href="chapter-005.html#udtfs-and-python-side-analysis"
+id="toc-udtfs-and-python-side-analysis"><span
+class="toc-section-number">5.14</span> UDTFs and Python-Side
+Analysis</a></li>
+<li><a href="chapter-005.html#python-data-sources"
+id="toc-python-data-sources"><span
+class="toc-section-number">5.15</span> Python Data Sources</a></li>
+<li><a href="chapter-005.html#testing-pyspark-compatibility"
+id="toc-testing-pyspark-compatibility"><span
+class="toc-section-number">5.16</span> Testing PySpark
+Compatibility</a></li>
+<li><a href="chapter-005.html#why-pyspark-versions-matter"
+id="toc-why-pyspark-versions-matter"><span
+class="toc-section-number">5.17</span> Why PySpark Versions
+Matter</a></li>
+<li><a href="chapter-005.html#what-pysail-means-for-extensions"
+id="toc-what-pysail-means-for-extensions"><span
+class="toc-section-number">5.18</span> What pysail Means for
+Extensions</a></li>
+<li><a href="chapter-005.html#a-small-end-to-end-example"
+id="toc-a-small-end-to-end-example"><span
+class="toc-section-number">5.19</span> A Small End-to-End
+Example</a></li>
+<li><a href="chapter-005.html#reading-exercises-2"
+id="toc-reading-exercises-2"><span
+class="toc-section-number">5.20</span> Reading Exercises</a></li>
+<li><a href="chapter-005.html#chapter-takeaways-3"
+id="toc-chapter-takeaways-3"><span
+class="toc-section-number">5.21</span> Chapter Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-006.html#chapter-05" id="toc-chapter-05"><span
+class="toc-section-number">6</span> Chapter 5: Apache Arrow</a>
+<ul>
+<li><a href="chapter-006.html#definitive-references"
+id="toc-definitive-references"><span
+class="toc-section-number">6.1</span> Definitive References</a></li>
+<li><a href="chapter-006.html#where-arrow-lives-in-sail"
+id="toc-where-arrow-lives-in-sail"><span
+class="toc-section-number">6.2</span> Where Arrow Lives In Sail</a></li>
+<li><a href="chapter-006.html#the-arrow-mental-model"
+id="toc-the-arrow-mental-model"><span
+class="toc-section-number">6.3</span> The Arrow Mental Model</a></li>
+<li><a href="chapter-006.html#why-arc-shows-up-everywhere"
+id="toc-why-arc-shows-up-everywhere"><span
+class="toc-section-number">6.4</span> Why <code>Arc</code> Shows Up
+Everywhere</a></li>
+<li><a href="chapter-006.html#recordbatch-as-the-unit-of-execution"
+id="toc-recordbatch-as-the-unit-of-execution"><span
+class="toc-section-number">6.5</span> RecordBatch As The Unit Of
+Execution</a></li>
+<li><a
+href="chapter-006.html#spark-connect-output-arrow-ipc-in-protobuf-clothing"
+id="toc-spark-connect-output-arrow-ipc-in-protobuf-clothing"><span
+class="toc-section-number">6.6</span> Spark Connect Output: Arrow IPC In
+Protobuf Clothing</a></li>
+<li><a
+href="chapter-006.html#schema-conversion-arrow-back-to-spark-types"
+id="toc-schema-conversion-arrow-back-to-spark-types"><span
+class="toc-section-number">6.7</span> Schema Conversion: Arrow Back To
+Spark Types</a></li>
+<li><a href="chapter-006.html#extension-types-geoarrow-and-variant"
+id="toc-extension-types-geoarrow-and-variant"><span
+class="toc-section-number">6.8</span> Extension Types: GeoArrow And
+Variant</a></li>
+<li><a href="chapter-006.html#pyarrow-the-python-boundary"
+id="toc-pyarrow-the-python-boundary"><span
+class="toc-section-number">6.9</span> PyArrow: The Python
+Boundary</a></li>
+<li><a href="chapter-006.html#udf-kinds-and-arrow-native-execution"
+id="toc-udf-kinds-and-arrow-native-execution"><span
+class="toc-section-number">6.10</span> UDF Kinds And Arrow-Native
+Execution</a></li>
+<li><a
+href="chapter-006.html#distributed-shuffle-arrow-as-the-exchange-unit"
+id="toc-distributed-shuffle-arrow-as-the-exchange-unit"><span
+class="toc-section-number">6.11</span> Distributed Shuffle: Arrow As The
+Exchange Unit</a></li>
+<li><a href="chapter-006.html#row-round-robin-repartition"
+id="toc-row-round-robin-repartition"><span
+class="toc-section-number">6.12</span> Row Round-Robin
+Repartition</a></li>
+<li><a href="chapter-006.html#flight-sql-arrow-on-the-network"
+id="toc-flight-sql-arrow-on-the-network"><span
+class="toc-section-number">6.13</span> Flight SQL: Arrow On The
+Network</a></li>
+<li><a href="chapter-006.html#arrow-ipc-versus-flight"
+id="toc-arrow-ipc-versus-flight"><span
+class="toc-section-number">6.14</span> Arrow IPC Versus Flight</a></li>
+<li><a href="chapter-006.html#a-small-end-to-end-example-1"
+id="toc-a-small-end-to-end-example-1"><span
+class="toc-section-number">6.15</span> A Small End-To-End
+Example</a></li>
+<li><a href="chapter-006.html#what-arrow-does-not-solve-by-itself"
+id="toc-what-arrow-does-not-solve-by-itself"><span
+class="toc-section-number">6.16</span> What Arrow Does Not Solve By
+Itself</a></li>
+<li><a
+href="chapter-006.html#extension-design-pattern-arrow-first-semantics"
+id="toc-extension-design-pattern-arrow-first-semantics"><span
+class="toc-section-number">6.17</span> Extension Design Pattern:
+Arrow-First Semantics</a></li>
+<li><a
+href="chapter-006.html#common-mistakes-when-learning-arrow-in-sail"
+id="toc-common-mistakes-when-learning-arrow-in-sail"><span
+class="toc-section-number">6.18</span> Common Mistakes When Learning
+Arrow In Sail</a></li>
+<li><a href="chapter-006.html#reading-exercise-follow-one-batch"
+id="toc-reading-exercise-follow-one-batch"><span
+class="toc-section-number">6.19</span> Reading Exercise: Follow One
+Batch</a></li>
+<li><a href="chapter-006.html#reading-exercise-follow-one-python-udf"
+id="toc-reading-exercise-follow-one-python-udf"><span
+class="toc-section-number">6.20</span> Reading Exercise: Follow One
+Python UDF</a></li>
+<li><a href="chapter-006.html#how-this-prepares-us-for-datafusion"
+id="toc-how-this-prepares-us-for-datafusion"><span
+class="toc-section-number">6.21</span> How This Prepares Us For
+DataFusion</a></li>
+<li><a href="chapter-006.html#takeaways" id="toc-takeaways"><span
+class="toc-section-number">6.22</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-007.html#chapter-06" id="toc-chapter-06"><span
+class="toc-section-number">7</span> Chapter 6: Apache DataFusion</a>
+<ul>
+<li><a href="chapter-007.html#definitive-references-1"
+id="toc-definitive-references-1"><span
+class="toc-section-number">7.1</span> Definitive References</a></li>
+<li><a href="chapter-007.html#where-datafusion-lives-in-sail"
+id="toc-where-datafusion-lives-in-sail"><span
+class="toc-section-number">7.2</span> Where DataFusion Lives In
+Sail</a></li>
+<li><a
+href="chapter-007.html#the-critical-function-resolve_and_execute_plan"
+id="toc-the-critical-function-resolve_and_execute_plan"><span
+class="toc-section-number">7.3</span> The Critical Function:
+<code>resolve_and_execute_plan</code></a></li>
+<li><a
+href="chapter-007.html#sessioncontext-sessionstate-and-sessionconfig"
+id="toc-sessioncontext-sessionstate-and-sessionconfig"><span
+class="toc-section-number">7.4</span> <code>SessionContext</code>,
+<code>SessionState</code>, And <code>SessionConfig</code></a></li>
+<li><a href="chapter-007.html#typed-session-extensions-1"
+id="toc-typed-session-extensions-1"><span
+class="toc-section-number">7.5</span> Typed Session Extensions</a></li>
+<li><a href="chapter-007.html#sails-query-planner"
+id="toc-sails-query-planner"><span class="toc-section-number">7.6</span>
+Sail’s Query Planner</a></li>
+<li><a href="chapter-007.html#logical-extension-nodes"
+id="toc-logical-extension-nodes"><span
+class="toc-section-number">7.7</span> Logical Extension Nodes</a></li>
+<li><a href="chapter-007.html#physical-extension-planning"
+id="toc-physical-extension-planning"><span
+class="toc-section-number">7.8</span> Physical Extension
+Planning</a></li>
+<li><a href="chapter-007.html#physical-plans-and-executionplan"
+id="toc-physical-plans-and-executionplan"><span
+class="toc-section-number">7.9</span> Physical Plans And
+<code>ExecutionPlan</code></a></li>
+<li><a
+href="chapter-007.html#plan-properties-partitioning-boundedness-emission"
+id="toc-plan-properties-partitioning-boundedness-emission"><span
+class="toc-section-number">7.10</span> Plan Properties: Partitioning,
+Boundedness, Emission</a></li>
+<li><a href="chapter-007.html#logical-optimizers"
+id="toc-logical-optimizers"><span class="toc-section-number">7.11</span>
+Logical Optimizers</a></li>
+<li><a href="chapter-007.html#physical-optimizers"
+id="toc-physical-optimizers"><span
+class="toc-section-number">7.12</span> Physical Optimizers</a></li>
+<li><a
+href="chapter-007.html#function-mapping-spark-names-to-datafusion-expressions"
+id="toc-function-mapping-spark-names-to-datafusion-expressions"><span
+class="toc-section-number">7.13</span> Function Mapping: Spark Names To
+DataFusion Expressions</a></li>
+<li><a href="chapter-007.html#vectorized-udfs"
+id="toc-vectorized-udfs"><span class="toc-section-number">7.14</span>
+Vectorized UDFs</a></li>
+<li><a href="chapter-007.html#table-functions-and-providers"
+id="toc-table-functions-and-providers"><span
+class="toc-section-number">7.15</span> Table Functions And
+Providers</a></li>
+<li><a
+href="chapter-007.html#datafusion-as-local-engine-sail-as-distributed-engine"
+id="toc-datafusion-as-local-engine-sail-as-distributed-engine"><span
+class="toc-section-number">7.16</span> DataFusion As Local Engine, Sail
+As Distributed Engine</a></li>
+<li><a href="chapter-007.html#spark-semantics-on-a-datafusion-kernel"
+id="toc-spark-semantics-on-a-datafusion-kernel"><span
+class="toc-section-number">7.17</span> Spark Semantics On A DataFusion
+Kernel</a></li>
+<li><a href="chapter-007.html#extension-implications"
+id="toc-extension-implications"><span
+class="toc-section-number">7.18</span> Extension Implications</a></li>
+<li><a href="chapter-007.html#reading-exercise-trace-range"
+id="toc-reading-exercise-trace-range"><span
+class="toc-section-number">7.19</span> Reading Exercise: Trace
+<code>range</code></a></li>
+<li><a href="chapter-007.html#reading-exercise-trace-repartition"
+id="toc-reading-exercise-trace-repartition"><span
+class="toc-section-number">7.20</span> Reading Exercise: Trace
+<code>repartition</code></a></li>
+<li><a href="chapter-007.html#reading-exercise-trace-a-spark-function"
+id="toc-reading-exercise-trace-a-spark-function"><span
+class="toc-section-number">7.21</span> Reading Exercise: Trace A Spark
+Function</a></li>
+<li><a href="chapter-007.html#takeaways-1" id="toc-takeaways-1"><span
+class="toc-section-number">7.22</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-008.html#chapter-07" id="toc-chapter-07"><span
+class="toc-section-number">8</span> Chapter 7: From Physical Plan To Job
+Graph</a>
+<ul>
+<li><a href="chapter-008.html#the-core-files"
+id="toc-the-core-files"><span class="toc-section-number">8.1</span> The
+Core Files</a></li>
+<li><a href="chapter-008.html#local-runner-versus-cluster-runner"
+id="toc-local-runner-versus-cluster-runner"><span
+class="toc-section-number">8.2</span> Local Runner Versus Cluster
+Runner</a></li>
+<li><a href="chapter-008.html#what-a-job-graph-represents"
+id="toc-what-a-job-graph-represents"><span
+class="toc-section-number">8.3</span> What A Job Graph
+Represents</a></li>
+<li><a
+href="chapter-008.html#stageinputexec-a-placeholder-not-an-operator"
+id="toc-stageinputexec-a-placeholder-not-an-operator"><span
+class="toc-section-number">8.4</span> <code>StageInputExec</code>: A
+Placeholder, Not An Operator</a></li>
+<li><a href="chapter-008.html#stage-inputs-and-input-modes"
+id="toc-stage-inputs-and-input-modes"><span
+class="toc-section-number">8.5</span> Stage Inputs And Input
+Modes</a></li>
+<li><a href="chapter-008.html#output-distribution"
+id="toc-output-distribution"><span class="toc-section-number">8.6</span>
+Output Distribution</a></li>
+<li><a href="chapter-008.html#how-jobgraphtry_new-starts"
+id="toc-how-jobgraphtry_new-starts"><span
+class="toc-section-number">8.7</span> How <code>JobGraph::try_new</code>
+Starts</a></li>
+<li><a
+href="chapter-008.html#rewrite-1-global-limit-needs-one-input-partition"
+id="toc-rewrite-1-global-limit-needs-one-input-partition"><span
+class="toc-section-number">8.8</span> Rewrite 1: Global Limit Needs One
+Input Partition</a></li>
+<li><a
+href="chapter-008.html#rewrite-2-collect-left-hash-joins-and-unmatched-rows"
+id="toc-rewrite-2-collect-left-hash-joins-and-unmatched-rows"><span
+class="toc-section-number">8.9</span> Rewrite 2: Collect-Left Hash Joins
+And Unmatched Rows</a></li>
+<li><a href="chapter-008.html#recursive-stage-splitting"
+id="toc-recursive-stage-splitting"><span
+class="toc-section-number">8.10</span> Recursive Stage
+Splitting</a></li>
+<li><a href="chapter-008.html#partition-usage-single-versus-shared"
+id="toc-partition-usage-single-versus-shared"><span
+class="toc-section-number">8.11</span> Partition Usage: Single Versus
+Shared</a></li>
+<li><a href="chapter-008.html#create_shuffle"
+id="toc-create_shuffle"><span class="toc-section-number">8.12</span>
+<code>create_shuffle</code></a></li>
+<li><a href="chapter-008.html#merge-and-rescale-boundaries"
+id="toc-merge-and-rescale-boundaries"><span
+class="toc-section-number">8.13</span> Merge And Rescale
+Boundaries</a></li>
+<li><a href="chapter-008.html#driver-stages"
+id="toc-driver-stages"><span class="toc-section-number">8.14</span>
+Driver Stages</a></li>
+<li><a href="chapter-008.html#topological-order"
+id="toc-topological-order"><span class="toc-section-number">8.15</span>
+Topological Order</a></li>
+<li><a href="chapter-008.html#replicas-and-repeated-consumption"
+id="toc-replicas-and-repeated-consumption"><span
+class="toc-section-number">8.16</span> Replicas And Repeated
+Consumption</a></li>
+<li><a href="chapter-008.html#from-job-graph-to-job-topology"
+id="toc-from-job-graph-to-job-topology"><span
+class="toc-section-number">8.17</span> From Job Graph To Job
+Topology</a></li>
+<li><a href="chapter-008.html#region-dependencies"
+id="toc-region-dependencies"><span
+class="toc-section-number">8.18</span> Region Dependencies</a></li>
+<li><a href="chapter-008.html#task-definitions"
+id="toc-task-definitions"><span class="toc-section-number">8.19</span>
+Task Definitions</a></li>
+<li><a href="chapter-008.html#job-output" id="toc-job-output"><span
+class="toc-section-number">8.20</span> Job Output</a></li>
+<li><a href="chapter-008.html#a-worked-example-hash-aggregate"
+id="toc-a-worked-example-hash-aggregate"><span
+class="toc-section-number">8.21</span> A Worked Example: Hash
+Aggregate</a></li>
+<li><a href="chapter-008.html#a-worked-example-global-limit"
+id="toc-a-worked-example-global-limit"><span
+class="toc-section-number">8.22</span> A Worked Example: Global
+Limit</a></li>
+<li><a
+href="chapter-008.html#a-worked-example-broadcast-like-shared-input"
+id="toc-a-worked-example-broadcast-like-shared-input"><span
+class="toc-section-number">8.23</span> A Worked Example: Broadcast-Like
+Shared Input</a></li>
+<li><a href="chapter-008.html#why-this-design-works"
+id="toc-why-this-design-works"><span
+class="toc-section-number">8.24</span> Why This Design Works</a></li>
+<li><a href="chapter-008.html#extension-implications-1"
+id="toc-extension-implications-1"><span
+class="toc-section-number">8.25</span> Extension Implications</a></li>
+<li><a
+href="chapter-008.html#reading-exercise-trace-a-repartition-boundary"
+id="toc-reading-exercise-trace-a-repartition-boundary"><span
+class="toc-section-number">8.26</span> Reading Exercise: Trace A
+Repartition Boundary</a></li>
+<li><a href="chapter-008.html#reading-exercise-trace-job-acceptance"
+id="toc-reading-exercise-trace-job-acceptance"><span
+class="toc-section-number">8.27</span> Reading Exercise: Trace Job
+Acceptance</a></li>
+<li><a href="chapter-008.html#takeaways-2" id="toc-takeaways-2"><span
+class="toc-section-number">8.28</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-009.html#chapter-08" id="toc-chapter-08"><span
+class="toc-section-number">9</span> Chapter 8: Drivers, Workers, Tasks,
+And Streams</a>
+<ul>
+<li><a href="chapter-009.html#the-core-files-1"
+id="toc-the-core-files-1"><span class="toc-section-number">9.1</span>
+The Core Files</a></li>
+<li><a href="chapter-009.html#the-actor-runtime"
+id="toc-the-actor-runtime"><span class="toc-section-number">9.2</span>
+The Actor Runtime</a></li>
+<li><a href="chapter-009.html#driver-actor-the-coordinator"
+id="toc-driver-actor-the-coordinator"><span
+class="toc-section-number">9.3</span> Driver Actor: The
+Coordinator</a></li>
+<li><a href="chapter-009.html#worker-actor-the-executor"
+id="toc-worker-actor-the-executor"><span
+class="toc-section-number">9.4</span> Worker Actor: The
+Executor</a></li>
+<li><a href="chapter-009.html#worker-launch-and-registration"
+id="toc-worker-launch-and-registration"><span
+class="toc-section-number">9.5</span> Worker Launch And
+Registration</a></li>
+<li><a href="chapter-009.html#worker-health"
+id="toc-worker-health"><span class="toc-section-number">9.6</span>
+Worker Health</a></li>
+<li><a href="chapter-009.html#from-job-to-task-regions"
+id="toc-from-job-to-task-regions"><span
+class="toc-section-number">9.7</span> From Job To Task Regions</a></li>
+<li><a href="chapter-009.html#task-attempts"
+id="toc-task-attempts"><span class="toc-section-number">9.8</span> Task
+Attempts</a></li>
+<li><a href="chapter-009.html#task-regions-and-cascading-cancellation"
+id="toc-task-regions-and-cascading-cancellation"><span
+class="toc-section-number">9.9</span> Task Regions And Cascading
+Cancellation</a></li>
+<li><a href="chapter-009.html#task-assignment"
+id="toc-task-assignment"><span class="toc-section-number">9.10</span>
+Task Assignment</a></li>
+<li><a href="chapter-009.html#scaling-workers"
+id="toc-scaling-workers"><span class="toc-section-number">9.11</span>
+Scaling Workers</a></li>
+<li><a href="chapter-009.html#building-a-task-definition"
+id="toc-building-a-task-definition"><span
+class="toc-section-number">9.12</span> Building A Task
+Definition</a></li>
+<li><a href="chapter-009.html#dispatching-tasks"
+id="toc-dispatching-tasks"><span class="toc-section-number">9.13</span>
+Dispatching Tasks</a></li>
+<li><a href="chapter-009.html#running-a-task-on-a-worker"
+id="toc-running-a-task-on-a-worker"><span
+class="toc-section-number">9.14</span> Running A Task On A
+Worker</a></li>
+<li><a href="chapter-009.html#why-the-task-monitor-drains-the-stream"
+id="toc-why-the-task-monitor-drains-the-stream"><span
+class="toc-section-number">9.15</span> Why The Task Monitor Drains The
+Stream</a></li>
+<li><a
+href="chapter-009.html#stream-accessor-actors-as-readers-and-writers"
+id="toc-stream-accessor-actors-as-readers-and-writers"><span
+class="toc-section-number">9.16</span> Stream Accessor: Actors As
+Readers And Writers</a></li>
+<li><a href="chapter-009.html#stream-locations"
+id="toc-stream-locations"><span class="toc-section-number">9.17</span>
+Stream Locations</a></li>
+<li><a href="chapter-009.html#stream-manager"
+id="toc-stream-manager"><span class="toc-section-number">9.18</span>
+Stream Manager</a></li>
+<li><a href="chapter-009.html#memory-streams-and-replicas"
+id="toc-memory-streams-and-replicas"><span
+class="toc-section-number">9.19</span> Memory Streams And
+Replicas</a></li>
+<li><a href="chapter-009.html#arrow-flight-for-task-streams"
+id="toc-arrow-flight-for-task-streams"><span
+class="toc-section-number">9.20</span> Arrow Flight For Task
+Streams</a></li>
+<li><a href="chapter-009.html#peer-tracking"
+id="toc-peer-tracking"><span class="toc-section-number">9.21</span> Peer
+Tracking</a></li>
+<li><a href="chapter-009.html#cleanup-and-stream-tracking"
+id="toc-cleanup-and-stream-tracking"><span
+class="toc-section-number">9.22</span> Cleanup And Stream
+Tracking</a></li>
+<li><a href="chapter-009.html#job-output-1" id="toc-job-output-1"><span
+class="toc-section-number">9.23</span> Job Output</a></li>
+<li><a href="chapter-009.html#one-query-lifecycle"
+id="toc-one-query-lifecycle"><span
+class="toc-section-number">9.24</span> One Query Lifecycle</a></li>
+<li><a href="chapter-009.html#failure-and-retry-story"
+id="toc-failure-and-retry-story"><span
+class="toc-section-number">9.25</span> Failure And Retry Story</a></li>
+<li><a href="chapter-009.html#why-this-design-fits-rust"
+id="toc-why-this-design-fits-rust"><span
+class="toc-section-number">9.26</span> Why This Design Fits
+Rust</a></li>
+<li><a href="chapter-009.html#extension-implications-2"
+id="toc-extension-implications-2"><span
+class="toc-section-number">9.27</span> Extension Implications</a></li>
+<li><a
+href="chapter-009.html#reading-exercise-follow-a-task-to-a-worker"
+id="toc-reading-exercise-follow-a-task-to-a-worker"><span
+class="toc-section-number">9.28</span> Reading Exercise: Follow A Task
+To A Worker</a></li>
+<li><a href="chapter-009.html#reading-exercise-follow-a-stream-fetch"
+id="toc-reading-exercise-follow-a-stream-fetch"><span
+class="toc-section-number">9.29</span> Reading Exercise: Follow A Stream
+Fetch</a></li>
+<li><a href="chapter-009.html#reading-exercise-follow-worker-loss"
+id="toc-reading-exercise-follow-worker-loss"><span
+class="toc-section-number">9.30</span> Reading Exercise: Follow Worker
+Loss</a></li>
+<li><a href="chapter-009.html#takeaways-3" id="toc-takeaways-3"><span
+class="toc-section-number">9.31</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-010.html#chapter-09" id="toc-chapter-09"><span
+class="toc-section-number">10</span> Chapter 9: Shuffle And Data
+Movement</a>
+<ul>
+<li><a href="chapter-010.html#code-map" id="toc-code-map"><span
+class="toc-section-number">10.1</span> Code Map</a></li>
+<li><a href="chapter-010.html#the-vocabulary-of-movement"
+id="toc-the-vocabulary-of-movement"><span
+class="toc-section-number">10.2</span> The Vocabulary Of
+Movement</a></li>
+<li><a href="chapter-010.html#from-job-graph-to-task-definition"
+id="toc-from-job-graph-to-task-definition"><span
+class="toc-section-number">10.3</span> From Job Graph To Task
+Definition</a></li>
+<li><a href="chapter-010.html#the-runtime-rewrite"
+id="toc-the-runtime-rewrite"><span
+class="toc-section-number">10.4</span> The Runtime Rewrite</a></li>
+<li><a href="chapter-010.html#writing-shuffle-output"
+id="toc-writing-shuffle-output"><span
+class="toc-section-number">10.5</span> Writing Shuffle Output</a></li>
+<li><a href="chapter-010.html#reading-shuffle-input"
+id="toc-reading-shuffle-input"><span
+class="toc-section-number">10.6</span> Reading Shuffle Input</a></li>
+<li><a href="chapter-010.html#locations-become-streams"
+id="toc-locations-become-streams"><span
+class="toc-section-number">10.7</span> Locations Become Streams</a></li>
+<li><a href="chapter-010.html#local-memory-streams"
+id="toc-local-memory-streams"><span
+class="toc-section-number">10.8</span> Local Memory Streams</a></li>
+<li><a href="chapter-010.html#arrow-flight-as-the-remote-shape"
+id="toc-arrow-flight-as-the-remote-shape"><span
+class="toc-section-number">10.9</span> Arrow Flight As The Remote
+Shape</a></li>
+<li><a href="chapter-010.html#a-hash-shuffle-walkthrough"
+id="toc-a-hash-shuffle-walkthrough"><span
+class="toc-section-number">10.10</span> A Hash Shuffle
+Walkthrough</a></li>
+<li><a href="chapter-010.html#other-movement-patterns"
+id="toc-other-movement-patterns"><span
+class="toc-section-number">10.11</span> Other Movement Patterns</a></li>
+<li><a href="chapter-010.html#failure-attempts-and-early-termination"
+id="toc-failure-attempts-and-early-termination"><span
+class="toc-section-number">10.12</span> Failure, Attempts, And Early
+Termination</a></li>
+<li><a href="chapter-010.html#what-is-still-open"
+id="toc-what-is-still-open"><span
+class="toc-section-number">10.13</span> What Is Still Open</a></li>
+<li><a href="chapter-010.html#extension-hooks"
+id="toc-extension-hooks"><span class="toc-section-number">10.14</span>
+Extension Hooks</a></li>
+<li><a href="chapter-010.html#reading-exercise"
+id="toc-reading-exercise"><span class="toc-section-number">10.15</span>
+Reading Exercise</a></li>
+<li><a href="chapter-010.html#takeaways-4" id="toc-takeaways-4"><span
+class="toc-section-number">10.16</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-011.html#chapter-10" id="toc-chapter-10"><span
+class="toc-section-number">11</span> Chapter 10: The Sail Spec And Plan
+Resolver</a>
+<ul>
+<li><a href="chapter-011.html#code-map-1" id="toc-code-map-1"><span
+class="toc-section-number">11.1</span> Code Map</a></li>
+<li><a href="chapter-011.html#why-sail-has-a-spec-layer"
+id="toc-why-sail-has-a-spec-layer"><span
+class="toc-section-number">11.2</span> Why Sail Has A Spec
+Layer</a></li>
+<li><a href="chapter-011.html#the-full-planning-pipeline"
+id="toc-the-full-planning-pipeline"><span
+class="toc-section-number">11.3</span> The Full Planning
+Pipeline</a></li>
+<li><a href="chapter-011.html#spark-connect-to-sail-spec"
+id="toc-spark-connect-to-sail-spec"><span
+class="toc-section-number">11.4</span> Spark Connect To Sail
+Spec</a></li>
+<li><a href="chapter-011.html#sql-to-sail-spec"
+id="toc-sql-to-sail-spec"><span class="toc-section-number">11.5</span>
+SQL To Sail Spec</a></li>
+<li><a href="chapter-011.html#the-resolver-entry-point"
+id="toc-the-resolver-entry-point"><span
+class="toc-section-number">11.6</span> The Resolver Entry Point</a></li>
+<li><a href="chapter-011.html#resolver-state"
+id="toc-resolver-state"><span class="toc-section-number">11.7</span>
+Resolver State</a></li>
+<li><a href="chapter-011.html#query-resolution"
+id="toc-query-resolution"><span class="toc-section-number">11.8</span>
+Query Resolution</a></li>
+<li><a href="chapter-011.html#reading-tables-and-data-sources"
+id="toc-reading-tables-and-data-sources"><span
+class="toc-section-number">11.9</span> Reading Tables And Data
+Sources</a></li>
+<li><a href="chapter-011.html#project-resolution-and-rewriters"
+id="toc-project-resolution-and-rewriters"><span
+class="toc-section-number">11.10</span> Project Resolution And
+Rewriters</a></li>
+<li><a href="chapter-011.html#attribute-resolution"
+id="toc-attribute-resolution"><span
+class="toc-section-number">11.11</span> Attribute Resolution</a></li>
+<li><a href="chapter-011.html#function-resolution"
+id="toc-function-resolution"><span
+class="toc-section-number">11.12</span> Function Resolution</a></li>
+<li><a href="chapter-011.html#commands-become-logical-plans-too"
+id="toc-commands-become-logical-plans-too"><span
+class="toc-section-number">11.13</span> Commands Become Logical Plans
+Too</a></li>
+<li><a href="chapter-011.html#logical-extension-nodes-1"
+id="toc-logical-extension-nodes-1"><span
+class="toc-section-number">11.14</span> Logical Extension Nodes</a></li>
+<li><a
+href="chapter-011.html#repartition-as-a-bridge-to-distributed-execution"
+id="toc-repartition-as-a-bridge-to-distributed-execution"><span
+class="toc-section-number">11.15</span> Repartition As A Bridge To
+Distributed Execution</a></li>
+<li><a href="chapter-011.html#withrelations-and-plan-ids"
+id="toc-withrelations-and-plan-ids"><span
+class="toc-section-number">11.16</span> WithRelations And Plan
+IDs</a></li>
+<li><a href="chapter-011.html#commands-in-spark-connect-execution"
+id="toc-commands-in-spark-connect-execution"><span
+class="toc-section-number">11.17</span> Commands In Spark Connect
+Execution</a></li>
+<li><a
+href="chapter-011.html#a-worked-example-dataframe-filter-and-project"
+id="toc-a-worked-example-dataframe-filter-and-project"><span
+class="toc-section-number">11.18</span> A Worked Example: DataFrame
+Filter And Project</a></li>
+<li><a href="chapter-011.html#a-worked-example-repartition-by-customer"
+id="toc-a-worked-example-repartition-by-customer"><span
+class="toc-section-number">11.19</span> A Worked Example: Repartition By
+Customer</a></li>
+<li><a href="chapter-011.html#a-worked-example-registered-python-udf"
+id="toc-a-worked-example-registered-python-udf"><span
+class="toc-section-number">11.20</span> A Worked Example: Registered
+Python UDF</a></li>
+<li><a href="chapter-011.html#extension-implications-3"
+id="toc-extension-implications-3"><span
+class="toc-section-number">11.21</span> Extension Implications</a></li>
+<li><a href="chapter-011.html#a-proposed-resolver-side-extension-shape"
+id="toc-a-proposed-resolver-side-extension-shape"><span
+class="toc-section-number">11.22</span> A Proposed Resolver-Side
+Extension Shape</a></li>
+<li><a href="chapter-011.html#design-rules-for-future-extensions"
+id="toc-design-rules-for-future-extensions"><span
+class="toc-section-number">11.23</span> Design Rules For Future
+Extensions</a></li>
+<li><a href="chapter-011.html#reading-exercise-1"
+id="toc-reading-exercise-1"><span
+class="toc-section-number">11.24</span> Reading Exercise</a></li>
+<li><a href="chapter-011.html#takeaways-5" id="toc-takeaways-5"><span
+class="toc-section-number">11.25</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-012.html#chapter-11" id="toc-chapter-11"><span
+class="toc-section-number">12</span> Chapter 11: Functions, UDFs, And
+Codecs</a>
+<ul>
+<li><a href="chapter-012.html#code-map-2" id="toc-code-map-2"><span
+class="toc-section-number">12.1</span> Code Map</a></li>
+<li><a href="chapter-012.html#the-function-lifecycle"
+id="toc-the-function-lifecycle"><span
+class="toc-section-number">12.2</span> The Function Lifecycle</a></li>
+<li><a href="chapter-012.html#spec-representation"
+id="toc-spec-representation"><span
+class="toc-section-number">12.3</span> Spec Representation</a></li>
+<li><a href="chapter-012.html#built-in-function-registry"
+id="toc-built-in-function-registry"><span
+class="toc-section-number">12.4</span> Built-In Function
+Registry</a></li>
+<li><a href="chapter-012.html#function-resolution-order"
+id="toc-function-resolution-order"><span
+class="toc-section-number">12.5</span> Function Resolution
+Order</a></li>
+<li><a href="chapter-012.html#registered-pyspark-udfs"
+id="toc-registered-pyspark-udfs"><span
+class="toc-section-number">12.6</span> Registered PySpark UDFs</a></li>
+<li><a href="chapter-012.html#inline-pyspark-udfs"
+id="toc-inline-pyspark-udfs"><span
+class="toc-section-number">12.7</span> Inline PySpark UDFs</a></li>
+<li><a href="chapter-012.html#scalar-python-execution"
+id="toc-scalar-python-execution"><span
+class="toc-section-number">12.8</span> Scalar Python Execution</a></li>
+<li><a href="chapter-012.html#grouped-aggregate-python-udfs"
+id="toc-grouped-aggregate-python-udfs"><span
+class="toc-section-number">12.9</span> Grouped Aggregate Python
+UDFs</a></li>
+<li><a href="chapter-012.html#udtfs-and-stream-udfs"
+id="toc-udtfs-and-stream-udfs"><span
+class="toc-section-number">12.10</span> UDTFs And Stream UDFs</a></li>
+<li><a href="chapter-012.html#the-python-stream-bridge"
+id="toc-the-python-stream-bridge"><span
+class="toc-section-number">12.11</span> The Python Stream
+Bridge</a></li>
+<li><a href="chapter-012.html#the-remote-execution-codec"
+id="toc-the-remote-execution-codec"><span
+class="toc-section-number">12.12</span> The Remote Execution
+Codec</a></li>
+<li><a href="chapter-012.html#encoding-scalar-udfs"
+id="toc-encoding-scalar-udfs"><span
+class="toc-section-number">12.13</span> Encoding Scalar UDFs</a></li>
+<li><a href="chapter-012.html#decoding-scalar-udfs"
+id="toc-decoding-scalar-udfs"><span
+class="toc-section-number">12.14</span> Decoding Scalar UDFs</a></li>
+<li><a href="chapter-012.html#encoding-aggregate-and-window-udfs"
+id="toc-encoding-aggregate-and-window-udfs"><span
+class="toc-section-number">12.15</span> Encoding Aggregate And Window
+UDFs</a></li>
+<li><a href="chapter-012.html#encoding-stream-udfs"
+id="toc-encoding-stream-udfs"><span
+class="toc-section-number">12.16</span> Encoding Stream UDFs</a></li>
+<li><a href="chapter-012.html#worker-sessions-and-built-ins"
+id="toc-worker-sessions-and-built-ins"><span
+class="toc-section-number">12.17</span> Worker Sessions And
+Built-Ins</a></li>
+<li><a href="chapter-012.html#distributed-example-built-in-function"
+id="toc-distributed-example-built-in-function"><span
+class="toc-section-number">12.18</span> Distributed Example: Built-In
+Function</a></li>
+<li><a href="chapter-012.html#distributed-example-python-scalar-udf"
+id="toc-distributed-example-python-scalar-udf"><span
+class="toc-section-number">12.19</span> Distributed Example: Python
+Scalar UDF</a></li>
+<li><a href="chapter-012.html#distributed-example-python-udtf"
+id="toc-distributed-example-python-udtf"><span
+class="toc-section-number">12.20</span> Distributed Example: Python
+UDTF</a></li>
+<li><a href="chapter-012.html#codec-design-lessons"
+id="toc-codec-design-lessons"><span
+class="toc-section-number">12.21</span> Codec Design Lessons</a></li>
+<li><a href="chapter-012.html#extension-implications-4"
+id="toc-extension-implications-4"><span
+class="toc-section-number">12.22</span> Extension Implications</a></li>
+<li><a href="chapter-012.html#a-proposed-extension-codec-registry"
+id="toc-a-proposed-extension-codec-registry"><span
+class="toc-section-number">12.23</span> A Proposed Extension Codec
+Registry</a></li>
+<li><a href="chapter-012.html#a-proposed-function-registration-model"
+id="toc-a-proposed-function-registration-model"><span
+class="toc-section-number">12.24</span> A Proposed Function Registration
+Model</a></li>
+<li><a href="chapter-012.html#reading-exercise-2"
+id="toc-reading-exercise-2"><span
+class="toc-section-number">12.25</span> Reading Exercise</a></li>
+<li><a href="chapter-012.html#takeaways-6" id="toc-takeaways-6"><span
+class="toc-section-number">12.26</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-013.html#chapter-12" id="toc-chapter-12"><span
+class="toc-section-number">13</span> Chapter 12: Catalogs, Lakehouse
+Tables, And File Formats</a>
+<ul>
+<li><a href="chapter-013.html#code-map-3" id="toc-code-map-3"><span
+class="toc-section-number">13.1</span> Code Map</a></li>
+<li><a href="chapter-013.html#the-storage-boundary"
+id="toc-the-storage-boundary"><span
+class="toc-section-number">13.2</span> The Storage Boundary</a></li>
+<li><a href="chapter-013.html#catalogs-names-before-data"
+id="toc-catalogs-names-before-data"><span
+class="toc-section-number">13.3</span> Catalogs: Names Before
+Data</a></li>
+<li><a href="chapter-013.html#catalog-providers"
+id="toc-catalog-providers"><span class="toc-section-number">13.4</span>
+Catalog Providers</a></li>
+<li><a href="chapter-013.html#table-formats"
+id="toc-table-formats"><span class="toc-section-number">13.5</span>
+Table Formats</a></li>
+<li><a href="chapter-013.html#session-format-registration"
+id="toc-session-format-registration"><span
+class="toc-section-number">13.6</span> Session Format
+Registration</a></li>
+<li><a href="chapter-013.html#sourceinfo-a-read-request-in-one-struct"
+id="toc-sourceinfo-a-read-request-in-one-struct"><span
+class="toc-section-number">13.7</span> SourceInfo: A Read Request In One
+Struct</a></li>
+<li><a href="chapter-013.html#reading-a-named-table"
+id="toc-reading-a-named-table"><span
+class="toc-section-number">13.8</span> Reading A Named Table</a></li>
+<li><a href="chapter-013.html#reading-a-data-source"
+id="toc-reading-a-data-source"><span
+class="toc-section-number">13.9</span> Reading A Data Source</a></li>
+<li><a
+href="chapter-013.html#listing-formats-parquet-as-the-normal-case"
+id="toc-listing-formats-parquet-as-the-normal-case"><span
+class="toc-section-number">13.10</span> Listing Formats: Parquet As The
+Normal Case</a></li>
+<li><a href="chapter-013.html#sinkinfo-a-write-request-in-one-struct"
+id="toc-sinkinfo-a-write-request-in-one-struct"><span
+class="toc-section-number">13.11</span> SinkInfo: A Write Request In One
+Struct</a></li>
+<li><a href="chapter-013.html#write-resolution"
+id="toc-write-resolution"><span class="toc-section-number">13.12</span>
+Write Resolution</a></li>
+<li><a href="chapter-013.html#column-matching-and-generated-columns"
+id="toc-column-matching-and-generated-columns"><span
+class="toc-section-number">13.13</span> Column Matching And Generated
+Columns</a></li>
+<li><a href="chapter-013.html#filewritenode-and-physical-planning"
+id="toc-filewritenode-and-physical-planning"><span
+class="toc-section-number">13.14</span> FileWriteNode And Physical
+Planning</a></li>
+<li><a href="chapter-013.html#catalog-commands-as-physical-plans"
+id="toc-catalog-commands-as-physical-plans"><span
+class="toc-section-number">13.15</span> Catalog Commands As Physical
+Plans</a></li>
+<li><a href="chapter-013.html#delta-lake" id="toc-delta-lake"><span
+class="toc-section-number">13.16</span> Delta Lake</a></li>
+<li><a href="chapter-013.html#iceberg" id="toc-iceberg"><span
+class="toc-section-number">13.17</span> Iceberg</a></li>
+<li><a href="chapter-013.html#lakehouse-extension-planners"
+id="toc-lakehouse-extension-planners"><span
+class="toc-section-number">13.18</span> Lakehouse Extension
+Planners</a></li>
+<li><a href="chapter-013.html#row-level-metadata-columns"
+id="toc-row-level-metadata-columns"><span
+class="toc-section-number">13.19</span> Row-Level Metadata
+Columns</a></li>
+<li><a href="chapter-013.html#python-data-sources-1"
+id="toc-python-data-sources-1"><span
+class="toc-section-number">13.20</span> Python Data Sources</a></li>
+<li><a href="chapter-013.html#example-parquet-read"
+id="toc-example-parquet-read"><span
+class="toc-section-number">13.21</span> Example: Parquet Read</a></li>
+<li><a href="chapter-013.html#example-delta-ctas"
+id="toc-example-delta-ctas"><span
+class="toc-section-number">13.22</span> Example: Delta CTAS</a></li>
+<li><a href="chapter-013.html#example-delta-merge"
+id="toc-example-delta-merge"><span
+class="toc-section-number">13.23</span> Example: Delta MERGE</a></li>
+<li><a href="chapter-013.html#extension-lessons"
+id="toc-extension-lessons"><span class="toc-section-number">13.24</span>
+Extension Lessons</a></li>
+<li><a href="chapter-013.html#reading-exercises-3"
+id="toc-reading-exercises-3"><span
+class="toc-section-number">13.25</span> Reading Exercises</a></li>
+<li><a href="chapter-013.html#key-takeaways"
+id="toc-key-takeaways"><span class="toc-section-number">13.26</span> Key
+Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-014.html#chapter-13" id="toc-chapter-13"><span
+class="toc-section-number">14</span> Chapter 13: Extension Architecture:
+From Proposal To Design</a>
+<ul>
+<li><a href="chapter-014.html#code-map-4" id="toc-code-map-4"><span
+class="toc-section-number">14.1</span> Code Map</a></li>
+<li><a href="chapter-014.html#what-the-proposal-is-really-asking-for"
+id="toc-what-the-proposal-is-really-asking-for"><span
+class="toc-section-number">14.2</span> What The Proposal Is Really
+Asking For</a></li>
+<li><a href="chapter-014.html#two-boundaries-not-one"
+id="toc-two-boundaries-not-one"><span
+class="toc-section-number">14.3</span> Two Boundaries, Not One</a></li>
+<li><a href="chapter-014.html#existing-patterns-worth-keeping"
+id="toc-existing-patterns-worth-keeping"><span
+class="toc-section-number">14.4</span> Existing Patterns Worth
+Keeping</a></li>
+<li><a href="chapter-014.html#current-gaps" id="toc-current-gaps"><span
+class="toc-section-number">14.5</span> Current Gaps</a></li>
+<li><a href="chapter-014.html#design-goal" id="toc-design-goal"><span
+class="toc-section-number">14.6</span> Design Goal</a></li>
+<li><a href="chapter-014.html#the-core-trait"
+id="toc-the-core-trait"><span class="toc-section-number">14.7</span> The
+Core Trait</a></li>
+<li><a href="chapter-014.html#extension-registry"
+id="toc-extension-registry"><span class="toc-section-number">14.8</span>
+Extension Registry</a></li>
+<li><a href="chapter-014.html#function-registration"
+id="toc-function-registration"><span
+class="toc-section-number">14.9</span> Function Registration</a></li>
+<li><a href="chapter-014.html#optimizer-rules"
+id="toc-optimizer-rules"><span class="toc-section-number">14.10</span>
+Optimizer Rules</a></li>
+<li><a href="chapter-014.html#extension-physical-planners"
+id="toc-extension-physical-planners"><span
+class="toc-section-number">14.11</span> Extension Physical
+Planners</a></li>
+<li><a href="chapter-014.html#physical-codec-extensions"
+id="toc-physical-codec-extensions"><span
+class="toc-section-number">14.12</span> Physical Codec
+Extensions</a></li>
+<li><a href="chapter-014.html#driver-and-worker-symmetry"
+id="toc-driver-and-worker-symmetry"><span
+class="toc-section-number">14.13</span> Driver And Worker
+Symmetry</a></li>
+<li><a href="chapter-014.html#python-entry-point-discovery-1"
+id="toc-python-entry-point-discovery-1"><span
+class="toc-section-number">14.14</span> Python Entry-Point
+Discovery</a></li>
+<li><a
+href="chapter-014.html#spark-connect-as-the-plan-time-extension-surface"
+id="toc-spark-connect-as-the-plan-time-extension-surface"><span
+class="toc-section-number">14.15</span> Spark Connect As The Plan-Time
+Extension Surface</a></li>
+<li><a href="chapter-014.html#a-sedona-style-worked-design"
+id="toc-a-sedona-style-worked-design"><span
+class="toc-section-number">14.16</span> A Sedona-Style Worked
+Design</a></li>
+<li><a href="chapter-014.html#table-formats-as-extensions"
+id="toc-table-formats-as-extensions"><span
+class="toc-section-number">14.17</span> Table Formats As
+Extensions</a></li>
+<li><a href="chapter-014.html#catalog-providers-as-extensions"
+id="toc-catalog-providers-as-extensions"><span
+class="toc-section-number">14.18</span> Catalog Providers As
+Extensions</a></li>
+<li><a href="chapter-014.html#conflict-policy"
+id="toc-conflict-policy"><span class="toc-section-number">14.19</span>
+Conflict Policy</a></li>
+<li><a href="chapter-014.html#enablement-policy"
+id="toc-enablement-policy"><span class="toc-section-number">14.20</span>
+Enablement Policy</a></li>
+<li><a href="chapter-014.html#versioning-and-abi"
+id="toc-versioning-and-abi"><span
+class="toc-section-number">14.21</span> Versioning And ABI</a></li>
+<li><a href="chapter-014.html#security-and-trust"
+id="toc-security-and-trust"><span
+class="toc-section-number">14.22</span> Security And Trust</a></li>
+<li><a href="chapter-014.html#system-tables-for-observability"
+id="toc-system-tables-for-observability"><span
+class="toc-section-number">14.23</span> System Tables For
+Observability</a></li>
+<li><a href="chapter-014.html#implementation-roadmap"
+id="toc-implementation-roadmap"><span
+class="toc-section-number">14.24</span> Implementation Roadmap</a></li>
+<li><a href="chapter-014.html#tests-an-extension-api-needs"
+id="toc-tests-an-extension-api-needs"><span
+class="toc-section-number">14.25</span> Tests An Extension API
+Needs</a></li>
+<li><a href="chapter-014.html#a-mental-model-for-future-contributors"
+id="toc-a-mental-model-for-future-contributors"><span
+class="toc-section-number">14.26</span> A Mental Model For Future
+Contributors</a></li>
+<li><a href="chapter-014.html#how-the-previous-chapters-fit-together"
+id="toc-how-the-previous-chapters-fit-together"><span
+class="toc-section-number">14.27</span> How The Previous Chapters Fit
+Together</a></li>
+<li><a href="chapter-014.html#final-takeaways"
+id="toc-final-takeaways"><span class="toc-section-number">14.28</span>
+Final Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-015.html#chapter-14" id="toc-chapter-14"><span
+class="toc-section-number">15</span> Chapter 14: Arrow Flight SQL</a>
+<ul>
+<li><a href="chapter-015.html#code-map-5" id="toc-code-map-5"><span
+class="toc-section-number">15.1</span> Code Map</a></li>
+<li><a
+href="chapter-015.html#why-flight-sql-exists-beside-spark-connect"
+id="toc-why-flight-sql-exists-beside-spark-connect"><span
+class="toc-section-number">15.2</span> Why Flight SQL Exists Beside
+Spark Connect</a></li>
+<li><a href="chapter-015.html#the-service-shape"
+id="toc-the-service-shape"><span class="toc-section-number">15.3</span>
+The Service Shape</a></li>
+<li><a href="chapter-015.html#phase-one-getflightinfo"
+id="toc-phase-one-getflightinfo"><span
+class="toc-section-number">15.4</span> Phase One:
+<code>GetFlightInfo</code></a></li>
+<li><a href="chapter-015.html#phase-two-doget"
+id="toc-phase-two-doget"><span class="toc-section-number">15.5</span>
+Phase Two: <code>DoGet</code></a></li>
+<li><a href="chapter-015.html#the-shared-session-model"
+id="toc-the-shared-session-model"><span
+class="toc-section-number">15.6</span> The Shared Session Model</a></li>
+<li><a href="chapter-015.html#commands-1" id="toc-commands-1"><span
+class="toc-section-number">15.7</span> Commands</a></li>
+<li><a href="chapter-015.html#metrics" id="toc-metrics"><span
+class="toc-section-number">15.8</span> Metrics</a></li>
+<li><a href="chapter-015.html#spark-connect-versus-flight-sql"
+id="toc-spark-connect-versus-flight-sql"><span
+class="toc-section-number">15.9</span> Spark Connect Versus Flight
+SQL</a></li>
+<li><a href="chapter-015.html#extension-implications-5"
+id="toc-extension-implications-5"><span
+class="toc-section-number">15.10</span> Extension Implications</a></li>
+<li><a href="chapter-015.html#takeaways-7" id="toc-takeaways-7"><span
+class="toc-section-number">15.11</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-016.html#chapter-15" id="toc-chapter-15"><span
+class="toc-section-number">16</span> Chapter 15: Custom Nodes And
+Optimizers</a>
+<ul>
+<li><a href="chapter-016.html#code-map-6" id="toc-code-map-6"><span
+class="toc-section-number">16.1</span> Code Map</a></li>
+<li><a href="chapter-016.html#the-pattern" id="toc-the-pattern"><span
+class="toc-section-number">16.2</span> The Pattern</a></li>
+<li><a href="chapter-016.html#logical-node-inventory"
+id="toc-logical-node-inventory"><span
+class="toc-section-number">16.3</span> Logical Node Inventory</a></li>
+<li><a href="chapter-016.html#example-range"
+id="toc-example-range"><span class="toc-section-number">16.4</span>
+Example: Range</a></li>
+<li><a href="chapter-016.html#example-explicit-repartition"
+id="toc-example-explicit-repartition"><span
+class="toc-section-number">16.5</span> Example: Explicit
+Repartition</a></li>
+<li><a href="chapter-016.html#the-extension-physical-planner"
+id="toc-the-extension-physical-planner"><span
+class="toc-section-number">16.6</span> The Extension Physical
+Planner</a></li>
+<li><a href="chapter-016.html#logical-optimizers-1"
+id="toc-logical-optimizers-1"><span
+class="toc-section-number">16.7</span> Logical Optimizers</a></li>
+<li><a href="chapter-016.html#physical-optimizers-1"
+id="toc-physical-optimizers-1"><span
+class="toc-section-number">16.8</span> Physical Optimizers</a></li>
+<li><a href="chapter-016.html#contributor-checklist"
+id="toc-contributor-checklist"><span
+class="toc-section-number">16.9</span> Contributor Checklist</a></li>
+<li><a href="chapter-016.html#extension-implications-6"
+id="toc-extension-implications-6"><span
+class="toc-section-number">16.10</span> Extension Implications</a></li>
+<li><a href="chapter-016.html#takeaways-8" id="toc-takeaways-8"><span
+class="toc-section-number">16.11</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-017.html#chapter-16" id="toc-chapter-16"><span
+class="toc-section-number">17</span> Chapter 16: Local And Streaming
+Execution</a>
+<ul>
+<li><a href="chapter-017.html#code-map-7" id="toc-code-map-7"><span
+class="toc-section-number">17.1</span> Code Map</a></li>
+<li><a href="chapter-017.html#one-trait-two-execution-modes"
+id="toc-one-trait-two-execution-modes"><span
+class="toc-section-number">17.2</span> One Trait, Two Execution
+Modes</a></li>
+<li><a href="chapter-017.html#local-execution"
+id="toc-local-execution"><span class="toc-section-number">17.3</span>
+Local Execution</a></li>
+<li><a href="chapter-017.html#cluster-execution"
+id="toc-cluster-execution"><span class="toc-section-number">17.4</span>
+Cluster Execution</a></li>
+<li><a href="chapter-017.html#streaming-starts-as-a-logical-rewrite"
+id="toc-streaming-starts-as-a-logical-rewrite"><span
+class="toc-section-number">17.5</span> Streaming Starts As A Logical
+Rewrite</a></li>
+<li><a href="chapter-017.html#stream-sources"
+id="toc-stream-sources"><span class="toc-section-number">17.6</span>
+Stream Sources</a></li>
+<li><a href="chapter-017.html#flow-event-schema"
+id="toc-flow-event-schema"><span class="toc-section-number">17.7</span>
+Flow Event Schema</a></li>
+<li><a href="chapter-017.html#streaming-physical-nodes"
+id="toc-streaming-physical-nodes"><span
+class="toc-section-number">17.8</span> Streaming Physical Nodes</a></li>
+<li><a href="chapter-017.html#streaming-query-lifecycle"
+id="toc-streaming-query-lifecycle"><span
+class="toc-section-number">17.9</span> Streaming Query
+Lifecycle</a></li>
+<li><a href="chapter-017.html#current-boundaries"
+id="toc-current-boundaries"><span
+class="toc-section-number">17.10</span> Current Boundaries</a></li>
+<li><a href="chapter-017.html#takeaways-9" id="toc-takeaways-9"><span
+class="toc-section-number">17.11</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-018.html#chapter-17" id="toc-chapter-17"><span
+class="toc-section-number">18</span> Chapter 17: Testing Spark
+Compatibility</a>
+<ul>
+<li><a href="chapter-018.html#code-map-8" id="toc-code-map-8"><span
+class="toc-section-number">18.1</span> Code Map</a></li>
+<li><a href="chapter-018.html#the-test-pyramid"
+id="toc-the-test-pyramid"><span class="toc-section-number">18.2</span>
+The Test Pyramid</a></li>
+<li><a href="chapter-018.html#gold-tests" id="toc-gold-tests"><span
+class="toc-section-number">18.3</span> Gold Tests</a></li>
+<li><a href="chapter-018.html#parser-round-trips"
+id="toc-parser-round-trips"><span class="toc-section-number">18.4</span>
+Parser Round Trips</a></li>
+<li><a href="chapter-018.html#pyspark-integration-tests"
+id="toc-pyspark-integration-tests"><span
+class="toc-section-number">18.5</span> PySpark Integration
+Tests</a></li>
+<li><a href="chapter-018.html#flight-tests" id="toc-flight-tests"><span
+class="toc-section-number">18.6</span> Flight Tests</a></li>
+<li><a href="chapter-018.html#plan-inspection"
+id="toc-plan-inspection"><span class="toc-section-number">18.7</span>
+Plan Inspection</a></li>
+<li><a href="chapter-018.html#local-versus-cluster-testing"
+id="toc-local-versus-cluster-testing"><span
+class="toc-section-number">18.8</span> Local Versus Cluster
+Testing</a></li>
+<li><a href="chapter-018.html#testing-new-functions"
+id="toc-testing-new-functions"><span
+class="toc-section-number">18.9</span> Testing New Functions</a></li>
+<li><a href="chapter-018.html#testing-new-table-formats-or-catalogs"
+id="toc-testing-new-table-formats-or-catalogs"><span
+class="toc-section-number">18.10</span> Testing New Table Formats Or
+Catalogs</a></li>
+<li><a href="chapter-018.html#testing-extensions"
+id="toc-testing-extensions"><span
+class="toc-section-number">18.11</span> Testing Extensions</a></li>
+<li><a href="chapter-018.html#takeaways-10" id="toc-takeaways-10"><span
+class="toc-section-number">18.12</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-019.html#chapter-18" id="toc-chapter-18"><span
+class="toc-section-number">19</span> Chapter 18: Feature Playbooks</a>
+<ul>
+<li><a href="chapter-019.html#adding-a-spark-function"
+id="toc-adding-a-spark-function"><span
+class="toc-section-number">19.1</span> Adding A Spark Function</a></li>
+<li><a href="chapter-019.html#adding-a-python-udf-path"
+id="toc-adding-a-python-udf-path"><span
+class="toc-section-number">19.2</span> Adding A Python UDF Path</a></li>
+<li><a href="chapter-019.html#adding-a-catalog-backend"
+id="toc-adding-a-catalog-backend"><span
+class="toc-section-number">19.3</span> Adding A Catalog Backend</a></li>
+<li><a href="chapter-019.html#adding-a-table-format"
+id="toc-adding-a-table-format"><span
+class="toc-section-number">19.4</span> Adding A Table Format</a></li>
+<li><a href="chapter-019.html#adding-a-logical-plan-node"
+id="toc-adding-a-logical-plan-node"><span
+class="toc-section-number">19.5</span> Adding A Logical Plan
+Node</a></li>
+<li><a href="chapter-019.html#adding-a-physical-optimizer-rule"
+id="toc-adding-a-physical-optimizer-rule"><span
+class="toc-section-number">19.6</span> Adding A Physical Optimizer
+Rule</a></li>
+<li><a href="chapter-019.html#adding-a-streaming-source"
+id="toc-adding-a-streaming-source"><span
+class="toc-section-number">19.7</span> Adding A Streaming
+Source</a></li>
+<li><a href="chapter-019.html#adding-distributed-codec-support"
+id="toc-adding-distributed-codec-support"><span
+class="toc-section-number">19.8</span> Adding Distributed Codec
+Support</a></li>
+<li><a href="chapter-019.html#debugging-a-compatibility-bug"
+id="toc-debugging-a-compatibility-bug"><span
+class="toc-section-number">19.9</span> Debugging A Compatibility
+Bug</a></li>
+<li><a href="chapter-019.html#takeaways-11" id="toc-takeaways-11"><span
+class="toc-section-number">19.10</span> Takeaways</a></li>
+</ul></li>
+<li><a href="chapter-020.html#chapter-19" id="toc-chapter-19"><span
+class="toc-section-number">20</span> Chapter 19: Roadmap And Codebase
+Navigation</a>
+<ul>
+<li><a href="chapter-020.html#start-by-task"
+id="toc-start-by-task"><span class="toc-section-number">20.1</span>
+Start By Task</a></li>
+<li><a href="chapter-020.html#start-by-symptom"
+id="toc-start-by-symptom"><span class="toc-section-number">20.2</span>
+Start By Symptom</a></li>
+<li><a href="chapter-020.html#what-is-mature"
+id="toc-what-is-mature"><span class="toc-section-number">20.3</span>
+What Is Mature</a></li>
+<li><a href="chapter-020.html#what-is-evolving"
+id="toc-what-is-evolving"><span class="toc-section-number">20.4</span>
+What Is Evolving</a></li>
+<li><a href="chapter-020.html#capability-snapshot"
+id="toc-capability-snapshot"><span
+class="toc-section-number">20.5</span> Capability Snapshot</a></li>
+<li><a href="chapter-020.html#reading-the-crate-graph"
+id="toc-reading-the-crate-graph"><span
+class="toc-section-number">20.6</span> Reading The Crate Graph</a></li>
+<li><a href="chapter-020.html#the-files-worth-bookmarking"
+id="toc-the-files-worth-bookmarking"><span
+class="toc-section-number">20.7</span> The Files Worth
+Bookmarking</a></li>
+<li><a href="chapter-020.html#the-definitive-mental-model"
+id="toc-the-definitive-mental-model"><span
+class="toc-section-number">20.8</span> The Definitive Mental
+Model</a></li>
+<li><a href="chapter-020.html#closing" id="toc-closing"><span
+class="toc-section-number">20.9</span> Closing</a></li>
+</ul></li>
+</ul>
+</nav>
+
+</body>
+</html>

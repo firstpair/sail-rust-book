@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 4: PySpark and pysail</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-006.html" accesskey="n" rel="next">Chapter 5: Apache Arrow</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-004.html" accesskey="p" rel="previous">Chapter 3: Spark Connect</a>
+</span>
+</div>
+</nav>
+<h1 data-number="5" id="chapter-04"><span
+class="header-section-number">5</span> Chapter 4: PySpark and
+pysail</h1>
+<p>PySpark is the user experience Sail tries to preserve.
+<code>pysail</code> is the Python package that makes Sail feel like
+something a Python developer can install, start, test, and use from
+ordinary PySpark code.</p>
+<p>The design is intentionally asymmetric:</p>
+<pre class="text"><code>PySpark remains the client API.
+pysail starts and packages the Rust engine.
+Spark Connect is the wire protocol between them.</code></pre>
+<p>That is why Sail can claim that no PySpark code rewrites are needed
+once the user connects to a Sail server. A PySpark program still imports
+<code>pyspark.sql.SparkSession</code>; the difference is the remote
+URL:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql <span class="im">import</span> SparkSession</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>spark <span class="op">=</span> SparkSession.builder.remote(<span class="st">&quot;sc://localhost:50051&quot;</span>).getOrCreate()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>spark.sql(<span class="st">&quot;SELECT 1 + 1&quot;</span>).show()</span></code></pre></div>
+<p>The official PySpark entry point for this is <a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.SparkSession.builder.remote.html"><code>SparkSession.builder.remote</code></a>.
+Sail’s job is to provide a compatible Spark Connect server at that
+address.</p>
+<h2 data-number="5.1" id="the-main-files-1"><span
+class="header-section-number">5.1</span> The Main Files</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>File</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pyproject.toml</code></td>
+<td>Python package metadata, build backend, optional dependencies, test
+matrices</td>
+</tr>
+<tr>
+<td><code>python/pysail/spark/__init__.py</code></td>
+<td>Public Python wrapper for <code>SparkConnectServer</code></td>
+</tr>
+<tr>
+<td><code>python/pysail/cli.py</code> and
+<code>python/pysail/__main__.py</code></td>
+<td>Python entry points into the Sail CLI</td>
+</tr>
+<tr>
+<td><code>crates/sail-python/src/lib.rs</code></td>
+<td>PyO3 <code>_native</code> module registration</td>
+</tr>
+<tr>
+<td><code>crates/sail-python/src/spark/server.rs</code></td>
+<td>Native Python class that starts the Spark Connect server</td>
+</tr>
+<tr>
+<td><code>crates/sail-python/src/globals.rs</code></td>
+<td>Global runtime, config, telemetry, and environment snapshot</td>
+</tr>
+<tr>
+<td><code>crates/sail-python-udf/*</code></td>
+<td>Python UDF, UDAF, UDTF, Pandas, and Arrow execution support</td>
+</tr>
+<tr>
+<td><code>crates/sail-plan/src/resolver/expression/udf.rs</code></td>
+<td>Converts Spark Connect inline Python UDFs into DataFusion UDF
+expressions</td>
+</tr>
+<tr>
+<td><code>python/pysail/tests/spark/conftest.py</code></td>
+<td>How Sail’s own tests create a PySpark client connected to Sail</td>
+</tr>
+</tbody>
+</table>
+<p>The code divides into two worlds:</p>
+<pre class="text"><code>User-facing Python package:
+  pysail, pysail.spark, sail CLI
+
+Engine-facing Rust/PyO3 bindings:
+  _native module, SparkConnectServer, Python UDF runtime</code></pre>
+<h2 data-number="5.2" id="package-shape"><span
+class="header-section-number">5.2</span> Package Shape</h2>
+<p>The Python package is defined in <code>pyproject.toml</code>.</p>
+<p>It is named <code>pysail</code>, supports Python
+<code>&gt;=3.10,&lt;3.15</code>, and is built with <code>maturin</code>.
+That tells you the package is not pure Python. It ships a compiled Rust
+extension module:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[build-system]</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="dt">requires</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;maturin&gt;=1.0,&lt;2.0&quot;</span><span class="op">]</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="dt">build-backend</span> <span class="op">=</span> <span class="st">&quot;maturin&quot;</span></span></code></pre></div>
+<p>The package entry point is:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[project.scripts]</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">sail</span> <span class="op">=</span> <span class="st">&quot;pysail.cli:main&quot;</span></span></code></pre></div>
+<p>So the installed <code>sail</code> command is a Python console
+script, but the Python script immediately delegates to Rust:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pysail <span class="im">import</span> _native</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main():</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    _native.main(sys.argv)</span></code></pre></div>
+<p>The native module is built by
+<code>crates/sail-python/src/lib.rs</code>:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span>pymodule<span class="at">]</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> _native(m<span class="op">:</span> <span class="op">&amp;</span>Bound<span class="op">&lt;</span><span class="ot">&#39;_</span><span class="op">,</span> PyModule<span class="op">&gt;</span>) <span class="op">-&gt;</span> PyResult<span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">flight::</span>register_module(m)<span class="op">?;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">spark::</span>register_module(m)<span class="op">?;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    m<span class="op">.</span>add_function(<span class="pp">wrap_pyfunction!</span>(<span class="pp">cli::</span>main<span class="op">,</span> m)<span class="op">?</span>)<span class="op">?;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    m<span class="op">.</span>add(<span class="st">&quot;_SAIL_VERSION&quot;</span><span class="op">,</span> <span class="pp">env!</span>(<span class="st">&quot;CARGO_PKG_VERSION&quot;</span>))<span class="op">?;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(())</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That module exposes:</p>
+<ul>
+<li><code>pysail._native.main</code></li>
+<li><code>pysail._native.spark.SparkConnectServer</code></li>
+<li>Flight-related bindings</li>
+<li><code>_SAIL_VERSION</code></li>
+</ul>
+<p>The package layout is a useful lesson in Rust/Python hybrid
+projects:</p>
+<figure>
+<img src="diagrams/04-diagram-01.svg" alt="Flowchart 04.1" />
+<figcaption aria-hidden="true">Flowchart 04.1</figcaption>
+</figure>
+<h2 data-number="5.3" id="starting-sail-from-python"><span
+class="header-section-number">5.3</span> Starting Sail From Python</h2>
+<p>The public Python wrapper is tiny:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SparkConnectServer:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, ip: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;127.0.0.1&quot;</span>, port: <span class="bu">int</span> <span class="op">=</span> <span class="dv">0</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._inner <span class="op">=</span> _native.spark.SparkConnectServer(ip, port)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> start(<span class="va">self</span>, <span class="op">*</span>, background<span class="op">=</span><span class="va">True</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._inner.start(background<span class="op">=</span>background)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> stop(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._inner.stop()</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">@property</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> listening_address(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">int</span>] <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>._inner.listening_address</span></code></pre></div>
+<p>The real work happens in Rust, in
+<code>crates/sail-python/src/spark/server.rs</code>.</p>
+<p>The PyO3 class:</p>
+<ul>
+<li>loads <code>AppConfig</code></li>
+<li>initializes or retrieves global runtime state</li>
+<li>binds a TCP listener</li>
+<li>starts the Spark Connect server</li>
+<li>records the actual listening address</li>
+<li>can run in the background or block the calling thread</li>
+<li>can shut down through a one-shot channel</li>
+</ul>
+<p>The most important method is <code>start</code>:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> listener <span class="op">=</span> <span class="kw">self</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>runtime</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>primary()</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>block_on(<span class="pp">TcpListener::</span>bind(address))<span class="op">?;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>state <span class="op">=</span> <span class="cn">Some</span>(<span class="kw">self</span><span class="op">.</span>run(listener)<span class="op">?</span>)<span class="op">;</span></span></code></pre></div>
+<p>If the user passes port <code>0</code>, the OS chooses an available
+port. The actual address is exposed through
+<code>listening_address</code>. Sail’s tests use exactly that:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>server <span class="op">=</span> SparkConnectServer(<span class="st">&quot;127.0.0.1&quot;</span>, <span class="dv">0</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>server.start(background<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>_, port <span class="op">=</span> server.listening_address</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="cf">yield</span> <span class="ss">f&quot;sc://localhost:</span><span class="sc">{</span>port<span class="sc">}</span><span class="ss">&quot;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>server.stop()</span></code></pre></div>
+<p>That is the local development loop in one picture:</p>
+<figure>
+<img src="diagrams/04-diagram-02.svg" alt="Sequence diagram 04.2" />
+<figcaption aria-hidden="true">Sequence diagram 04.2</figcaption>
+</figure>
+<h2 data-number="5.4" id="the-global-runtime"><span
+class="header-section-number">5.4</span> The Global Runtime</h2>
+<p><code>crates/sail-python/src/globals.rs</code> contains
+<code>GlobalState</code>.</p>
+<p>This is where <code>pysail</code> creates a global Sail runtime and
+initializes telemetry. It uses <code>PyOnceLock</code> so initialization
+happens once per Python interpreter:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">static</span> GLOBALS<span class="op">:</span> PyOnceLock<span class="op">&lt;</span>GlobalState<span class="op">&gt;</span> <span class="op">=</span> <span class="pp">PyOnceLock::</span>new()<span class="op">;</span></span></code></pre></div>
+<p><code>GlobalState</code> contains:</p>
+<ul>
+<li>a <code>RuntimeManager</code></li>
+<li>an <code>EnvironmentSnapshot</code></li>
+</ul>
+<p>The environment snapshot matters because Sail configuration is
+environment-variable driven. Some environment variables are effectively
+static once the runtime and telemetry have been initialized. If they
+change afterward, <code>pysail</code> warns that the changes are
+ignored.</p>
+<p>This is one of those systems details that looks small but saves
+debugging time. Python users often set environment variables inside
+notebooks or test processes. Sail has to explain when that is too
+late.</p>
+<pre class="text"><code>import pysail._native
+  -&gt; load AppConfig
+  -&gt; create runtime
+  -&gt; initialize telemetry
+  -&gt; snapshot Sail environment variables</code></pre>
+<h2 data-number="5.5" id="releasing-the-gil"><span
+class="header-section-number">5.5</span> Releasing the GIL</h2>
+<p>When Python calls into Rust and Rust blocks, Python’s global
+interpreter lock can prevent other Python code from running. That is
+dangerous for Sail because Python UDFs may need to run while the server
+is active.</p>
+<p>The server code explicitly uses <code>Python::detach</code>.</p>
+<p>In <code>SparkConnectServerState::wait</code>, the comment says the
+method should be called within <code>Python::detach</code>; otherwise,
+the GIL is not released and Python UDFs will be blocked when the server
+handles client requests.</p>
+<p>The blocking CLI path does the same:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>py<span class="op">.</span>detach(<span class="kw">move</span> <span class="op">||</span> <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">sail_cli::runner::</span>main(args)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>)</span></code></pre></div>
+<p>This is an important Rust/Python boundary rule:</p>
+<pre class="text"><code>Long-running Rust server work should not hold the Python GIL.</code></pre>
+<p>Without that, Sail could start fine and then mysteriously deadlock or
+starve Python UDF execution.</p>
+<h2 data-number="5.6" id="connecting-with-pyspark"><span
+class="header-section-number">5.6</span> Connecting With PySpark</h2>
+<p>Sail’s own tests show the intended user pattern in
+<code>python/pysail/tests/spark/conftest.py</code>:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>spark <span class="op">=</span> SparkSession.builder.remote(remote).getOrCreate()</span></code></pre></div>
+<p>Then the test fixture configures the session:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>session.conf.<span class="bu">set</span>(<span class="st">&quot;spark.sql.session.timeZone&quot;</span>, <span class="st">&quot;UTC&quot;</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>session.conf.<span class="bu">set</span>(<span class="st">&quot;spark.sql.ansi.enabled&quot;</span>, <span class="st">&quot;true&quot;</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>session.conf.<span class="bu">set</span>(<span class="st">&quot;spark.sql.execution.arrow.pyspark.enabled&quot;</span>, <span class="st">&quot;true&quot;</span>)</span></code></pre></div>
+<p>These are ordinary PySpark calls. They go through Spark Connect and
+reach Sail’s config/session machinery. The fixture then tests Sail
+through the normal PySpark surface: SQL, DataFrames, functions, catalog
+calls, writes, UDFs, streaming, and lakehouse features.</p>
+<p>The official PySpark reference documents the broader Spark SQL API at
+<a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/index.html">pyspark.sql</a>,
+and the main API index notes that Spark SQL, Structured Streaming, and
+DataFrame-based MLlib support Spark Connect through the Python API
+surface.</p>
+<p>The user sees:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>spark.<span class="bu">range</span>(<span class="dv">10</span>).where(<span class="st">&quot;id % 2 = 0&quot;</span>).count()</span></code></pre></div>
+<p>Sail sees:</p>
+<pre class="text"><code>Spark Connect relation tree
+  -&gt; Sail spec
+  -&gt; DataFusion logical plan
+  -&gt; DataFusion physical plan
+  -&gt; Arrow result batches</code></pre>
+<h2 data-number="5.7" id="pysail-is-not-a-pyspark-fork"><span
+class="header-section-number">5.7</span> pysail Is Not a PySpark
+Fork</h2>
+<p>This is subtle but central. <code>pysail</code> does not replace
+PySpark classes like <code>DataFrame</code>, <code>Column</code>, or
+<code>SparkSession</code>. It starts a server that PySpark can talk
+to.</p>
+<p>That means compatibility is mostly tested at the protocol/API
+behavior level:</p>
+<ul>
+<li>Does PySpark emit a Spark Connect plan Sail can understand?</li>
+<li>Does Sail return the schema PySpark expects?</li>
+<li>Does Sail return Arrow batches PySpark can decode?</li>
+<li>Do errors look like Spark errors?</li>
+<li>Do config, UDF, catalog, write, and streaming operations behave like
+Spark?</li>
+</ul>
+<p>This is why the test dependencies include
+<code>pyspark[connect]</code> in development and multiple Spark versions
+in test matrices:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[[tool.hatch.envs.test.matrix]]</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dt">spark</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;3.5.7&quot;</span><span class="op">,</span> <span class="st">&quot;4.0.1&quot;</span><span class="op">,</span> <span class="st">&quot;4.1.1&quot;</span><span class="op">]</span></span></code></pre></div>
+<p>The engine is Sail. The client is still PySpark.</p>
+<h2 data-number="5.8" id="python-udfs-enter-through-spark-connect"><span
+class="header-section-number">5.8</span> Python UDFs Enter Through Spark
+Connect</h2>
+<p>PySpark UDFs are user-provided Python functions. In Spark Connect,
+the function is serialized into the request and sent to the server.</p>
+<p>Sail resolves those inline Python UDFs in
+<code>crates/sail-plan/src/resolver/expression/udf.rs</code>.</p>
+<p>The resolver receives a
+<code>spec::CommonInlineUserDefinedFunction</code>, extracts:</p>
+<ul>
+<li>function name</li>
+<li>determinism</li>
+<li>distinct flag</li>
+<li>arguments</li>
+<li>serialized function payload</li>
+</ul>
+<p>Then it builds a <code>PySparkUdfPayload</code> and wraps it in a
+DataFusion <code>ScalarUDF</code> or <code>AggregateUDF</code>.</p>
+<p>For scalar UDFs:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> udf <span class="op">=</span> <span class="pp">PySparkUDF::</span>new(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">PySparkUdfKind::</span>Batch<span class="op">,</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    get_udf_name(name<span class="op">,</span> <span class="op">&amp;</span>payload)<span class="op">,</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    payload<span class="op">,</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    deterministic<span class="op">,</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    input_types<span class="op">,</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    function<span class="op">.</span>output_type<span class="op">,</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>config<span class="op">.</span>pyspark_udf_config<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="cn">Ok</span>(<span class="pp">Expr::</span>ScalarFunction(<span class="pp">expr::</span>ScalarFunction <span class="op">{</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    func<span class="op">:</span> <span class="pp">Arc::</span>new(<span class="pp">ScalarUDF::</span>from(udf))<span class="op">,</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    args<span class="op">:</span> arguments<span class="op">,</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>))</span></code></pre></div>
+<p>For grouped aggregate UDFs, Sail creates a
+<code>PySparkGroupAggregateUDF</code> and returns a DataFusion aggregate
+expression.</p>
+<p>The key idea is:</p>
+<pre class="text"><code>Python function payload
+  -&gt; Sail UDF payload
+  -&gt; DataFusion ScalarUDF/AggregateUDF
+  -&gt; executable physical plan</code></pre>
+<p>The official PySpark UDF APIs are:</p>
+<ul>
+<li><a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.udf.html"><code>pyspark.sql.functions.udf</code></a></li>
+<li><a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.pandas_udf.html"><code>pyspark.sql.functions.pandas_udf</code></a></li>
+<li><a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.udtf.html"><code>pyspark.sql.functions.udtf</code></a></li>
+<li><a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.mapInArrow.html"><code>pyspark.sql.DataFrame.mapInArrow</code></a></li>
+</ul>
+<h2 data-number="5.9" id="udf-kinds"><span
+class="header-section-number">5.9</span> UDF Kinds</h2>
+<p><code>crates/sail-python-udf/src/udf/pyspark_udf.rs</code> defines
+the scalar UDF kinds Sail supports:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> PySparkUdfKind <span class="op">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    Batch<span class="op">,</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    ArrowBatch<span class="op">,</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    ScalarPandas<span class="op">,</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    ScalarPandasIter<span class="op">,</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    ScalarArrow<span class="op">,</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    ScalarArrowIter<span class="op">,</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The resolver maps Spark eval types to these internal UDF kinds:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Spark/PySpark style</th>
+<th>Sail internal kind</th>
+<th>Python-side data shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>regular row-oriented UDF</td>
+<td><code>Batch</code></td>
+<td>Python values</td>
+</tr>
+<tr>
+<td>Arrow-optimized batch UDF</td>
+<td><code>ArrowBatch</code></td>
+<td>Arrow-backed batches</td>
+</tr>
+<tr>
+<td>Pandas scalar UDF</td>
+<td><code>ScalarPandas</code></td>
+<td><code>pandas.Series</code></td>
+</tr>
+<tr>
+<td>Pandas scalar iterator UDF</td>
+<td><code>ScalarPandasIter</code></td>
+<td>iterator of <code>pandas.Series</code></td>
+</tr>
+<tr>
+<td>Arrow scalar UDF</td>
+<td><code>ScalarArrow</code></td>
+<td><code>pyarrow.Array</code></td>
+</tr>
+<tr>
+<td>Arrow scalar iterator UDF</td>
+<td><code>ScalarArrowIter</code></td>
+<td>iterator of <code>pyarrow.Array</code></td>
+</tr>
+</tbody>
+</table>
+<p>The official PySpark docs describe these APIs from the user’s point
+of view. Sail’s code answers the engine question: what kind of object
+should DataFusion execute when such a function appears in a query
+plan?</p>
+<h2 data-number="5.10" id="loading-a-pyspark-udf-payload"><span
+class="header-section-number">5.10</span> Loading a PySpark UDF
+Payload</h2>
+<p><code>crates/sail-python-udf/src/cereal/pyspark_udf.rs</code> handles
+the serialized UDF payload format.</p>
+<p>The payload builder writes:</p>
+<ul>
+<li>eval type</li>
+<li>selected Spark/PySpark config values</li>
+<li>input type metadata for some PySpark versions</li>
+<li>profiling flag</li>
+<li>argument offsets</li>
+<li>keyword argument names when supported</li>
+<li>the serialized Python command bytes</li>
+</ul>
+<p>The payload loader calls into PySpark internals:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> serializer <span class="op">=</span> <span class="pp">PyModule::</span>import(py<span class="op">,</span> <span class="pp">intern!</span>(py<span class="op">,</span> <span class="st">&quot;pyspark.serializers&quot;</span>))<span class="op">?</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>getattr(<span class="pp">intern!</span>(py<span class="op">,</span> <span class="st">&quot;CPickleSerializer&quot;</span>))<span class="op">?</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>call0()<span class="op">?;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> tuple <span class="op">=</span> <span class="pp">PyModule::</span>import(py<span class="op">,</span> <span class="pp">intern!</span>(py<span class="op">,</span> <span class="st">&quot;pyspark.worker&quot;</span>))<span class="op">?</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>getattr(<span class="pp">intern!</span>(py<span class="op">,</span> <span class="st">&quot;read_udfs&quot;</span>))<span class="op">?</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>call1((serializer<span class="op">,</span> infile<span class="op">,</span> eval_type))<span class="op">?;</span></span></code></pre></div>
+<p>This is not an accident. To be compatible with PySpark UDF behavior,
+Sail reuses PySpark’s own worker deserialization conventions. It wants
+the same Python wrapper behavior Spark users expect.</p>
+<figure>
+<img src="diagrams/04-diagram-03.svg" alt="Flowchart 04.3" />
+<figcaption aria-hidden="true">Flowchart 04.3</figcaption>
+</figure>
+<h2 data-number="5.11" id="executing-python-udfs-in-process"><span
+class="header-section-number">5.11</span> Executing Python UDFs in
+Process</h2>
+<p><code>PySparkUDF</code> implements DataFusion’s
+<code>ScalarUDFImpl</code>.</p>
+<p>When DataFusion invokes it, Sail:</p>
+<ol type="1">
+<li>Converts DataFusion <code>ColumnarValue</code> arguments into Arrow
+arrays.</li>
+<li>Attaches to Python.</li>
+<li>Lazily loads or reuses the Python UDF wrapper.</li>
+<li>Converts Arrow arrays to Python objects using PyArrow bridges.</li>
+<li>Calls the Python function wrapper.</li>
+<li>Converts the result back to Arrow <code>ArrayData</code>.</li>
+<li>Casts it to the declared output type.</li>
+</ol>
+<p>The core execution path is:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> args<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>ArrayRef<span class="op">&gt;</span> <span class="op">=</span> <span class="pp">ColumnarValue::</span>values_to_arrays(<span class="op">&amp;</span>args)<span class="op">?;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> udf <span class="op">=</span> <span class="pp">Python::</span>attach(<span class="op">|</span>py<span class="op">|</span> <span class="kw">self</span><span class="op">.</span>udf(py))<span class="op">?;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> data <span class="op">=</span> <span class="pp">Python::</span>attach(<span class="op">|</span>py<span class="op">|</span> <span class="op">-&gt;</span> PyUdfResult<span class="op">&lt;</span>_<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> output <span class="op">=</span> udf<span class="op">.</span>call1(py<span class="op">,</span> (args<span class="op">.</span>try_to_py(py)<span class="op">?,</span> number_rows))<span class="op">?;</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(<span class="pp">ArrayData::</span>try_from_py(py<span class="op">,</span> <span class="op">&amp;</span>output)<span class="op">?</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>)<span class="op">?;</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> array <span class="op">=</span> cast(<span class="op">&amp;</span>make_array(data)<span class="op">,</span> <span class="op">&amp;</span><span class="kw">self</span><span class="op">.</span>output_type)<span class="op">?;</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="cn">Ok</span>(<span class="pp">ColumnarValue::</span>Array(array))</span></code></pre></div>
+<p>That differs from JVM Spark. In JVM Spark, Python UDF execution
+typically involves a Python worker process and serialization between JVM
+and Python. Sail’s Python UDF runs in the same process as the Rust
+execution engine, and Arrow memory can be shared through PyArrow
+bindings.</p>
+<p>The Sail UDF performance docs summarize the motivation: use Pandas or
+Arrow UDFs when possible so wrapper overhead is amortized over batches,
+and use Arrow-native UDFs for the most direct Arrow sharing.</p>
+<figure>
+<img src="diagrams/04-diagram-04.svg" alt="Flowchart 04.4" />
+<figcaption aria-hidden="true">Flowchart 04.4</figcaption>
+</figure>
+<h2 data-number="5.12" id="python-conversion-code"><span
+class="header-section-number">5.12</span> Python Conversion Code</h2>
+<p>The Python helper module embedded in Rust is
+<code>crates/sail-python-udf/src/python/spark.py</code>.</p>
+<p>It contains conversion wrappers for:</p>
+<ul>
+<li>scalar Python values</li>
+<li>Pandas UDFs</li>
+<li>Arrow UDFs</li>
+<li>grouped map functions</li>
+<li>co-grouped map functions</li>
+<li>table functions</li>
+<li>Arrow table functions</li>
+<li>UDTF analysis</li>
+</ul>
+<p>The Rust side loads that Python code from an embedded string:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> MODULE_SOURCE_CODE<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">=</span> <span class="pp">include_str!</span>(<span class="st">&quot;spark.py&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Then <code>PySpark::module</code> initializes it once through a
+<code>PyOnceLock</code>.</p>
+<p>This is a nice pattern: Sail can ship its Python-side UDF helpers
+inside the Rust extension module, so it does not need to locate a
+separate Python file at runtime.</p>
+<h2 data-number="5.13" id="config-for-python-udf-behavior"><span
+class="header-section-number">5.13</span> Config for Python UDF
+Behavior</h2>
+<p><code>PySparkUdfConfig</code> captures the Spark/PySpark settings
+that affect Python UDF behavior:</p>
+<ul>
+<li>session time zone</li>
+<li>Pandas grouped map column assignment</li>
+<li>safe Arrow conversion</li>
+<li>Arrow max records per batch</li>
+<li>Pandas conversion toggles</li>
+<li>int-to-decimal coercion</li>
+<li>binary-as-bytes behavior</li>
+</ul>
+<p>It can also emit key-value pairs that PySpark’s worker code
+understands:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;spark.sql.session.timeZone&quot;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;spark.sql.execution.arrow.maxRecordsPerBatch&quot;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;spark.sql.execution.pyspark.binaryAsBytes&quot;</span></span></code></pre></div>
+<p>This shows another compatibility layer. The same Python function may
+behave differently depending on Spark configuration. Sail has to carry
+those settings from Spark Connect session state into the UDF payload and
+wrapper.</p>
+<h2 data-number="5.14" id="udtfs-and-python-side-analysis"><span
+class="header-section-number">5.14</span> UDTFs and Python-Side
+Analysis</h2>
+<p>PySpark UDTFs can have an <code>analyze</code> static method. The
+official <a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.udtf.html"><code>udtf</code></a>
+documentation describes this as Python-side analysis that can return a
+dynamic schema.</p>
+<p>Sail has hooks for this in
+<code>crates/sail-python-udf/src/python/spark.rs</code>:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> analyze_udtf<span class="op">&lt;</span><span class="ot">&#39;py</span><span class="op">&gt;</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    py<span class="op">:</span> Python<span class="op">&lt;</span><span class="ot">&#39;py</span><span class="op">&gt;,</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    handler<span class="op">:</span> Bound<span class="op">&lt;</span><span class="ot">&#39;py</span><span class="op">,</span> PyAny<span class="op">&gt;,</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    arguments<span class="op">:</span> Bound<span class="op">&lt;</span><span class="ot">&#39;py</span><span class="op">,</span> PyAny<span class="op">&gt;,</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> PyResult<span class="op">&lt;</span>Bound<span class="op">&lt;</span><span class="ot">&#39;py</span><span class="op">,</span> PyAny<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Self</span><span class="pp">::</span>module(py)<span class="op">?</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>getattr(<span class="pp">intern!</span>(py<span class="op">,</span> <span class="st">&quot;analyze_udtf&quot;</span>))<span class="op">?</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>call1((handler<span class="op">,</span> arguments))</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This matters because analysis happens before physical execution. A
+UDTF may determine its output schema from argument types or literal
+values. That means Python code can participate in planning, not just
+execution.</p>
+<p>For the extension proposal, this is a preview of a broader rule:</p>
+<pre class="text"><code>Extensions may need hooks before execution starts.</code></pre>
+<h2 data-number="5.15" id="python-data-sources"><span
+class="header-section-number">5.15</span> Python Data Sources</h2>
+<p>Spark Connect can register Python data sources. Sail handles
+<code>RegisterDataSource</code> in
+<code>crates/sail-spark-connect/src/service/plan_executor.rs</code>.</p>
+<p>The handler extracts the pickled Python data source class and
+registers a session-scoped <code>PythonTableFormat</code> in the
+<code>TableFormatRegistry</code>:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> format <span class="op">=</span> <span class="pp">Arc::</span>new(<span class="pp">PythonTableFormat::</span>with_pickled_class(name<span class="op">.</span>clone()<span class="op">,</span> command))<span class="op">;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>registry<span class="op">.</span>register(format)</span></code></pre></div>
+<p>This is parallel to Python UDF registration:</p>
+<pre class="text"><code>Python behavior arrives through Spark Connect
+  -&gt; Sail stores it in session-scoped registry
+  -&gt; later scans can resolve and execute it</code></pre>
+<p>The important architectural point is session isolation. A registered
+Python data source belongs to that session’s table format registry, not
+a global singleton shared by all users.</p>
+<h2 data-number="5.16" id="testing-pyspark-compatibility"><span
+class="header-section-number">5.16</span> Testing PySpark
+Compatibility</h2>
+<p>Sail’s Python tests are themselves a guide to compatibility.</p>
+<p>The fixture in <code>python/pysail/tests/spark/conftest.py</code>
+either uses <code>SPARK_REMOTE</code> or starts a local Sail Spark
+Connect server. Then it creates a normal PySpark session:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>SparkSession.builder.remote(remote).getOrCreate()</span></code></pre></div>
+<p>The tests cover:</p>
+<ul>
+<li>DataFrame behavior</li>
+<li>SQL behavior</li>
+<li>catalog behavior</li>
+<li>joins, aggregation, ordering, sampling, repartitioning</li>
+<li>functions</li>
+<li>Python UDFs, Pandas UDFs, Arrow UDFs, UDTFs</li>
+<li>data sources</li>
+<li>writes</li>
+<li>streaming</li>
+<li>Delta and Iceberg behavior</li>
+<li>TPC-H, TPC-DS, ClickBench plans/results</li>
+</ul>
+<p>The test matrix explicitly checks different PySpark versions. That is
+because Spark Connect is a moving protocol and PySpark’s UDF behavior
+evolves. Sail has to track both API surface and wire behavior.</p>
+<h2 data-number="5.17" id="why-pyspark-versions-matter"><span
+class="header-section-number">5.17</span> Why PySpark Versions
+Matter</h2>
+<p>The UDF payload builder contains version-specific logic:</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> pyspark_version <span class="op">=</span> get_pyspark_version()<span class="op">?;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="pp">matches!</span>(pyspark_version<span class="op">,</span> <span class="pp">PySparkVersion::</span>V4_1)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;&amp;</span> <span class="pp">matches!</span>(eval_type<span class="op">,</span> <span class="pp">spec::PySparkUdfType::</span>ArrowBatched)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> schema_json <span class="op">=</span> build_input_types_json(input_types)<span class="op">?;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That is a concrete example of why “Spark compatible” is not a single
+target. Spark 3.5, Spark 4.0, and Spark 4.1 differ in function support,
+UDF payload details, UDTF behavior, Arrow APIs, and type handling.</p>
+<p><code>pyproject.toml</code> reflects this with test dependencies and
+test matrices for multiple Spark versions.</p>
+<h2 data-number="5.18" id="what-pysail-means-for-extensions"><span
+class="header-section-number">5.18</span> What pysail Means for
+Extensions</h2>
+<p>Discussion #2001 proposes Python entry points such as:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[project.entry-points.&quot;</span><span class="dt">pysail.extensions&quot;</span><span class="kw">]</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="dt">sedona</span> <span class="op">=</span> <span class="st">&quot;pysail_sedona:register&quot;</span></span></code></pre></div>
+<p>This is a natural Python packaging experience:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pysail pysail-sedona</span></code></pre></div>
+<p>Then, when <code>pysail</code> starts, it could discover installed
+extension packages and register them.</p>
+<p>But this chapter should make the hard parts clear.</p>
+<p>First, discovery is Python-level, but most extension hooks are
+Rust/DataFusion-level:</p>
+<pre class="text"><code>Python entry point
+  -&gt; Rust extension registration
+  -&gt; DataFusion UDFs, optimizer rules, extension planners, codecs</code></pre>
+<p>Second, version coupling is strict. A Python wheel that exposes Rust
+extension objects must match Sail’s <code>arrow</code>,
+<code>datafusion</code>, <code>pyo3</code>, and <code>pysail</code>
+versions. Rust trait objects are not a stable plugin ABI across
+arbitrary crate versions.</p>
+<p>Third, worker execution must see the same extension behavior.
+Installing an extension in the client Python environment is not enough
+if cluster workers cannot decode the physical plan or reconstruct
+extension UDFs.</p>
+<p>Fourth, analysis must work too. If a PySpark client asks for schema
+or explain output before execution, the extension must be registered
+before <code>analyze_plan</code> resolves the query.</p>
+<figure>
+<img src="diagrams/04-diagram-05.svg" alt="Flowchart 04.5" />
+<figcaption aria-hidden="true">Flowchart 04.5</figcaption>
+</figure>
+<p>The pleasant user story is Pythonic. The engine story is Rust and
+distributed.</p>
+<h2 data-number="5.19" id="a-small-end-to-end-example"><span
+class="header-section-number">5.19</span> A Small End-to-End
+Example</h2>
+<p>Suppose the user writes:</p>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql <span class="im">import</span> SparkSession</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql.functions <span class="im">import</span> udf</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql.types <span class="im">import</span> IntegerType</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>spark <span class="op">=</span> SparkSession.builder.remote(<span class="st">&quot;sc://localhost:50051&quot;</span>).getOrCreate()</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="at">@udf</span>(returnType<span class="op">=</span>IntegerType())</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plus_one(x):</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">None</span> <span class="cf">if</span> x <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>spark.<span class="bu">range</span>(<span class="dv">3</span>).select(plus_one(<span class="st">&quot;id&quot;</span>)).show()</span></code></pre></div>
+<p>Sail’s path is:</p>
+<pre class="text"><code>PySpark creates Spark Connect relation containing inline Python UDF
+  -&gt; sail-spark-connect converts relation to Sail spec
+  -&gt; PlanResolver resolves CommonInlineUserDefinedFunction
+  -&gt; PySparkUdfPayload is built
+  -&gt; PySparkUDF becomes a DataFusion ScalarUDF
+  -&gt; DataFusion physical plan executes
+  -&gt; PySparkUDF invokes Python wrapper in process
+  -&gt; output Arrow array returns to DataFusion
+  -&gt; Spark Connect streams ArrowBatch results to PySpark</code></pre>
+<p>This is the whole Sail philosophy in miniature: keep the PySpark
+surface, translate through Spark Connect, execute in
+Rust/DataFusion/Arrow, and invoke Python only where Python semantics are
+actually needed.</p>
+<h2 data-number="5.20" id="reading-exercises-2"><span
+class="header-section-number">5.20</span> Reading Exercises</h2>
+<ol type="1">
+<li>Read <code>python/pysail/spark/__init__.py</code>.
+<ul>
+<li>Notice how small the public wrapper is.</li>
+<li>Find the <code>listening_address</code> property.</li>
+</ul></li>
+<li>Read <code>crates/sail-python/src/spark/server.rs</code>.
+<ul>
+<li>Follow <code>new</code>, <code>start</code>, <code>run</code>, and
+<code>stop</code>.</li>
+<li>Find where <code>Python::detach</code> is used.</li>
+</ul></li>
+<li>Read <code>crates/sail-python/src/globals.rs</code>.
+<ul>
+<li>Follow global runtime initialization.</li>
+<li>Find environment-variable warning behavior.</li>
+</ul></li>
+<li>Read <code>python/pysail/tests/spark/conftest.py</code>.
+<ul>
+<li>Follow the <code>remote</code> fixture.</li>
+<li>Find <code>SparkSession.builder.remote</code>.</li>
+<li>Note which Spark config values tests set by default.</li>
+</ul></li>
+<li>Read <code>crates/sail-plan/src/resolver/expression/udf.rs</code>.
+<ul>
+<li>Trace a scalar UDF from Spark Connect spec to DataFusion
+<code>ScalarUDF</code>.</li>
+<li>Trace a grouped aggregate UDF to <code>AggregateUDF</code>.</li>
+</ul></li>
+<li>Read <code>crates/sail-python-udf/src/udf/pyspark_udf.rs</code>.
+<ul>
+<li>Find <code>PySparkUdfKind</code>.</li>
+<li>Follow <code>invoke_with_args</code>.</li>
+</ul></li>
+<li>Read <code>crates/sail-python-udf/src/cereal/pyspark_udf.rs</code>.
+<ul>
+<li>Find payload build and load.</li>
+<li>Notice the PySpark version-specific logic.</li>
+</ul></li>
+<li>Read <code>crates/sail-python-udf/src/python/spark.py</code>.
+<ul>
+<li>Skim the converter classes.</li>
+<li>Find how Pandas and Arrow wrappers shape Python execution.</li>
+</ul></li>
+</ol>
+<h2 data-number="5.21" id="chapter-takeaways-3"><span
+class="header-section-number">5.21</span> Chapter Takeaways</h2>
+<p><code>pysail</code> is the Python package that makes Sail usable from
+Python, but PySpark remains the primary user API. <code>pysail</code>
+starts and packages a Rust Spark Connect server. PySpark connects to
+that server using <code>SparkSession.builder.remote</code>.</p>
+<p>Python UDF support is where the layers meet most dramatically.
+PySpark serializes Python functions into Spark Connect plans. Sail turns
+those payloads into DataFusion UDFs. Execution invokes Python in process
+and exchanges Arrow memory through PyArrow bridges. Pandas and Arrow
+UDFs amortize Python overhead over batches, while Arrow-native functions
+can share Arrow data most directly.</p>
+<p>For extensions, Python packaging gives an attractive discovery story,
+but the actual extension hooks must reach Rust planning, DataFusion
+execution, and distributed worker decoding. The final extension
+architecture has to make that Python-to-Rust bridge explicit.</p>
+<p>The next chapter moves into Apache Arrow itself: arrays, schemas,
+record batches, IPC, PyArrow bridges, Arrow Flight, and why columnar
+memory is the common currency between Spark Connect, DataFusion, Python
+UDFs, and Sail’s distributed shuffle.</p>
+</body>
+</html>

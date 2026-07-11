@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="441" viewBox="0 0 1604 786">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1604" height="786" fill="white"/>
+
+<line x1="274" y1="83" x2="321" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="629" y1="83" x2="655" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="935" y1="83" x2="982" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="935" y1="83" x2="989" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="935" y1="83" x2="982" y2="393" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="935" y1="83" x2="961" y2="548" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="935" y1="83" x2="996" y2="703" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1234" y1="703" x2="1302" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="155" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="155" dy="0">pip install</tspan><tspan x="155" dy="32">pysail-sedona</tspan></text>
+<rect x="321" y="52" width="308" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="475" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="475" dy="0">Python entry point</tspan></text>
+<rect x="655" y="36" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="795" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="795" dy="0">pysail extension</tspan><tspan x="795" dy="32">registration</tspan></text>
+<rect x="982" y="36" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1115" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1115" dy="0">SessionConfig /</tspan><tspan x="1115" dy="32">SparkSession</tspan></text>
+<rect x="989" y="207" width="252" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1115" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1115" dy="0">UDF registries</tspan></text>
+<rect x="982" y="362" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1115" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1115" dy="0">Optimizer rules</tspan></text>
+<rect x="961" y="501" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1115" y="532" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1115" dy="0">Physical extension</tspan><tspan x="1115" dy="32">planners</tspan></text>
+<rect x="996" y="656" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1115" y="687" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1115" dy="0">Worker decode</tspan><tspan x="1115" dy="32">registry</tspan></text>
+<rect x="1302" y="52" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1435" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1435" dy="0">Cluster workers</tspan></text>
+</svg>

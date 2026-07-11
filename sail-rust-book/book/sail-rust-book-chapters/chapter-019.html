@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 18: Feature Playbooks</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-020.html" accesskey="n" rel="next">Chapter 19: Roadmap And Codebase Navigation</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-018.html" accesskey="p" rel="previous">Chapter 17: Testing Spark Compatibility</a>
+</span>
+</div>
+</nav>
+<h1 data-number="19" id="chapter-18"><span
+class="header-section-number">19</span> Chapter 18: Feature
+Playbooks</h1>
+<p>This chapter is a practical contributor guide. It turns the
+architecture from the previous chapters into checklists for common
+changes.</p>
+<p>The point is not to replace code review. The point is to help a
+contributor avoid the classic Sail mistake: implementing one layer of a
+feature and forgetting the other four.</p>
+<h2 data-number="19.1" id="adding-a-spark-function"><span
+class="header-section-number">19.1</span> Adding A Spark Function</h2>
+<p>Start by classifying the function.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Typical location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scalar expression that maps to DataFusion</td>
+<td><code>crates/sail-plan/src/function/scalar/</code></td>
+</tr>
+<tr>
+<td>Scalar function requiring Spark-specific runtime behavior</td>
+<td><code>crates/sail-function/src/scalar/</code></td>
+</tr>
+<tr>
+<td>Aggregate function</td>
+<td><code>crates/sail-function/src/aggregate/</code> and function
+registry</td>
+</tr>
+<tr>
+<td>Window function</td>
+<td><code>crates/sail-function/src/window/</code> and function
+registry</td>
+</tr>
+<tr>
+<td>Table/generator function</td>
+<td><code>crates/sail-plan/src/function/table/</code> and resolver
+paths</td>
+</tr>
+</tbody>
+</table>
+<p>Then follow the lifecycle:</p>
+<ol type="1">
+<li>Confirm Spark syntax and behavior.</li>
+<li>Decide whether the function can be expressed as a DataFusion
+<code>Expr</code>.</li>
+<li>If yes, register it through the <code>ScalarFunctionBuilder</code>
+closure model.</li>
+<li>If no, implement the appropriate DataFusion UDF/UDAF/window
+function.</li>
+<li>Add type coercion and return-type logic.</li>
+<li>Add SQL/gold tests.</li>
+<li>Add DataFrame/PySpark tests if the API path differs.</li>
+<li>Verify distributed behavior if aggregate state or custom UDF
+encoding is involved.</li>
+</ol>
+<p>Prefer expression-level registration when possible. It keeps the
+function visible to DataFusion optimization.</p>
+<h2 data-number="19.2" id="adding-a-python-udf-path"><span
+class="header-section-number">19.2</span> Adding A Python UDF Path</h2>
+<p>Python UDF work crosses a wide boundary:</p>
+<pre class="text"><code>Spark Connect function payload
+  -&gt; Sail spec
+  -&gt; resolver UDF object
+  -&gt; Python serialization/deserialization
+  -&gt; Arrow/Python conversion
+  -&gt; local or worker execution
+  -&gt; codec support if distributed</code></pre>
+<p>Before editing, identify which UDF family you are touching:</p>
+<ul>
+<li>scalar row-by-row,</li>
+<li>Arrow scalar,</li>
+<li>Pandas scalar,</li>
+<li>grouped aggregate,</li>
+<li>grouped map,</li>
+<li>co-grouped map,</li>
+<li>iterator UDF,</li>
+<li>UDTF.</li>
+</ul>
+<p>Then check:</p>
+<ol type="1">
+<li>Does Spark Connect carry enough metadata?</li>
+<li>Does the spec type preserve it?</li>
+<li>Does resolver logic construct the right UDF object?</li>
+<li>Does <code>sail-python-udf</code> know how to call it?</li>
+<li>Does the codec preserve it for workers?</li>
+<li>Are Python exceptions mapped back to Spark-friendly errors?</li>
+</ol>
+<h2 data-number="19.3" id="adding-a-catalog-backend"><span
+class="header-section-number">19.3</span> Adding A Catalog Backend</h2>
+<p>Catalogs answer questions about names, databases, tables, and
+views.</p>
+<ol type="1">
+<li>Add or update configuration in Sail’s config model.</li>
+<li>Implement <code>CatalogProvider</code>.</li>
+<li>Register the provider in
+<code>crates/sail-session/src/catalog.rs</code>.</li>
+<li>Decide whether it needs runtime-aware wrapping for I/O runtime
+use.</li>
+<li>Decide whether catalog caching applies.</li>
+<li>Map backend errors to <code>CatalogError</code>.</li>
+<li>Return <code>TableStatus</code> with accurate format, schema,
+location, and properties.</li>
+<li>Test create/list/get/drop behavior.</li>
+<li>Test table scans through the DataFusion bridge.</li>
+</ol>
+<p>Do not stop at metadata tests. A catalog backend is only useful if
+its <code>TableStatus</code> leads to the right table provider.</p>
+<h2 data-number="19.4" id="adding-a-table-format"><span
+class="header-section-number">19.4</span> Adding A Table Format</h2>
+<p>Table formats translate table metadata into read and write
+behavior.</p>
+<ol type="1">
+<li>Implement or extend the <code>TableFormat</code> contract.</li>
+<li>Register it in <code>crates/sail-session/src/formats.rs</code>.</li>
+<li>Define source and sink option resolution.</li>
+<li>Implement scan creation.</li>
+<li>Implement write planning if supported.</li>
+<li>Add object-store handling if needed.</li>
+<li>Add projection/filter tests.</li>
+<li>Add write-mode tests.</li>
+<li>Add catalog integration tests.</li>
+</ol>
+<p>For lakehouse formats, also ask:</p>
+<ul>
+<li>Does this format support row-level operations?</li>
+<li>Does it need logical expansion rules?</li>
+<li>Does it need an extension physical planner?</li>
+<li>Does it need metadata columns for merge/delete?</li>
+</ul>
+<h2 data-number="19.5" id="adding-a-logical-plan-node"><span
+class="header-section-number">19.5</span> Adding A Logical Plan
+Node</h2>
+<p>Use this path when Spark has a logical concept DataFusion does not
+represent natively.</p>
+<ol type="1">
+<li>Add the spec representation if needed.</li>
+<li>Add resolver logic that creates a
+<code>LogicalPlan::Extension</code>.</li>
+<li>Implement <code>UserDefinedLogicalNodeCore</code>.</li>
+<li>Preserve schema and expressions correctly.</li>
+<li>Implement projection-pushdown hints if relevant.</li>
+<li>Add the physical <code>ExecutionPlan</code>.</li>
+<li>Register downcast planning in
+<code>ExtensionPhysicalPlanner</code>.</li>
+<li>Add optimizer rules only if planning alone is insufficient.</li>
+<li>Add codec support for cluster mode if the physical node can reach
+workers.</li>
+</ol>
+<p>The physical planner registration belongs in
+<code>sail-session</code>, not <code>sail-plan</code>.</p>
+<h2 data-number="19.6" id="adding-a-physical-optimizer-rule"><span
+class="header-section-number">19.6</span> Adding A Physical Optimizer
+Rule</h2>
+<p>Physical optimizer rules rewrite executable plans. They should be
+used when:</p>
+<ul>
+<li>DataFusion’s physical plan is valid but not Spark-compatible,</li>
+<li>a Sail placeholder exec must be lowered,</li>
+<li>a partitioning/distribution contract must be enforced,</li>
+<li>cluster execution needs a safer physical shape.</li>
+</ul>
+<p>Checklist:</p>
+<ol type="1">
+<li>Write down the exact physical invariant.</li>
+<li>Add a focused rule implementation.</li>
+<li>Insert it in <code>get_physical_optimizers</code> at the correct
+point.</li>
+<li>Add tests for before/after plan shape.</li>
+<li>Confirm the rule does not fight DataFusion’s own rules.</li>
+<li>Test local and cluster execution when distribution changes.</li>
+</ol>
+<h2 data-number="19.7" id="adding-a-streaming-source"><span
+class="header-section-number">19.7</span> Adding A Streaming Source</h2>
+<p>Streaming sources implement <code>StreamSource</code>.</p>
+<ol type="1">
+<li>Define source options and schema.</li>
+<li>Implement <code>data_schema</code>.</li>
+<li>Implement <code>scan</code> to return an
+<code>ExecutionPlan</code>.</li>
+<li>Ensure execution emits flow-event batches.</li>
+<li>Register source discovery/read resolution.</li>
+<li>Test projection behavior.</li>
+<li>Test query lifecycle: start, status, stop, await.</li>
+<li>Test interactions with filters, limits, and sinks.</li>
+</ol>
+<p>The source should not return ordinary user-schema batches from
+physical execution. It must produce the flow-event schema expected by
+streaming physical operators.</p>
+<h2 data-number="19.8" id="adding-distributed-codec-support"><span
+class="header-section-number">19.8</span> Adding Distributed Codec
+Support</h2>
+<p>If a feature creates a physical object that workers need to execute,
+the remote execution codec has to know about it.</p>
+<p>Ask:</p>
+<ol type="1">
+<li>Does the object appear inside an <code>ExecutionPlan</code> sent to
+workers?</li>
+<li>Does DataFusion’s protobuf codec already support it?</li>
+<li>If not, does Sail’s codec need a custom representation?</li>
+<li>Does the worker session have all function/table-format registrations
+required to decode or re-resolve it?</li>
+<li>Are version mismatches possible?</li>
+</ol>
+<p>Codec work is often the difference between “works locally” and “works
+in Sail.”</p>
+<h2 data-number="19.9" id="debugging-a-compatibility-bug"><span
+class="header-section-number">19.9</span> Debugging A Compatibility
+Bug</h2>
+<p>Use this order:</p>
+<ol type="1">
+<li>Reproduce with a minimal SQL query if possible.</li>
+<li>Compare with Spark output.</li>
+<li>Inspect the Spark Connect or SQL entry path.</li>
+<li>Inspect the Sail spec.</li>
+<li>Inspect initial and final logical plans.</li>
+<li>Inspect the physical plan.</li>
+<li>Run in local mode.</li>
+<li>Run in cluster mode if the feature is distributed-sensitive.</li>
+<li>Add the smallest regression test that would have caught it.</li>
+</ol>
+<h2 data-number="19.10" id="takeaways-11"><span
+class="header-section-number">19.10</span> Takeaways</h2>
+<p>Sail features are pipelines. A complete contribution usually needs
+protocol/spec, resolver, DataFusion planning, execution, tests, and
+sometimes distributed codec support. The playbook is there to keep those
+layers visible.</p>
+<p>Navigation: <a href="chapter-018.html#chapter-17">Previous: Chapter
+17, Testing Spark Compatibility</a> | <a
+href="chapter-020.html#chapter-19">Next: Chapter 19, Roadmap And
+Codebase Navigation</a> | <a href="chapter-001.html#chapter-00">Reader
+Guide</a></p>
+</body>
+</html>

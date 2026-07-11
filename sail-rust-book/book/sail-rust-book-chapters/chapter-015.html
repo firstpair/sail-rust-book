@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 14: Arrow Flight SQL</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-016.html" accesskey="n" rel="next">Chapter 15: Custom Nodes And Optimizers</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-014.html" accesskey="p" rel="previous">Chapter 13: Extension Architecture: From Proposal To Design</a>
+</span>
+</div>
+</nav>
+<h1 data-number="15" id="chapter-14"><span
+class="header-section-number">15</span> Chapter 14: Arrow Flight
+SQL</h1>
+<p>Spark Connect is Sail’s primary front door, but it is not the only
+one. Sail also exposes Apache Arrow Flight SQL for clients that want SQL
+over Arrow-native transport rather than PySpark over Spark Connect.</p>
+<p>This chapter is deliberately short and concrete. Its job is to place
+<code>sail-flight</code> in the definitive architecture: it is a second
+protocol surface that converges on the same SQL parser, Sail spec layer,
+DataFusion physical planning, <code>JobService</code>, and Arrow
+<code>RecordBatch</code> streams.</p>
+<h2 data-number="15.1" id="code-map-5"><span
+class="header-section-number">15.1</span> Code Map</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flight SQL service</td>
+<td><code>crates/sail-flight/src/service.rs</code></td>
+</tr>
+<tr>
+<td>Query handle state</td>
+<td><code>crates/sail-flight/src/state.rs</code></td>
+</tr>
+<tr>
+<td>Metrics wrapper</td>
+<td><code>crates/sail-flight/src/metrics.rs</code></td>
+</tr>
+<tr>
+<td>SQL parser entry point</td>
+<td><code>crates/sail-sql-analyzer/src/parser.rs</code></td>
+</tr>
+<tr>
+<td>SQL AST to spec</td>
+<td><code>crates/sail-sql-analyzer/src/statement.rs</code></td>
+</tr>
+<tr>
+<td>Planning entry point</td>
+<td><code>crates/sail-plan/src/lib.rs</code></td>
+</tr>
+<tr>
+<td>Job runner extension</td>
+<td><code>crates/sail-common-datafusion/src/session/job.rs</code></td>
+</tr>
+<tr>
+<td>Session manager</td>
+<td><code>crates/sail-session/src/session_manager/</code></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="15.2"
+id="why-flight-sql-exists-beside-spark-connect"><span
+class="header-section-number">15.2</span> Why Flight SQL Exists Beside
+Spark Connect</h2>
+<p>Spark Connect is Spark-shaped. It carries unresolved Spark relations,
+commands, expressions, config operations, reattachable execution,
+artifacts, and session semantics. That is exactly what PySpark
+needs.</p>
+<p>Flight SQL is SQL-shaped. It is useful for ADBC, JDBC-style tools, BI
+clients, and systems that already understand Arrow Flight. The protocol
+does not try to model the Spark DataFrame API. It asks a simpler
+question:</p>
+<pre class="text"><code>Given this SQL statement, what schema will it produce, and where can I fetch the
+Arrow stream?</code></pre>
+<p>That makes <code>sail-flight</code> an excellent example of Sail’s
+internal layering. The protocol is different, but the planning core is
+the same.</p>
+<figure>
+<img src="diagrams/14-diagram-01.svg" alt="Flowchart 14.1" />
+<figcaption aria-hidden="true">Flowchart 14.1</figcaption>
+</figure>
+<h2 data-number="15.3" id="the-service-shape"><span
+class="header-section-number">15.3</span> The Service Shape</h2>
+<p><code>SailFlightSqlService</code> is small compared with
+<code>SparkConnectServer</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> SailFlightSqlService <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    session_manager<span class="op">:</span> SessionManager<span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    config<span class="op">:</span> Arc<span class="op">&lt;</span>PlanConfig<span class="op">&gt;,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span>MetricRegistry<span class="op">&gt;&gt;,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    state<span class="op">:</span> Arc<span class="op">&lt;</span>Mutex<span class="op">&lt;</span>SailFlightSqlState<span class="op">&gt;&gt;,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The service implements <code>FlightSqlService</code> from the
+<code>arrow-flight</code> crate. The key methods for query execution
+are:</p>
+<ul>
+<li><code>get_flight_info_statement</code></li>
+<li><code>do_get_statement</code></li>
+<li><code>do_handshake</code></li>
+</ul>
+<p>Other Flight SQL methods can remain unimplemented until Sail needs
+them. This is a different compatibility posture than Spark Connect,
+where PySpark expects a wider service surface.</p>
+<h2 data-number="15.4" id="phase-one-getflightinfo"><span
+class="header-section-number">15.4</span> Phase One:
+<code>GetFlightInfo</code></h2>
+<p>Flight SQL separates planning from fetching. The first request is
+<code>GetFlightInfo(CommandStatementQuery)</code>. Sail parses the SQL
+text, converts it to <code>spec::Plan</code>, creates a physical plan,
+starts execution through the session’s <code>JobService</code>, and
+stores the resulting stream under an opaque handle.</p>
+<p>The key sequence is:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> statement <span class="op">=</span> parse_one_statement(<span class="op">&amp;</span>query<span class="op">.</span>query)<span class="op">?;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> from_ast_statement(statement)<span class="op">?;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> ctx <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>get_session_context()<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> (plan<span class="op">,</span> _) <span class="op">=</span> resolve_and_execute_plan(<span class="op">&amp;</span>ctx<span class="op">,</span> <span class="kw">self</span><span class="op">.</span>config<span class="op">.</span>clone()<span class="op">,</span> plan)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> schema <span class="op">=</span> plan<span class="op">.</span>schema()<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> service <span class="op">=</span> ctx<span class="op">.</span><span class="pp">extension::</span><span class="op">&lt;</span>JobService<span class="op">&gt;</span>()<span class="op">?;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream <span class="op">=</span> service<span class="op">.</span>runner()<span class="op">.</span>execute(<span class="op">&amp;</span>ctx<span class="op">,</span> plan)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span></code></pre></div>
+<p>That is the same core path used elsewhere:</p>
+<pre class="text"><code>SQL text
+  -&gt; SQL AST
+  -&gt; Sail spec
+  -&gt; DataFusion physical plan
+  -&gt; JobRunner stream</code></pre>
+<p>The service then stores the stream in
+<code>SailFlightSqlState</code>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> handle <span class="op">=</span> <span class="pp">QueryHandle::</span>new()<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>state<span class="op">.</span>lock()<span class="op">.</span><span class="kw">await</span><span class="op">.</span>add_stream(handle<span class="op">.</span>clone()<span class="op">,</span> stream)<span class="op">;</span></span></code></pre></div>
+<p>The returned <code>FlightInfo</code> contains the schema and a
+<code>TicketStatementQuery</code> carrying that handle.</p>
+<h2 data-number="15.5" id="phase-two-doget"><span
+class="header-section-number">15.5</span> Phase Two:
+<code>DoGet</code></h2>
+<p>The second request presents the ticket:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> handle <span class="op">=</span> <span class="pp">QueryHandle::</span>try_from(ticket<span class="op">.</span>statement_handle<span class="op">.</span>as_ref())<span class="op">?;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream <span class="op">=</span> <span class="kw">self</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>state</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>lock()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="kw">await</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>remove_stream(<span class="op">&amp;</span>handle)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>ok_or_else(<span class="op">||</span> <span class="pp">Status::</span>not_found(<span class="op">...</span>))<span class="op">?;</span></span></code></pre></div>
+<p>The handle is consumed once. This keeps server state simple: Flight
+SQL clients can re-run a query if a fetch fails, while Spark Connect
+clients use reattachable execution and response buffering.</p>
+<p>After retrieving the stream, Sail encodes batches as Flight data:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> output <span class="op">=</span> <span class="pp">FlightDataEncoderBuilder::</span>new()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_schema(schema)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>build(output)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>map(<span class="op">|</span>result<span class="op">|</span> result<span class="op">.</span>map_err(<span class="op">|</span>e<span class="op">|</span> <span class="pp">Status::</span>internal(<span class="pp">format!</span>(<span class="st">&quot;encoding error: {e}&quot;</span>))))<span class="op">;</span></span></code></pre></div>
+<p>This is where Flight SQL differs from Spark Connect at the wire
+level. Spark Connect wraps Arrow IPC bytes in Spark protobuf messages.
+Flight SQL sends Arrow Flight frames directly.</p>
+<h2 data-number="15.6" id="the-shared-session-model"><span
+class="header-section-number">15.6</span> The Shared Session Model</h2>
+<p>The current Flight SQL service uses a shared default session:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> DEFAULT_SESSION_ID<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span> <span class="op">=</span> <span class="st">&quot;flight-default&quot;</span><span class="op">;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> DEFAULT_USER_ID<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span> <span class="op">=</span> <span class="st">&quot;flight-user&quot;</span><span class="op">;</span></span></code></pre></div>
+<p>That means Flight SQL queries share session configuration and catalog
+state. It is a reasonable initial model, but a definitive guide should
+call it out because it is not the same as Spark Connect’s
+client-provided session IDs.</p>
+<p>A future version could carry session identity in Flight headers. The
+important architectural point is that the same
+<code>SessionManager</code> and <code>SessionContext</code> machinery
+still applies.</p>
+<h2 data-number="15.7" id="commands-1"><span
+class="header-section-number">15.7</span> Commands</h2>
+<p>SQL commands are different from queries because the effect matters
+more than the result stream. Sail classifies the parsed plan:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> statement_type <span class="op">=</span> <span class="cf">match</span> <span class="op">&amp;</span>plan <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">spec::Plan::</span>Query(_) <span class="op">=&gt;</span> <span class="pp">StatementType::</span>Query<span class="op">,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">spec::Plan::</span>Command(_) <span class="op">=&gt;</span> <span class="pp">StatementType::</span>Command<span class="op">,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p>For commands, the service drains the stream eagerly in
+<code>get_flight_info_statement</code>. That ensures the command has
+completed before the client receives <code>FlightInfo</code>.</p>
+<p>This detail matters for DDL. A BI client that sends
+<code>CREATE TABLE</code> should not have to call <code>DoGet</code>
+just to make the side effect happen.</p>
+<h2 data-number="15.8" id="metrics"><span
+class="header-section-number">15.8</span> Metrics</h2>
+<p>When OpenTelemetry metrics are available, <code>sail-flight</code>
+wraps the result stream in <code>MetricsRecordingStream</code>. The
+wrapper records row counts, batch counts, elapsed time, and statement
+type.</p>
+<p>This mirrors a general Sail design habit: protocol crates should add
+protocol-level metrics around streams without changing the core
+execution layer.</p>
+<h2 data-number="15.9" id="spark-connect-versus-flight-sql"><span
+class="header-section-number">15.9</span> Spark Connect Versus Flight
+SQL</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Spark Connect</th>
+<th>Flight SQL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Main client</td>
+<td>PySpark</td>
+<td>ADBC/JDBC/BI tools</td>
+</tr>
+<tr>
+<td>Request payload</td>
+<td>Spark protobuf plan</td>
+<td>SQL statement</td>
+</tr>
+<tr>
+<td>Result transport</td>
+<td>Spark <code>ExecutePlanResponse</code> with
+<code>ArrowBatch</code></td>
+<td>Arrow Flight <code>FlightData</code></td>
+</tr>
+<tr>
+<td>Session identity</td>
+<td>Client-provided session ID</td>
+<td>Shared default session today</td>
+</tr>
+<tr>
+<td>Retry model</td>
+<td>Reattachable operation stream</td>
+<td>Re-execute query</td>
+</tr>
+<tr>
+<td>Planning convergence</td>
+<td><code>spec::Plan</code></td>
+<td><code>spec::Plan</code></td>
+</tr>
+<tr>
+<td>Execution convergence</td>
+<td><code>JobService</code> / <code>JobRunner</code></td>
+<td><code>JobService</code> / <code>JobRunner</code></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="15.10" id="extension-implications-5"><span
+class="header-section-number">15.10</span> Extension Implications</h2>
+<p>Flight SQL is a useful test for extension design. If a future
+extension only works when a user enters through Spark Connect protobufs,
+then SQL clients cannot use it. If it registers through the common
+spec/resolver/function/table-format layers, both front doors can use
+it.</p>
+<p>For extension authors, this gives a simple rule:</p>
+<pre class="text"><code>Protocol-specific dispatch is allowed, but semantic registration should happen below
+the protocol boundary whenever possible.</code></pre>
+<h2 data-number="15.11" id="takeaways-7"><span
+class="header-section-number">15.11</span> Takeaways</h2>
+<p>Flight SQL is not a separate query engine inside Sail. It is another
+way to reach the same SQL parser, Sail spec IR, DataFusion planning
+path, and job runner. The protocol differences are real, especially
+around session identity and fetch handles, but the internal convergence
+is the point.</p>
+<p>Navigation: <a href="chapter-014.html#chapter-13">Previous: Chapter
+13, Extension Architecture</a> | <a
+href="chapter-016.html#chapter-15">Next: Chapter 15, Custom Nodes And
+Optimizers</a> | <a href="chapter-001.html#chapter-00">Reader
+Guide</a></p>
+</body>
+</html>

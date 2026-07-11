@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="171" viewBox="0 0 1604 305">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1604" height="305" fill="white"/>
+
+<line x1="330" y1="83" x2="384" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="278" y1="238" x2="405" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="622" y1="83" x2="728" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="601" y1="238" x2="728" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="918" y1="83" x2="1031" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1255" y1="83" x2="1358" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">PySpark DataFrame</tspan><tspan x="183" dy="32">API</tspan></text>
+<rect x="384" y="36" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="503" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="503" dy="0">Spark Connect</tspan><tspan x="503" dy="32">proto</tspan></text>
+<rect x="88" y="207" width="190" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">SQL text</tspan></text>
+<rect x="405" y="207" width="196" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="503" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="503" dy="0">SQL parser</tspan></text>
+<rect x="728" y="52" width="190" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="823" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="823" dy="0">Sail spec</tspan></text>
+<rect x="1031" y="52" width="224" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1143" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1143" dy="0">PlanResolver</tspan></text>
+<rect x="1358" y="36" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1463" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1463" dy="0">DataFusion</tspan><tspan x="1463" dy="32">LogicalPlan</tspan></text>
+</svg>

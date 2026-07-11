@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 7: From Physical Plan To Job Graph</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-009.html" accesskey="n" rel="next">Chapter 8: Drivers, Workers, Tasks, And Streams</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-007.html" accesskey="p" rel="previous">Chapter 6: Apache DataFusion</a>
+</span>
+</div>
+</nav>
+<h1 data-number="8" id="chapter-07"><span
+class="header-section-number">8</span> Chapter 7: From Physical Plan To
+Job Graph</h1>
+<p>The previous chapter ended with a DataFusion physical plan:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;</span></span></code></pre></div>
+<p>That is enough for local execution. DataFusion can call
+<code>execute(partition, task_context)</code> on the plan and return a
+stream of Arrow <code>RecordBatch</code> values.</p>
+<p>But a distributed engine needs one more transformation. It has to
+decide:</p>
+<ul>
+<li>which parts of the physical plan can run together,</li>
+<li>where data has to be materialized,</li>
+<li>where shuffle boundaries exist,</li>
+<li>how partitions map to tasks,</li>
+<li>which stage outputs are consumed by which later stages,</li>
+<li>and which tasks run on workers versus the driver.</li>
+</ul>
+<p>In Sail, that transformation is the job graph.</p>
+<p>This chapter follows the path:</p>
+<pre class="text"><code>DataFusion ExecutionPlan -&gt; Sail JobGraph -&gt; JobTopology -&gt; task regions -&gt; task definitions</code></pre>
+<p>The job graph is where DataFusion’s local, partitioned execution
+model becomes Sail’s distributed execution model.</p>
+<h2 data-number="8.1" id="the-core-files"><span
+class="header-section-number">8.1</span> The Core Files</h2>
+<p>The main files for this chapter are:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Area</th>
+<th>Files</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Job graph data model</td>
+<td><code>crates/sail-execution/src/job_graph/mod.rs</code></td>
+<td>Defines jobs, stages, inputs, distributions, placement, and input
+modes</td>
+</tr>
+<tr>
+<td>Job graph planner</td>
+<td><code>crates/sail-execution/src/job_graph/planner.rs</code></td>
+<td>Splits a DataFusion physical plan into stages</td>
+</tr>
+<tr>
+<td>Job runner boundary</td>
+<td><code>crates/sail-execution/src/job_runner.rs</code></td>
+<td>Chooses local execution or cluster execution</td>
+</tr>
+<tr>
+<td>Driver job acceptance</td>
+<td><code>crates/sail-execution/src/driver/job_scheduler/core.rs</code></td>
+<td>Builds the job graph and creates job output streams</td>
+</tr>
+<tr>
+<td>Job topology</td>
+<td><code>crates/sail-execution/src/driver/job_scheduler/topology.rs</code></td>
+<td>Groups stages into task regions and dependencies</td>
+</tr>
+<tr>
+<td>Job state</td>
+<td><code>crates/sail-execution/src/driver/job_scheduler/state.rs</code></td>
+<td>Tracks jobs, stages, tasks, attempts, and task states</td>
+</tr>
+<tr>
+<td>Task definition</td>
+<td><code>crates/sail-execution/src/task/definition.rs</code></td>
+<td>Defines serialized worker task inputs and outputs</td>
+</tr>
+<tr>
+<td>Stage input placeholder</td>
+<td><code>crates/sail-execution/src/plan/stage_input.rs</code></td>
+<td>Placeholder <code>ExecutionPlan</code> node for cross-stage
+inputs</td>
+</tr>
+<tr>
+<td>Shuffle plans</td>
+<td><code>crates/sail-execution/src/plan/shuffle_write.rs</code>,
+<code>shuffle_read.rs</code></td>
+<td>Physical data movement at stage boundaries</td>
+</tr>
+<tr>
+<td>Job output</td>
+<td><code>crates/sail-execution/src/driver/output.rs</code></td>
+<td>Merges final task output streams into the client-facing stream</td>
+</tr>
+</tbody>
+</table>
+<p>The first file to read is <code>job_graph/mod.rs</code>. It defines
+the vocabulary.</p>
+<h2 data-number="8.2" id="local-runner-versus-cluster-runner"><span
+class="header-section-number">8.2</span> Local Runner Versus Cluster
+Runner</h2>
+<p>Sail can execute the same DataFusion physical plan locally or through
+the cluster runtime.</p>
+<p><code>crates/sail-execution/src/job_runner.rs</code> has two
+implementations of <code>JobRunner</code>:</p>
+<ul>
+<li><code>LocalJobRunner</code></li>
+<li><code>ClusterJobRunner</code></li>
+</ul>
+<p>The local runner is intentionally simple:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> trace_execution_plan(plan<span class="op">,</span> options)<span class="op">?;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cn">Ok</span>(execute_stream(plan<span class="op">,</span> ctx<span class="op">.</span>task_ctx())<span class="op">?</span>)</span></code></pre></div>
+<p>It hands the plan directly to DataFusion’s
+<code>execute_stream</code>.</p>
+<p>The cluster runner sends the plan to the driver actor:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>driver</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>send(<span class="pp">DriverEvent::</span>ExecuteJob <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        plan<span class="op">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        context<span class="op">:</span> ctx<span class="op">.</span>task_ctx()<span class="op">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        result<span class="op">:</span> tx<span class="op">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span></code></pre></div>
+<p>That event is handled by the driver:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> out <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>job_scheduler<span class="op">.</span>accept_job(ctx<span class="op">,</span> plan<span class="op">,</span> context)<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">let</span> <span class="cn">Ok</span>((job_id<span class="op">,</span> _)) <span class="op">=</span> <span class="op">&amp;</span>out <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>refresh_job(ctx<span class="op">,</span> <span class="op">*</span>job_id)<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>run_tasks(ctx)<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>scale_up_workers(ctx)<span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>So the split is:</p>
+<figure>
+<img src="diagrams/07-diagram-01.svg" alt="Flowchart 07.1" />
+<figcaption aria-hidden="true">Flowchart 07.1</figcaption>
+</figure>
+<p>This chapter is about the cluster branch.</p>
+<h2 data-number="8.3" id="what-a-job-graph-represents"><span
+class="header-section-number">8.3</span> What A Job Graph
+Represents</h2>
+<p><code>JobGraph</code> is defined in
+<code>crates/sail-execution/src/job_graph/mod.rs</code>:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> JobGraph <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    stages<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Stage<span class="op">&gt;,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    schema<span class="op">:</span> SchemaRef<span class="op">,</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The code comment gives the mental model:</p>
+<ul>
+<li>a job has stages,</li>
+<li>a stage has partitions,</li>
+<li>a task executes one partition of one stage,</li>
+<li>a task can have multiple attempts,</li>
+<li>each task produces output split into channels.</li>
+</ul>
+<p>That last point is essential. A task does not merely produce one
+stream. It can produce multiple channels so downstream tasks can
+read:</p>
+<ul>
+<li>the same partition,</li>
+<li>all partitions,</li>
+<li>a shuffle channel from all partitions,</li>
+<li>all channels for broadcast,</li>
+<li>or a contiguous subset for rescale.</li>
+</ul>
+<p>The <code>Stage</code> struct carries:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> Stage <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> inputs<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>StageInput<span class="op">&gt;,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> plan<span class="op">:</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> group<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> mode<span class="op">:</span> OutputMode<span class="op">,</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> distribution<span class="op">:</span> OutputDistribution<span class="op">,</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> placement<span class="op">:</span> TaskPlacement<span class="op">,</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Each stage is still an <code>ExecutionPlan</code>. Sail does not
+compile to a separate mini-language for stages. Instead, it cuts a
+DataFusion physical plan into smaller DataFusion physical plans and
+links them with placeholders.</p>
+<figure>
+<img src="diagrams/07-diagram-02.svg" alt="Flowchart 07.2" />
+<figcaption aria-hidden="true">Flowchart 07.2</figcaption>
+</figure>
+<p><code>StageInputExec</code> is the placeholder that marks “read
+another stage’s output here.”</p>
+<h2 data-number="8.4"
+id="stageinputexec-a-placeholder-not-an-operator"><span
+class="header-section-number">8.4</span> <code>StageInputExec</code>: A
+Placeholder, Not An Operator</h2>
+<p><code>crates/sail-execution/src/plan/stage_input.rs</code> defines
+<code>StageInputExec&lt;I&gt;</code>.</p>
+<p>It implements DataFusion’s <code>ExecutionPlan</code>, but its
+<code>execute</code> method errors:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> execute(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    _partition<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    _context<span class="op">:</span> Arc<span class="op">&lt;</span>TaskContext<span class="op">&gt;,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SendableRecordBatchStream<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">internal_err!</span>(<span class="st">&quot;{} should be resolved before execution&quot;</span><span class="op">,</span> <span class="kw">self</span><span class="op">.</span>name())</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That is deliberate. <code>StageInputExec</code> is not meant to run
+as-is. It is a marker inserted during job graph construction. Later,
+when a worker task is prepared, the task runner resolves the placeholder
+into a real <code>ShuffleReadExec</code> or stream input.</p>
+<p>The generic parameter <code>I</code> changes meaning during
+planning:</p>
+<ul>
+<li><code>StageInputExec&lt;StageInput&gt;</code> records a logical
+dependency on another stage.</li>
+<li><code>StageInputExec&lt;usize&gt;</code> records an index into the
+current stage’s input list.</li>
+</ul>
+<p>The <code>rewrite_inputs</code> function performs that
+conversion:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(placeholder) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>StageInputExec<span class="op">&lt;</span>StageInput<span class="op">&gt;&gt;</span>() <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> index <span class="op">=</span> inputs<span class="op">.</span>len()<span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    inputs<span class="op">.</span>push(placeholder<span class="op">.</span>input()<span class="op">.</span>clone())<span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> placeholder <span class="op">=</span> <span class="pp">StageInputExec::</span>new(index<span class="op">,</span> placeholder<span class="op">.</span>properties()<span class="op">.</span>clone())<span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(<span class="pp">Transformed::</span>yes(<span class="pp">Arc::</span>new(placeholder)))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That gives every stage:</p>
+<ul>
+<li>a plan containing numbered input placeholders,</li>
+<li>and a separate <code>inputs: Vec&lt;StageInput&gt;</code> that
+describes where those inputs come from.</li>
+</ul>
+<p>This separation is neat. The plan stays serializable as a DataFusion
+physical plan, while stage dependencies stay explicit in the job
+graph.</p>
+<h2 data-number="8.5" id="stage-inputs-and-input-modes"><span
+class="header-section-number">8.5</span> Stage Inputs And Input
+Modes</h2>
+<p><code>StageInput</code> has two fields:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> StageInput <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> stage<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> mode<span class="op">:</span> InputMode<span class="op">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><code>InputMode</code> is the distributed execution contract:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> InputMode <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    Forward<span class="op">,</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    Merge<span class="op">,</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    Shuffle<span class="op">,</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    Broadcast<span class="op">,</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    Rescale<span class="op">,</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The code comments are worth translating into a table:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Current partition reads</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Forward</code></td>
+<td>Same partition from the input stage, all channels</td>
+<td>Pipelined one-to-one dependencies</td>
+</tr>
+<tr>
+<td><code>Merge</code></td>
+<td>All partitions from input stage, all channels</td>
+<td>Sort-preserving merge and global merge-style inputs</td>
+</tr>
+<tr>
+<td><code>Shuffle</code></td>
+<td>Same output channel from all input partitions</td>
+<td>Hash or round-robin repartition</td>
+</tr>
+<tr>
+<td><code>Broadcast</code></td>
+<td>All partitions and all channels</td>
+<td>Shared build-side or repeated consumption</td>
+</tr>
+<tr>
+<td><code>Rescale</code></td>
+<td>A contiguous subset of input partitions, all channels</td>
+<td>Coalescing from many partitions to fewer partitions</td>
+</tr>
+</tbody>
+</table>
+<p>The scheduler later converts each mode into concrete
+<code>TaskInputKey</code> groups in
+<code>build_task_input_keys</code>.</p>
+<p>For shuffle, the comment says it plainly:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Enumerate channels in the outer loop and partitions in the inner loop.</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">// This is the whole point of shuffle!</span></span></code></pre></div>
+<p>If an upstream stage has <code>P</code> partitions and <code>C</code>
+channels, then shuffle input groups are:</p>
+<pre class="text"><code>output partition 0 reads: (input p0, channel 0), (input p1, channel 0), ...
+output partition 1 reads: (input p0, channel 1), (input p1, channel 1), ...
+...</code></pre>
+<p>That is the exchange pattern for repartitioning.</p>
+<h2 data-number="8.6" id="output-distribution"><span
+class="header-section-number">8.6</span> Output Distribution</h2>
+<p>A stage’s output distribution describes how each task splits its
+output into channels:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> OutputDistribution <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">Hash</span> <span class="op">{</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        keys<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> PhysicalExpr<span class="op">&gt;&gt;,</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        channels<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">},</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    RoundRobin <span class="op">{</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        channels<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">},</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><code>Hash</code> means evaluate physical expressions on each row and
+send the row to the corresponding channel. <code>RoundRobin</code> means
+distribute rows across channels without hash keys.</p>
+<p>This becomes a <code>TaskOutputDistribution</code> when the scheduler
+creates a task definition:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">TaskOutputDistribution::</span><span class="bu">Hash</span> <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    keys<span class="op">,</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    channels<span class="op">,</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The hash keys are serialized physical expressions, which is one
+reason the extensions chapter will need to care about physical-plan
+codecs. If an extension introduces a custom physical expression,
+distributed workers must be able to deserialize it.</p>
+<h2 data-number="8.7" id="how-jobgraphtry_new-starts"><span
+class="header-section-number">8.7</span> How
+<code>JobGraph::try_new</code> Starts</h2>
+<p>The entry point is:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> try_new(plan<span class="op">:</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;</span>) <span class="op">-&gt;</span> ExecutionResult<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;</span></span></code></pre></div>
+<p>The first two lines are important rewrites:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> ensure_single_input_partition_for_global_limit(plan)<span class="op">?;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> ensure_partitioned_hash_join_if_build_side_emits_unmatched_rows(plan)<span class="op">?;</span></span></code></pre></div>
+<p>Then Sail builds an empty graph and recursively splits the plan:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="kw">mut</span> graph <span class="op">=</span> <span class="dt">Self</span> <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    stages<span class="op">:</span> <span class="pp">vec!</span>[]<span class="op">,</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    schema<span class="op">:</span> plan<span class="op">.</span>schema()<span class="op">,</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> last <span class="op">=</span> build_job_graph(plan<span class="op">,</span> <span class="pp">PartitionUsage::</span>Once<span class="op">,</span> <span class="op">&amp;</span><span class="kw">mut</span> graph)<span class="op">?;</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> (last<span class="op">,</span> inputs) <span class="op">=</span> rewrite_inputs(last)<span class="op">?;</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>graph<span class="op">.</span>stages<span class="op">.</span>push(Stage <span class="op">{</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    inputs<span class="op">,</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    plan<span class="op">:</span> last<span class="op">,</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">:</span> <span class="pp">OutputMode::</span>Pipelined<span class="op">,</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    distribution<span class="op">:</span> <span class="pp">OutputDistribution::</span>RoundRobin <span class="op">{</span> channels<span class="op">:</span> <span class="dv">1</span> <span class="op">},</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    placement<span class="op">:</span> <span class="pp">TaskPlacement::</span>Worker<span class="op">,</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>)<span class="op">;</span></span></code></pre></div>
+<p>The final stage is always added after recursive splitting. Its output
+schema is the job schema. If no later stage consumes it, the driver will
+expose its task streams as job output.</p>
+<figure>
+<img src="diagrams/07-diagram-03.svg" alt="Flowchart 07.3" />
+<figcaption aria-hidden="true">Flowchart 07.3</figcaption>
+</figure>
+<h2 data-number="8.8"
+id="rewrite-1-global-limit-needs-one-input-partition"><span
+class="header-section-number">8.8</span> Rewrite 1: Global Limit Needs
+One Input Partition</h2>
+<p><code>ensure_single_input_partition_for_global_limit</code> rewrites
+every <code>GlobalLimitExec</code>.</p>
+<p>If a global limit has a real <code>LIMIT</code> or
+<code>OFFSET</code> and its input has more than one partition, Sail
+wraps the input in <code>CoalescePartitionsExec</code>:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> input <span class="op">=</span> <span class="pp">Arc::</span>new(<span class="pp">CoalescePartitionsExec::</span>new(input<span class="op">.</span>clone()))<span class="op">;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="pp">Arc::</span>new(<span class="pp">GlobalLimitExec::</span>new(input<span class="op">,</span> skip<span class="op">,</span> fetch))</span></code></pre></div>
+<p>Why?</p>
+<p>A global limit is not the same as a per-partition limit. If each
+worker applies <code>LIMIT 10</code> locally, the whole job may return
+far more than 10 rows. Sail keeps any local limit optimization that
+DataFusion created, but ensures the final global limit sees a single
+partition.</p>
+<p>This is an example of distributed correctness requiring a physical
+rewrite after DataFusion planning.</p>
+<h2 data-number="8.9"
+id="rewrite-2-collect-left-hash-joins-and-unmatched-rows"><span
+class="header-section-number">8.9</span> Rewrite 2: Collect-Left Hash
+Joins And Unmatched Rows</h2>
+<p><code>ensure_partitioned_hash_join_if_build_side_emits_unmatched_rows</code>
+handles a more subtle distributed problem.</p>
+<p>DataFusion can use <code>PartitionMode::CollectLeft</code> for hash
+joins. In that mode, one side is collected and reused. This is fine in
+local execution. In a distributed engine, it becomes tricky for join
+types that need to emit unmatched rows from the build side, because
+row-match state is not shared across all distributed partitions.</p>
+<p>For join types such as <code>Left</code>, <code>LeftAnti</code>,
+<code>LeftSemi</code>, <code>LeftMark</code>, and <code>Full</code>,
+Sail rewrites the join to <code>PartitionMode::Partitioned</code> with
+explicit repartitioning on both sides:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="pp">HashJoinExec::</span>try_new(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    repartition(join<span class="op">.</span>left<span class="op">,</span> left_exprs<span class="op">,</span> partition_count)<span class="op">?,</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    repartition(join<span class="op">.</span>right<span class="op">,</span> right_exprs<span class="op">,</span> partition_count)<span class="op">?,</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    join<span class="op">.</span>on<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">PartitionMode::</span>Partitioned<span class="op">,</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>This makes each output partition independently executable. It may be
+less clever than a local collect-left plan, but it is correct for Sail’s
+distributed execution model.</p>
+<p>The lesson is that physical plans produced by a single-node optimizer
+sometimes need a distribution-aware fixup before being split into
+stages.</p>
+<h2 data-number="8.10" id="recursive-stage-splitting"><span
+class="header-section-number">8.10</span> Recursive Stage Splitting</h2>
+<p>The heart of the planner is <code>build_job_graph</code>.</p>
+<p>It walks the physical plan tree from the leaves upward. First it
+recursively processes children. Then it decides whether the current node
+introduces a stage boundary.</p>
+<p>These nodes introduce boundaries:</p>
+<ul>
+<li><code>RepartitionExec</code></li>
+<li><code>ExplicitRepartitionExec</code></li>
+<li><code>CoalescePartitionsExec</code></li>
+<li><code>SortPreservingMergeExec</code></li>
+<li>Sail <code>CoalesceExec</code></li>
+<li>driver-only plans such as <code>SystemTableExec</code> and
+<code>CatalogCommandExec</code></li>
+</ul>
+<p>The broad shape is:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> children <span class="op">=</span> <span class="op">...</span> build_job_graph(child<span class="op">,</span> usage<span class="op">,</span> graph) <span class="op">...;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> with_new_children_if_necessary(plan<span class="op">,</span> children)<span class="op">?;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(repartition) <span class="op">=</span> plan<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>RepartitionExec<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    create_shuffle(child<span class="op">,</span> graph<span class="op">,</span> properties<span class="op">,</span> consumption)<span class="op">?</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(coalesce) <span class="op">=</span> plan<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>CoalescePartitionsExec<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    create_shuffle(child<span class="op">,</span> graph<span class="op">,</span> properties<span class="op">,</span> consumption)<span class="op">?</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> plan<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">is::</span><span class="op">&lt;</span>SortPreservingMergeExec<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    plan<span class="op">.</span>with_new_children(<span class="pp">vec!</span>[create_merge_input(child<span class="op">,</span> graph)<span class="op">?</span>])<span class="op">?</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(coalesce) <span class="op">=</span> plan<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>CoalesceExec<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    create_rescale_input(child<span class="op">,</span> coalesce<span class="op">.</span>output_partitions()<span class="op">,</span> graph)<span class="op">?</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    plan</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p>The planner preserves ordinary operators inside a stage. It cuts only
+when the execution pattern changes across partitions.</p>
+<figure>
+<img src="diagrams/07-diagram-04.svg" alt="Flowchart 07.4" />
+<figcaption aria-hidden="true">Flowchart 07.4</figcaption>
+</figure>
+<p>In the job graph, <code>RepartitionExec</code> itself is replaced by
+a stage boundary: stage 0 writes channels; stage 1 reads those
+channels.</p>
+<h2 data-number="8.11" id="partition-usage-single-versus-shared"><span
+class="header-section-number">8.11</span> Partition Usage: Single Versus
+Shared</h2>
+<p>The <code>PartitionUsage</code> enum has two variants:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> PartitionUsage <span class="op">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    Once<span class="op">,</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    Shared<span class="op">,</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Most plan inputs are used once. But some joins reuse one side across
+many partitions. For example, a collect-left style join may gather the
+build-side data through <code>execute(0)</code> for each probe-side
+partition.</p>
+<p>In local DataFusion, helper machinery can make that efficient inside
+one process. In distributed execution, reused data must be materialized
+so multiple downstream tasks can consume it safely.</p>
+<p>Sail maps usage to shuffle consumption:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> consumption <span class="op">=</span> <span class="cf">match</span> usage <span class="op">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">PartitionUsage::</span>Once <span class="op">=&gt;</span> <span class="pp">ShuffleConsumption::</span>Single<span class="op">,</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">PartitionUsage::</span>Shared <span class="op">=&gt;</span> <span class="pp">ShuffleConsumption::</span>Multiple<span class="op">,</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p>Then <code>create_shuffle</code> chooses the input mode:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> mode <span class="op">=</span> <span class="cf">match</span> consumption <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">ShuffleConsumption::</span>Single <span class="op">=&gt;</span> <span class="pp">InputMode::</span>Shuffle<span class="op">,</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">ShuffleConsumption::</span>Multiple <span class="op">=&gt;</span> <span class="pp">InputMode::</span>Broadcast<span class="op">,</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p>So a shared input becomes broadcast-like downstream consumption.</p>
+<p>This is a nice example of a local execution property becoming a
+distributed data movement decision.</p>
+<h2 data-number="8.12" id="create_shuffle"><span
+class="header-section-number">8.12</span>
+<code>create_shuffle</code></h2>
+<p><code>create_shuffle</code> is used for repartition and
+coalesce-style boundaries.</p>
+<p>It converts DataFusion partitioning into Sail output
+distribution:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> distribution <span class="op">=</span> <span class="cf">match</span> properties<span class="op">.</span>partitioning<span class="op">.</span>clone() <span class="op">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Partitioning::</span>RoundRobinBatch(channels)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> <span class="pp">Partitioning::</span>UnknownPartitioning(channels) <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">OutputDistribution::</span>RoundRobin <span class="op">{</span> channels <span class="op">}</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Partitioning::</span><span class="bu">Hash</span>(keys<span class="op">,</span> channels) <span class="op">=&gt;</span> <span class="pp">OutputDistribution::</span><span class="bu">Hash</span> <span class="op">{</span> keys<span class="op">,</span> channels <span class="op">},</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p>Then it turns the child into a stage:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> (plan<span class="op">,</span> inputs) <span class="op">=</span> rewrite_inputs(plan<span class="op">.</span>clone())<span class="op">?;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stage <span class="op">=</span> Stage <span class="op">{</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    inputs<span class="op">,</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    plan<span class="op">,</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">:</span> <span class="pp">OutputMode::</span>Pipelined<span class="op">,</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    distribution<span class="op">,</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    placement<span class="op">:</span> <span class="pp">TaskPlacement::</span>Worker<span class="op">,</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>graph<span class="op">.</span>stages<span class="op">.</span>push(stage)<span class="op">;</span></span></code></pre></div>
+<p>Finally it returns a <code>StageInputExec</code> placeholder for the
+parent plan:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="pp">StageInputExec::</span>new(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    StageInput <span class="op">{</span> stage<span class="op">:</span> s<span class="op">,</span> mode <span class="op">},</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    properties<span class="op">,</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>The parent sees an execution plan input with the right schema and
+partitioning. The job graph sees a dependency on a previous stage.</p>
+<figure>
+<img src="diagrams/07-diagram-05.svg" alt="Flowchart 07.5" />
+<figcaption aria-hidden="true">Flowchart 07.5</figcaption>
+</figure>
+<h2 data-number="8.13" id="merge-and-rescale-boundaries"><span
+class="header-section-number">8.13</span> Merge And Rescale
+Boundaries</h2>
+<p><code>SortPreservingMergeExec</code> uses
+<code>create_merge_input</code>.</p>
+<p>That creates a worker stage for the child and returns a
+<code>StageInputExec</code> with <code>InputMode::Merge</code>. A merge
+input reads all partitions from the input stage. It is how a later
+operator can see globally merged streams.</p>
+<p>Sail’s custom <code>CoalesceExec</code> uses
+<code>create_rescale_input</code>.</p>
+<p>Rescale is different from broadcast and shuffle. It divides input
+partitions into contiguous ranges:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> start <span class="op">=</span> output_partition <span class="op">*</span> input_partitions <span class="op">/</span> output_partitions<span class="op">;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> end <span class="op">=</span> (output_partition <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> input_partitions <span class="op">/</span> output_partitions<span class="op">;</span></span></code></pre></div>
+<p>Each output partition consumes only its assigned range. This is the
+distributed form of reducing partition count without fully merging
+everything into one partition.</p>
+<figure>
+<img src="diagrams/07-diagram-06.svg" alt="Flowchart 07.6" />
+<figcaption aria-hidden="true">Flowchart 07.6</figcaption>
+</figure>
+<h2 data-number="8.14" id="driver-stages"><span
+class="header-section-number">8.14</span> Driver Stages</h2>
+<p>Most stages run on workers:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>placement<span class="op">:</span> <span class="pp">TaskPlacement::</span>Worker</span></code></pre></div>
+<p>But some plans must run on the driver. The job graph planner
+recognizes:</p>
+<ul>
+<li><code>SystemTableExec</code></li>
+<li><code>CatalogCommandExec</code></li>
+</ul>
+<p>and creates a driver stage:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>Stage <span class="op">{</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    inputs<span class="op">:</span> <span class="pp">vec!</span>[]<span class="op">,</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    plan<span class="op">:</span> plan<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    distribution<span class="op">:</span> <span class="pp">OutputDistribution::</span>RoundRobin <span class="op">{</span> channels<span class="op">:</span> <span class="dv">1</span> <span class="op">},</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    placement<span class="op">:</span> <span class="pp">TaskPlacement::</span>Driver<span class="op">,</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The TODO says driver stages with inputs are not supported yet. That
+is an important limitation for extension design. If a future extension
+introduces a driver-only physical operator that consumes distributed
+inputs, Sail would need to extend this part of the planner.</p>
+<h2 data-number="8.15" id="topological-order"><span
+class="header-section-number">8.15</span> Topological Order</h2>
+<p><code>JobGraph</code> stores stages in topological order:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// For any stage, all its input stages are guaranteed to</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co">/// appear before it in the list.</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>stages<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Stage<span class="op">&gt;</span></span></code></pre></div>
+<p>The recursive construction naturally creates earlier stages before
+later stages. When the final stage is pushed, all its dependencies have
+already been added.</p>
+<p>This matters because stage indices become part of task stream
+keys:</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>TaskStreamKey <span class="op">{</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    job_id<span class="op">,</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    stage<span class="op">,</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    partition<span class="op">,</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    attempt<span class="op">,</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    channel<span class="op">,</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Once a stage is inserted into the graph, its index is the stable
+identity used by the scheduler, task runner, stream manager, and job
+output system.</p>
+<h2 data-number="8.16" id="replicas-and-repeated-consumption"><span
+class="header-section-number">8.16</span> Replicas And Repeated
+Consumption</h2>
+<p><code>JobGraph::replicas(stage)</code> computes how many replicas of
+a stage’s output are needed:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="cf">match</span> input<span class="op">.</span>mode <span class="op">{</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">InputMode::</span>Forward <span class="op">|</span> <span class="pp">InputMode::</span>Shuffle <span class="op">|</span> <span class="pp">InputMode::</span>Rescale <span class="op">=&gt;</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">InputMode::</span>Merge <span class="op">|</span> <span class="pp">InputMode::</span>Broadcast <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>        x<span class="op">.</span>plan<span class="op">.</span>output_partitioning()<span class="op">.</span>partition_count()</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The result is at least one, because final stages need output for the
+client even if no later stage consumes them.</p>
+<p>Why do merge and broadcast need more replicas? Because multiple
+downstream partitions may read the same upstream streams. If output is
+pipelined and stored locally, Sail must keep enough stream replicas
+available for all consumers.</p>
+<p>This is the data-plane cost of repeated consumption.</p>
+<h2 data-number="8.17" id="from-job-graph-to-job-topology"><span
+class="header-section-number">8.17</span> From Job Graph To Job
+Topology</h2>
+<p>After <code>JobGraph::try_new</code>, the scheduler creates a
+<code>JobDescriptor</code>:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> graph <span class="op">=</span> <span class="pp">JobGraph::</span>try_new(plan)<span class="op">?;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> (output<span class="op">,</span> stream) <span class="op">=</span> build_job_output(ctx<span class="op">,</span> job_id<span class="op">,</span> graph<span class="op">.</span>schema()<span class="op">.</span>clone())<span class="op">;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> descriptor <span class="op">=</span> <span class="pp">JobDescriptor::</span>try_new(graph<span class="op">,</span> <span class="pp">JobState::</span>Running <span class="op">{</span> output<span class="op">,</span> context <span class="op">}</span>)<span class="op">?;</span></span></code></pre></div>
+<p><code>JobDescriptor::try_new</code> creates:</p>
+<ul>
+<li>one <code>StageDescriptor</code> per stage,</li>
+<li>one <code>TaskDescriptor</code> per stage partition,</li>
+<li>a <code>JobTopology</code>,</li>
+<li>one <code>TaskRegionDescriptor</code> per topology region.</li>
+</ul>
+<p>The topology builder groups pipelined stages into task regions. This
+is the transition from “stages” to “what should be scheduled
+together.”</p>
+<p><code>JobTopology::try_new</code> first records stage consumers and
+pipelined adjacency. Then it finds connected components of pipelined
+stages.</p>
+<p>If every in-component input is <code>Forward</code>, the component
+can be sliced by partition:</p>
+<pre class="text"><code>region 0: stage A partition 0, stage B partition 0
+region 1: stage A partition 1, stage B partition 1
+...</code></pre>
+<p>If the component has non-forward inputs, Sail creates one region
+containing all partitions of the component.</p>
+<p>This captures a practical scheduling idea:</p>
+<ul>
+<li>one-to-one pipelined dependencies can run partition by
+partition,</li>
+<li>shuffle/merge/broadcast-style dependencies need broader
+coordination.</li>
+</ul>
+<figure>
+<img src="diagrams/07-diagram-07.svg" alt="Flowchart 07.7" />
+<figcaption aria-hidden="true">Flowchart 07.7</figcaption>
+</figure>
+<h2 data-number="8.18" id="region-dependencies"><span
+class="header-section-number">8.18</span> Region Dependencies</h2>
+<p>After regions are created, the topology builder adds
+dependencies.</p>
+<p>For <code>Forward</code> input, a task depends on the corresponding
+partition of the input stage:</p>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>TaskTopology <span class="op">{</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    stage<span class="op">:</span> input<span class="op">.</span>stage<span class="op">,</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    partition<span class="op">:</span> task<span class="op">.</span>partition<span class="op">,</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>For all other input modes, the task depends on all partitions of the
+input stage:</p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> p <span class="kw">in</span> <span class="dv">0</span><span class="op">..</span>partitions <span class="op">{</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    TaskTopology <span class="op">{</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>        stage<span class="op">:</span> input<span class="op">.</span>stage<span class="op">,</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>        partition<span class="op">:</span> p<span class="op">,</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is conservative and correct. Shuffle, broadcast, merge, and
+rescale may need data from multiple upstream partitions, so downstream
+regions wait until the relevant upstream regions are complete.</p>
+<h2 data-number="8.19" id="task-definitions"><span
+class="header-section-number">8.19</span> Task Definitions</h2>
+<p>A worker does not receive a Rust <code>Stage</code> object. It
+receives a serialized <code>TaskDefinition</code>:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> TaskDefinition <span class="op">{</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> plan<span class="op">:</span> Arc<span class="op">&lt;</span>[<span class="dt">u8</span>]<span class="op">&gt;,</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> inputs<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>TaskInput<span class="op">&gt;,</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> output<span class="op">:</span> TaskOutput<span class="op">,</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The plan is serialized bytes. Inputs describe where to read upstream
+streams. Output describes how to publish this task’s result streams.</p>
+<p>Inputs can be:</p>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> TaskInputLocator <span class="op">{</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    Driver <span class="op">{</span> stage<span class="op">,</span> keys <span class="op">},</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    Worker <span class="op">{</span> stage<span class="op">,</span> keys <span class="op">},</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    Remote <span class="op">{</span> uri<span class="op">,</span> stage<span class="op">,</span> keys <span class="op">},</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Outputs can be:</p>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> TaskOutputLocator <span class="op">{</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    Local <span class="op">{</span> replicas <span class="op">},</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    Remote <span class="op">{</span> uri <span class="op">},</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The current pipelined path uses local stream storage and
+worker/driver stream locations. Blocking remote output is present in the
+type system but not fully implemented in the code paths shown here.</p>
+<p>This is another extension lesson: physical plans and expressions must
+be serializable if they are going to run on workers. A local-only
+extension is much easier than a distributed-safe extension.</p>
+<h2 data-number="8.20" id="job-output"><span
+class="header-section-number">8.20</span> Job Output</h2>
+<p>The final stage’s output becomes the stream returned to Spark Connect
+or Flight SQL.</p>
+<p><code>build_job_output</code> creates:</p>
+<ul>
+<li>a <code>JobOutputManager</code>, used by the scheduler to add task
+streams,</li>
+<li>and a <code>SendableRecordBatchStream</code>, returned to the query
+caller.</li>
+</ul>
+<p>The stream is a <code>RecordBatchStreamAdapter</code> around a
+receiver. Internally, <code>JobOutputStream</code> keeps a
+<code>SelectAll</code> of task streams.</p>
+<p>When final stage tasks start running or succeed,
+<code>extend_job_output</code> adds their channels:</p>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> c <span class="kw">in</span> <span class="dv">0</span><span class="op">..</span>channels <span class="op">{</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> key <span class="op">=</span> TaskStreamKey <span class="op">{</span> job_id<span class="op">,</span> stage<span class="op">:</span> s<span class="op">,</span> partition<span class="op">:</span> p<span class="op">,</span> attempt<span class="op">,</span> channel<span class="op">:</span> c <span class="op">};</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    actions<span class="op">.</span>push(<span class="pp">JobAction::</span>ExtendJobOutput <span class="op">{</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>        handle<span class="op">:</span> output<span class="op">.</span>handle()<span class="op">,</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>        key<span class="op">,</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>        schema<span class="op">:</span> schema<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span>)<span class="op">;</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The job output stream can therefore begin returning batches while
+final tasks are still running. That is why the output mode is currently
+<code>Pipelined</code>.</p>
+<p>The stream also handles task attempts carefully. If a later attempt
+supersedes an earlier attempt for the same task stream, the wrapper can
+mute the older stream so the client does not see duplicate output.</p>
+<h2 data-number="8.21" id="a-worked-example-hash-aggregate"><span
+class="header-section-number">8.21</span> A Worked Example: Hash
+Aggregate</h2>
+<p>Imagine a query that scans a table and groups by
+<code>customer_id</code>:</p>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> customer_id, <span class="fu">count</span>(<span class="op">*</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> orders</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> customer_id</span></code></pre></div>
+<p>A simplified physical plan might look like:</p>
+<pre class="text"><code>AggregateExec final
+  RepartitionExec Hash(customer_id, 4)
+    AggregateExec partial
+      TableScanExec</code></pre>
+<p>The job graph planner sees <code>RepartitionExec</code> and cuts the
+plan:</p>
+<figure>
+<img src="diagrams/07-diagram-08.svg" alt="Flowchart 07.8" />
+<figcaption aria-hidden="true">Flowchart 07.8</figcaption>
+</figure>
+<p>Stage 0 output distribution is
+<code>Hash { keys: [customer_id], channels: 4 }</code>. Stage 1 input
+mode is <code>Shuffle</code>. Therefore:</p>
+<ul>
+<li>Stage 0 partition 0 writes channels 0..3.</li>
+<li>Stage 0 partition 1 writes channels 0..3.</li>
+<li>Stage 1 partition 0 reads channel 0 from every Stage 0
+partition.</li>
+<li>Stage 1 partition 1 reads channel 1 from every Stage 0
+partition.</li>
+<li>and so on.</li>
+</ul>
+<p>That is a distributed hash exchange.</p>
+<h2 data-number="8.22" id="a-worked-example-global-limit"><span
+class="header-section-number">8.22</span> A Worked Example: Global
+Limit</h2>
+<p>Consider:</p>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> <span class="kw">events</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">10</span></span></code></pre></div>
+<p>If the scan has many partitions, a global limit must not
+independently return 10 rows from every partition. Sail rewrites:</p>
+<pre class="text"><code>GlobalLimitExec
+  multi-partition input</code></pre>
+<p>into:</p>
+<pre class="text"><code>GlobalLimitExec
+  CoalescePartitionsExec
+    multi-partition input</code></pre>
+<p>Then <code>CoalescePartitionsExec</code> becomes a stage boundary.
+The upstream stage produces partitioned output, and the final stage
+reads it as a coalesced input before applying the global limit.</p>
+<p>Correctness beats parallelism here. The global decision has to be
+made in one place.</p>
+<h2 data-number="8.23"
+id="a-worked-example-broadcast-like-shared-input"><span
+class="header-section-number">8.23</span> A Worked Example:
+Broadcast-Like Shared Input</h2>
+<p>Some joins reuse one side. In Sail’s planner, that shows up as
+<code>PartitionUsage::Shared</code>. Shared usage turns into
+<code>ShuffleConsumption::Multiple</code>, which turns into
+<code>InputMode::Broadcast</code>.</p>
+<p>The upstream stage is materialized once. Downstream partitions can
+all read it.</p>
+<figure>
+<img src="diagrams/07-diagram-09.svg" alt="Flowchart 07.9" />
+<figcaption aria-hidden="true">Flowchart 07.9</figcaption>
+</figure>
+<p>The key point is not that Sail necessarily implements every broadcast
+join optimization you might imagine. The key point is that the job graph
+has an explicit mode for repeated consumption of upstream data.</p>
+<h2 data-number="8.24" id="why-this-design-works"><span
+class="header-section-number">8.24</span> Why This Design Works</h2>
+<p>Sail does not throw away the DataFusion plan and invent a separate
+distributed IR. Instead, it:</p>
+<ol type="1">
+<li>Uses DataFusion physical plans as stage bodies.</li>
+<li>Rewrites a few single-node assumptions for distributed
+correctness.</li>
+<li>Cuts stage boundaries at exchange-like operators.</li>
+<li>Replaces cross-stage edges with <code>StageInputExec</code>.</li>
+<li>Tracks how each stage output is distributed into channels.</li>
+<li>Lets the scheduler turn stages into task regions and attempts.</li>
+</ol>
+<p>This has several benefits:</p>
+<ul>
+<li>Sail inherits DataFusion physical operators and optimizer
+behavior.</li>
+<li>Custom Sail physical nodes can participate as normal
+<code>ExecutionPlan</code> nodes.</li>
+<li>The job graph can be displayed in terms of familiar physical
+plans.</li>
+<li>Distributed correctness is concentrated in stage splitting and
+scheduling.</li>
+<li>The final output is still a normal Arrow <code>RecordBatch</code>
+stream.</li>
+</ul>
+<h2 data-number="8.25" id="extension-implications-1"><span
+class="header-section-number">8.25</span> Extension Implications</h2>
+<p>For discussion #2001, this chapter is the warning label on the
+box.</p>
+<p>It is not enough for an extension to register a DataFusion function
+or physical planner. If the extension participates in distributed
+execution, it must also fit this job graph transformation.</p>
+<p>An extension author needs to ask:</p>
+<ul>
+<li>Does my physical operator preserve partitioning?</li>
+<li>Does it require all input partitions at once?</li>
+<li>Can it run independently per partition?</li>
+<li>Does it need driver placement?</li>
+<li>Does it produce a custom physical expression used for hash
+distribution?</li>
+<li>Can its physical plan be serialized to workers?</li>
+<li>If it creates a new exchange-like node, how should the job graph
+planner cut it into stages?</li>
+<li>If it creates a shared input, should downstream consumption be
+broadcast?</li>
+<li>If it introduces a driver-only command, can it have inputs?</li>
+</ul>
+<p>The current planner hard-codes the known Sail and DataFusion nodes. A
+general extension API will need a way for extensions to declare
+distributed planning behavior, or at least a fallback policy that
+rejects unsupported distributed plans clearly.</p>
+<h2 data-number="8.26"
+id="reading-exercise-trace-a-repartition-boundary"><span
+class="header-section-number">8.26</span> Reading Exercise: Trace A
+Repartition Boundary</h2>
+<p>Follow a repartition from DataFusion physical plan to job graph:</p>
+<ol type="1">
+<li>Open
+<code>crates/sail-execution/src/job_graph/planner.rs</code>.</li>
+<li>Find <code>build_job_graph</code>.</li>
+<li>Find the <code>RepartitionExec</code> branch.</li>
+<li>Follow the call to <code>create_shuffle</code>.</li>
+<li>Observe how <code>Partitioning::Hash</code> becomes
+<code>OutputDistribution::Hash</code>.</li>
+<li>Observe how <code>ShuffleConsumption::Single</code> becomes
+<code>InputMode::Shuffle</code>.</li>
+<li>Open
+<code>crates/sail-execution/src/driver/job_scheduler/core.rs</code>.</li>
+<li>Find <code>build_task_input_keys</code>.</li>
+<li>Read the <code>InputMode::Shuffle</code> branch.</li>
+</ol>
+<p>At the end, you should be able to explain which upstream task streams
+a downstream shuffle partition reads.</p>
+<h2 data-number="8.27" id="reading-exercise-trace-job-acceptance"><span
+class="header-section-number">8.27</span> Reading Exercise: Trace Job
+Acceptance</h2>
+<p>Follow a cluster query:</p>
+<ol type="1">
+<li>Start in <code>crates/sail-execution/src/job_runner.rs</code>.</li>
+<li>Find <code>ClusterJobRunner::execute</code>.</li>
+<li>Follow <code>DriverEvent::ExecuteJob</code>.</li>
+<li>Open
+<code>crates/sail-execution/src/driver/actor/handler.rs</code>.</li>
+<li>Find <code>handle_execute_job</code>.</li>
+<li>Follow <code>job_scheduler.accept_job</code>.</li>
+<li>Open
+<code>crates/sail-execution/src/driver/job_scheduler/core.rs</code>.</li>
+<li>Find <code>JobGraph::try_new(plan)</code>.</li>
+<li>Follow <code>build_job_output</code>.</li>
+</ol>
+<p>That is the control path from a physical plan to a client-visible
+output stream.</p>
+<h2 data-number="8.28" id="takeaways-2"><span
+class="header-section-number">8.28</span> Takeaways</h2>
+<p>The job graph is Sail’s distributed version of a DataFusion physical
+plan. It keeps each stage as an <code>ExecutionPlan</code>, but replaces
+cross-stage edges with <code>StageInputExec</code> placeholders and
+records explicit input modes.</p>
+<p>The most important enum in this chapter is <code>InputMode</code>:
+<code>Forward</code>, <code>Merge</code>, <code>Shuffle</code>,
+<code>Broadcast</code>, and <code>Rescale</code>. Those five modes
+describe how downstream partitions consume upstream task streams.</p>
+<p>Before splitting the plan, Sail rewrites global limits and certain
+collect-left hash joins for distributed correctness. During splitting,
+it cuts at repartition, coalesce, merge, rescale, and driver-only nodes.
+After splitting, the scheduler groups stages into task regions, builds
+task definitions, and connects final task streams into a single Arrow
+output stream.</p>
+<p>The next chapter will follow those task regions into the driver,
+workers, task assigner, and stream manager.</p>
+</body>
+</html>

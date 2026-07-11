@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="1096" viewBox="0 0 420 1096">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="420" height="1096" fill="white"/>
+
+<line x1="183" y1="130" x2="183" y2="207" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="183" y1="269" x2="183" y2="346" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="183" y1="440" x2="183" y2="517" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="183" y1="579" x2="183" y2="672" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="183" y1="734" x2="183" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="183" y1="905" x2="183" y2="966" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="36" y="36" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">input RecordBatch</tspan><tspan x="183" dy="32">stream</tspan></text>
+<rect x="36" y="207" width="294" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">MapPartitionsExec</tspan></text>
+<rect x="78" y="346" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">PySparkUDTF</tspan><tspan x="183" dy="32">StreamUDF</tspan></text>
+<rect x="64" y="517" width="238" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="548" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">PyInputStream</tspan></text>
+<rect x="50" y="672" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="703" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">Python iterator</tspan></text>
+<rect x="57" y="811" width="252" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="842" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">PyArrow output</tspan><tspan x="183" dy="32">batches</tspan></text>
+<rect x="43" y="966" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="183" y="997" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="183" dy="0">Rust RecordBatch</tspan><tspan x="183" dy="32">stream</tspan></text>
+</svg>

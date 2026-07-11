@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 3: Spark Connect</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-005.html" accesskey="n" rel="next">Chapter 4: PySpark and pysail</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-003.html" accesskey="p" rel="previous">Chapter 2: Rust Foundations in Sail</a>
+</span>
+</div>
+</nav>
+<h1 data-number="4" id="chapter-03"><span
+class="header-section-number">4</span> Chapter 3: Spark Connect</h1>
+<p>Spark Connect is Sail’s public front door for PySpark. When a PySpark
+user writes <code>spark.read.parquet(...).groupBy(...).count()</code>,
+Sail does not receive Python bytecode or a Spark JVM object. It receives
+Spark Connect protobuf messages over gRPC. The definitive starting point
+is Apache Spark’s own <a
+href="https://spark.apache.org/docs/latest/spark-connect-overview.html">Spark
+Connect Overview</a>, which describes Spark Connect as a decoupled
+client-server architecture using unresolved logical plans as the
+protocol.</p>
+<p>That design gives Sail its “drop-in replacement” shape. The client
+can stay PySpark. The server can be Rust. The wire protocol between them
+is Spark Connect.</p>
+<pre class="text"><code>PySpark client
+  -&gt; Spark Connect protobuf messages
+  -&gt; Sail SparkConnectServer
+  -&gt; Sail spec
+  -&gt; DataFusion logical and physical plans
+  -&gt; Arrow batches in Spark Connect responses</code></pre>
+<p>This chapter follows that front door in code. The goal is to
+understand what Spark Connect means architecturally, not just where the
+<code>.proto</code> files are generated.</p>
+<h2 data-number="4.1" id="definitive-spark-connect-references"><span
+class="header-section-number">4.1</span> Definitive Spark Connect
+References</h2>
+<p>Use these official references alongside this chapter:</p>
+<ul>
+<li><a
+href="https://spark.apache.org/docs/latest/spark-connect-overview.html">Spark
+Connect Overview</a>: the Apache Spark documentation page for the
+client/server architecture, protobuf transport, gRPC, and Arrow result
+batches.</li>
+<li><a href="https://spark.apache.org/spark-connect/">Spark Connect
+architecture page</a>: Apache Spark’s higher-level architecture
+explanation, including the connection flow, unresolved logical plans,
+Protocol Buffers, server-side optimization, and Arrow record batch
+result streaming.</li>
+<li><a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.SparkSession.builder.remote.html">PySpark
+<code>SparkSession.builder.remote</code></a>: the official PySpark API
+for connecting to a Spark Connect server with an
+<code>sc://host:port</code> URL.</li>
+<li><a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/spark_session.html">PySpark
+Spark Session API reference</a>: the Spark-session surface, including
+Spark Connect-only methods, artifacts, tags, interrupt methods, and the
+<code>client</code> attribute.</li>
+<li><a
+href="https://spark.apache.org/docs/latest/api/python/reference/index.html">PySpark
+API Reference</a>: the official API index; it marks the Spark SQL,
+Pandas API on Spark, Structured Streaming, and DataFrame-based MLlib
+surfaces that support Spark Connect.</li>
+<li><a
+href="https://github.com/apache/spark/tree/master/sql/connect/common/src/main/protobuf/spark/connect">Spark
+Connect protobuf definitions</a>: the authoritative Spark repository
+location for <code>base.proto</code>, <code>relations.proto</code>,
+<code>expressions.proto</code>, <code>commands.proto</code>,
+<code>types.proto</code>, and related protocol files.</li>
+</ul>
+<h2 data-number="4.2" id="the-main-files"><span
+class="header-section-number">4.2</span> The Main Files</h2>
+<p>The Spark Connect layer lives mainly in
+<code>crates/sail-spark-connect</code>.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>File</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/server.rs</code></td>
+<td>Implements the Spark Connect gRPC service</td>
+</tr>
+<tr>
+<td><code>src/service/plan_executor.rs</code></td>
+<td>Executes relations, commands, streaming operations, interrupts, and
+reattach/release</td>
+</tr>
+<tr>
+<td><code>src/service/plan_analyzer.rs</code></td>
+<td>Handles schema, explain, tree string, version, DDL parsing,
+streaming checks</td>
+</tr>
+<tr>
+<td><code>src/service/config_manager.rs</code></td>
+<td>Handles runtime Spark config operations</td>
+</tr>
+<tr>
+<td><code>src/service/artifact_manager.rs</code></td>
+<td>Placeholder for artifact upload/status support</td>
+</tr>
+<tr>
+<td><code>src/proto/plan.rs</code></td>
+<td>Converts Spark Connect relations and commands into Sail specs</td>
+</tr>
+<tr>
+<td><code>src/proto/expression.rs</code></td>
+<td>Converts Spark Connect expressions</td>
+</tr>
+<tr>
+<td><code>src/proto/data_type*.rs</code></td>
+<td>Converts Spark, Arrow, JSON, and DDL data types</td>
+</tr>
+<tr>
+<td><code>src/executor.rs</code></td>
+<td>Converts DataFusion <code>RecordBatch</code> streams into Spark
+Connect response batches</td>
+</tr>
+<tr>
+<td><code>src/session.rs</code></td>
+<td>Stores Spark-session state inside DataFusion’s
+<code>SessionContext</code></td>
+</tr>
+<tr>
+<td><code>src/session_manager.rs</code></td>
+<td>Creates sessions with Spark-specific extensions</td>
+</tr>
+<tr>
+<td><code>src/error.rs</code></td>
+<td>Converts planning/execution errors into Spark-compatible gRPC
+statuses</td>
+</tr>
+</tbody>
+</table>
+<p>The server implementation is generated-facing. The rest of the crate
+is translation-facing.</p>
+<figure>
+<img src="diagrams/03-diagram-01.svg" alt="Flowchart 03.1" />
+<figcaption aria-hidden="true">Flowchart 03.1</figcaption>
+</figure>
+<h2 data-number="4.3" id="the-grpc-service-surface"><span
+class="header-section-number">4.3</span> The gRPC Service Surface</h2>
+<p><code>SparkConnectServer</code> in
+<code>crates/sail-spark-connect/src/server.rs</code> implements Spark’s
+generated <code>SparkConnectService</code> trait. The corresponding
+public protocol schema lives in Spark’s official <a
+href="https://github.com/apache/spark/tree/master/sql/connect/common/src/main/protobuf/spark/connect">Connect
+protobuf definitions</a>, especially <code>base.proto</code> for the
+service and request/response envelope and
+<code>relations.proto</code>/<code>commands.proto</code> for plan
+payloads.</p>
+<p>The service methods are the server’s public protocol surface:</p>
+<ul>
+<li><code>execute_plan</code></li>
+<li><code>analyze_plan</code></li>
+<li><code>config</code></li>
+<li><code>add_artifacts</code></li>
+<li><code>artifact_status</code></li>
+<li><code>interrupt</code></li>
+<li><code>reattach_execute</code></li>
+<li><code>release_execute</code></li>
+<li><code>release_session</code></li>
+<li><code>fetch_error_details</code></li>
+<li><code>clone_session</code></li>
+</ul>
+<p>Some are fully implemented, some are partial, and some are explicit
+TODOs. That is normal for a compatibility server: Spark Connect is
+broad, and Sail implements the pieces needed by its Spark SQL/DataFrame
+compatibility goals first.</p>
+<p>The official PySpark API exposes many of these protocol features
+through normal <code>SparkSession</code> methods. For example, the <a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/spark_session.html">Spark
+Session API reference</a> lists Spark Connect-only methods and client
+operations such as artifacts, progress handlers, tags, and operation
+interrupts.</p>
+<p>The most important method is <code>execute_plan</code>.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">fn</span> execute_plan(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    request<span class="op">:</span> Request<span class="op">&lt;</span>ExecutePlanRequest<span class="op">&gt;,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Response<span class="op">&lt;</span><span class="dt">Self</span><span class="pp">::</span>ExecutePlanStream<span class="op">&gt;,</span> Status<span class="op">&gt;</span></span></code></pre></div>
+<p>Its flow is simple and crucial:</p>
+<ol type="1">
+<li>Extract request metadata.</li>
+<li>Get or create a session context.</li>
+<li>Require that the request contains a plan.</li>
+<li>Dispatch <code>Root(relation)</code> to relation execution.</li>
+<li>Dispatch <code>Command(command)</code> to command execution.</li>
+<li>Return an <code>ExecutePlanResponseStream</code>.</li>
+</ol>
+<p>In code, the split is:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">match</span> op <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">plan::OpType::</span>Root(relation) <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">service::</span>handle_execute_relation(<span class="op">&amp;</span>ctx<span class="op">,</span> relation<span class="op">,</span> metadata)<span class="op">.</span><span class="kw">await</span><span class="op">?</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">plan::OpType::</span>Command(Command <span class="op">{</span> command_type<span class="op">:</span> command <span class="op">}</span>) <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> command <span class="op">=</span> command<span class="op">.</span>required(<span class="st">&quot;command&quot;</span>)<span class="op">?;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        handle_command(<span class="op">&amp;</span>ctx<span class="op">,</span> command<span class="op">,</span> metadata)<span class="op">.</span><span class="kw">await</span><span class="op">?</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="pp">plan::OpType::</span>CompressedOperation(_) <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="cn">Err</span>(<span class="pp">Status::</span>unimplemented(<span class="st">&quot;compressed operation plan&quot;</span>))<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Spark Connect calls the top-level operation a <code>Plan</code>, but
+Sail immediately separates it into the two categories that matter to a
+query engine:</p>
+<pre class="text"><code>Relation: produces a table-like result
+Command: changes state, writes data, registers things, starts streams, or returns command metadata</code></pre>
+<h2 data-number="4.4"
+id="sessions-spark-state-inside-datafusion-state"><span
+class="header-section-number">4.4</span> Sessions: Spark State Inside
+DataFusion State</h2>
+<p>Every Spark Connect request carries a session ID and optional user
+context. On the client side, PySpark users create this remote session
+with <code>SparkSession.builder.remote("sc://host:port")</code>,
+documented in the official <a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.SparkSession.builder.remote.html"><code>builder.remote</code></a>
+API reference. Sail uses the request’s session values to get a
+DataFusion <code>SessionContext</code>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>session_manager</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>get_or_create_session_context(session_id<span class="op">,</span> user_id)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="kw">await</span></span></code></pre></div>
+<p>The Spark-specific session setup happens in
+<code>crates/sail-spark-connect/src/session_manager.rs</code>.</p>
+<p><code>SparkSessionMutator</code> implements
+<code>ServerSessionMutator</code>. During session creation, it adds two
+extensions to DataFusion’s <code>SessionConfig</code>:</p>
+<ul>
+<li><code>PlanService</code>, with Spark-style plan and catalog
+formatting.</li>
+<li><code>SparkSession</code>, Sail’s Spark-session state object.</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cn">Ok</span>(config</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(plan_service))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(spark)))</span></code></pre></div>
+<p>The <code>SparkSession</code> extension stores:</p>
+<ul>
+<li><code>session_id</code></li>
+<li><code>user_id</code></li>
+<li>Spark runtime config</li>
+<li>active executors for reattachable operations</li>
+<li>streaming query state</li>
+</ul>
+<p>This is one of Sail’s clever bridges. Spark Connect expects Spark
+session behavior. DataFusion expects a <code>SessionContext</code>. Sail
+installs Spark session semantics into DataFusion session state through
+typed extensions.</p>
+<figure>
+<img src="diagrams/03-diagram-02.svg" alt="Flowchart 03.2" />
+<figcaption aria-hidden="true">Flowchart 03.2</figcaption>
+</figure>
+<h2 data-number="4.5" id="relations-become-sail-specs"><span
+class="header-section-number">4.5</span> Relations Become Sail
+Specs</h2>
+<p>The key conversion file is
+<code>crates/sail-spark-connect/src/proto/plan.rs</code>.</p>
+<p>Spark Connect relations are protobuf trees. Sail does not plan
+directly from those protobuf structs. It converts them into
+<code>sail_common::spec</code>. For the upstream protocol shape, read
+Spark’s <code>relations.proto</code> in the official <a
+href="https://github.com/apache/spark/tree/master/sql/connect/common/src/main/protobuf/spark/connect">Spark
+Connect protobuf definitions</a>.</p>
+<p>The important implementation is:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> <span class="bu">TryFrom</span><span class="op">&lt;</span>Relation<span class="op">&gt;</span> <span class="cf">for</span> <span class="pp">spec::</span>Plan</span></code></pre></div>
+<p>It extracts:</p>
+<ul>
+<li><code>RelationCommon</code>, including <code>plan_id</code>.</li>
+<li><code>RelType</code>, the actual relation variant.</li>
+<li>A <code>RelationNode</code>, which is either a query node or a
+command node.</li>
+</ul>
+<p>Then it returns:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="pp">spec::Plan::</span>Query(<span class="pp">spec::</span>QueryPlan <span class="op">{</span> <span class="op">...</span> <span class="op">}</span>)</span></code></pre></div>
+<p>or:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">spec::Plan::</span>Command(<span class="pp">spec::</span>CommandPlan <span class="op">{</span> <span class="op">...</span> <span class="op">}</span>)</span></code></pre></div>
+<p>Examples of relation variants that become query nodes:</p>
+<ul>
+<li><code>Read</code></li>
+<li><code>Project</code></li>
+<li><code>Filter</code></li>
+<li><code>Join</code></li>
+<li><code>SetOp</code></li>
+<li><code>Sort</code></li>
+<li><code>Limit</code></li>
+<li><code>Aggregate</code></li>
+<li><code>Sql</code></li>
+<li><code>Range</code></li>
+<li><code>LocalRelation</code></li>
+<li><code>Repartition</code></li>
+<li><code>MapPartitions</code></li>
+<li><code>CommonInlineUserDefinedTableFunction</code></li>
+</ul>
+<p>Some relation variants can become commands. This is why
+<code>TryFrom&lt;Relation&gt; for spec::Plan</code> returns a full
+<code>spec::Plan</code>, not only a <code>QueryPlan</code>.</p>
+<p>The teaching point is that Spark Connect is not Sail’s internal
+language. It is an external compatibility protocol. Sail’s internal
+unresolved language is the Sail spec, because Sail also accepts SQL and
+needs one common representation for both.</p>
+<pre class="text"><code>Spark Connect Relation
+  -&gt; RelationNode
+  -&gt; spec::QueryNode or spec::CommandNode
+  -&gt; PlanResolver
+  -&gt; DataFusion LogicalPlan</code></pre>
+<h2 data-number="4.6"
+id="sql-is-also-routed-through-the-front-door"><span
+class="header-section-number">4.6</span> SQL Is Also Routed Through the
+Front Door</h2>
+<p>Spark Connect can send a SQL relation. In <code>proto/plan.rs</code>,
+SQL text is parsed while converting the protobuf relation. This matches
+the official architecture description: the client sends unresolved
+intent, and the server analyzes and optimizes it, as described in Apache
+Spark’s <a href="https://spark.apache.org/spark-connect/">Spark Connect
+architecture page</a>.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>parse_one_statement(<span class="op">...</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>from_ast_statement(<span class="op">...</span>)</span></code></pre></div>
+<p>This is an important compatibility detail. From the client’s point of
+view:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>spark.sql(<span class="st">&quot;select * from t&quot;</span>)</span></code></pre></div>
+<p>is still a Spark Connect request. From Sail’s point of view, it
+becomes a Sail spec through the same general conversion pipeline as
+DataFrame relations.</p>
+<p>That gives Sail one downstream planning path:</p>
+<pre class="text"><code>Spark DataFrame relation
+  -&gt; Sail spec
+SQL string
+  -&gt; Sail SQL parser/analyzer
+  -&gt; Sail spec
+Sail spec
+  -&gt; DataFusion logical plan</code></pre>
+<p>The cost of this approach is compatibility work. Spark SQL has many
+grammar and semantic quirks. Sail has its own SQL parser and analyzer so
+the server can accept Spark-shaped SQL without embedding Spark
+itself.</p>
+<h2 data-number="4.7" id="commands"><span
+class="header-section-number">4.7</span> Commands</h2>
+<p>The command dispatcher lives in <code>handle_command</code> in
+<code>server.rs</code>.</p>
+<p>It routes Spark Connect command variants to service handlers.
+Examples:</p>
+<ul>
+<li><code>RegisterFunction</code></li>
+<li><code>WriteOperation</code></li>
+<li><code>CreateDataframeView</code></li>
+<li><code>WriteOperationV2</code></li>
+<li><code>SqlCommand</code></li>
+<li><code>WriteStreamOperationStart</code></li>
+<li><code>StreamingQueryCommand</code></li>
+<li><code>GetResourcesCommand</code></li>
+<li><code>StreamingQueryManagerCommand</code></li>
+<li><code>RegisterTableFunction</code></li>
+<li><code>RegisterDataSource</code></li>
+<li><code>CheckpointCommand</code></li>
+<li><code>MergeIntoTableCommand</code></li>
+</ul>
+<p>The split matters because commands often execute eagerly. In
+<code>plan_executor.rs</code>, <code>ExecutePlanMode</code> has two
+variants:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> ExecutePlanMode <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    Lazy<span class="op">,</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    EagerSilent<span class="op">,</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Relations use <code>Lazy</code>: return a response stream and let the
+client consume result batches.</p>
+<p>Commands often use <code>EagerSilent</code>: execute the plan
+immediately, drain the stream, and return no data unless Spark Connect
+expects a command result.</p>
+<figure>
+<img src="diagrams/03-diagram-03.svg" alt="Flowchart 03.3" />
+<figcaption aria-hidden="true">Flowchart 03.3</figcaption>
+</figure>
+<p>This is why a Spark statement like <code>CREATE TABLE</code> and a
+query like <code>SELECT * FROM t</code> use the same gRPC method but
+have different execution behavior inside Sail.</p>
+<h2 data-number="4.8" id="the-core-execution-path"><span
+class="header-section-number">4.8</span> The Core Execution Path</h2>
+<p>The heart of execution is <code>handle_execute_plan</code> in
+<code>plan_executor.rs</code>. This is Sail’s version of the official
+Spark Connect flow where a client sends an encoded unresolved logical
+plan and receives streamed Apache Arrow batches back over gRPC,
+described in the <a
+href="https://spark.apache.org/docs/latest/spark-connect-overview.html">Spark
+Connect Overview</a>.</p>
+<p>It does four things:</p>
+<ol type="1">
+<li>Retrieve the <code>SparkSession</code> extension.</li>
+<li>Retrieve the <code>JobService</code> extension.</li>
+<li>Resolve and physical-plan the Sail spec.</li>
+<li>Execute the physical plan through the session’s job runner.</li>
+</ol>
+<p>In code:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> spark <span class="op">=</span> ctx<span class="op">.</span><span class="pp">extension::</span><span class="op">&lt;</span>SparkSession<span class="op">&gt;</span>()<span class="op">?;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> service <span class="op">=</span> ctx<span class="op">.</span><span class="pp">extension::</span><span class="op">&lt;</span>JobService<span class="op">&gt;</span>()<span class="op">?;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> (plan<span class="op">,</span> _) <span class="op">=</span> resolve_and_execute_plan(ctx<span class="op">,</span> spark<span class="op">.</span>plan_config()<span class="op">?,</span> plan)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream <span class="op">=</span> service<span class="op">.</span>runner()<span class="op">.</span>execute(ctx<span class="op">,</span> plan)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span></code></pre></div>
+<p>That line <code>service.runner().execute(ctx, plan)</code> hides the
+local/cluster choice described in Chapter 2. Spark Connect does not care
+whether Sail is local, local-cluster, or Kubernetes-cluster. It receives
+a <code>SendableRecordBatchStream</code> either way.</p>
+<pre class="text"><code>spec::Plan
+  -&gt; resolve_and_execute_plan
+  -&gt; Arc&lt;dyn ExecutionPlan&gt;
+  -&gt; JobRunner::execute
+  -&gt; SendableRecordBatchStream</code></pre>
+<p>From there, Spark Connect’s job is to translate a DataFusion/Arrow
+stream into Spark Connect response messages.</p>
+<h2 data-number="4.9" id="response-streams-and-arrow-batches"><span
+class="header-section-number">4.9</span> Response Streams and Arrow
+Batches</h2>
+<p><code>crates/sail-spark-connect/src/executor.rs</code> owns the
+response-stream behavior. Apache Spark’s Spark Connect docs call out
+this same result shape: query results are streamed to the client as
+Apache Arrow record batches rather than returned as one monolithic
+response.</p>
+<p>The important output enum is:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> ExecutorBatch <span class="op">{</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    ArrowBatch(ArrowBatch)<span class="op">,</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    SqlCommandResult(<span class="dt">Box</span><span class="op">&lt;</span>SqlCommandResult<span class="op">&gt;</span>)<span class="op">,</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    WriteStreamOperationStartResult(<span class="dt">Box</span><span class="op">&lt;</span>WriteStreamOperationStartResult<span class="op">&gt;</span>)<span class="op">,</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    StreamingQueryCommandResult(<span class="dt">Box</span><span class="op">&lt;</span>StreamingQueryCommandResult<span class="op">&gt;</span>)<span class="op">,</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    StreamingQueryManagerCommandResult(<span class="dt">Box</span><span class="op">&lt;</span>StreamingQueryManagerCommandResult<span class="op">&gt;</span>)<span class="op">,</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    CheckpointCommandResult(<span class="dt">Box</span><span class="op">&lt;</span>CheckpointCommandResult<span class="op">&gt;</span>)<span class="op">,</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    Schema(<span class="dt">Box</span><span class="op">&lt;</span>DataType<span class="op">&gt;</span>)<span class="op">,</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    Complete<span class="op">,</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>A running executor first sends the schema, then Arrow batches, then a
+completion marker:</p>
+<pre class="text"><code>Schema
+  -&gt; ArrowBatch
+  -&gt; ArrowBatch
+  -&gt; ...
+  -&gt; Complete</code></pre>
+<p>The Arrow conversion uses Arrow IPC:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> cursor <span class="op">=</span> <span class="pp">Cursor::</span>new(<span class="op">&amp;</span><span class="kw">mut</span> output<span class="op">.</span>data)<span class="op">;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="kw">mut</span> writer <span class="op">=</span> <span class="pp">StreamWriter::</span>try_new(cursor<span class="op">,</span> batch<span class="op">.</span>schema()<span class="op">.</span>as_ref())<span class="op">?;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>writer<span class="op">.</span>write(batch)<span class="op">?;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>writer<span class="op">.</span>finish()<span class="op">?;</span></span></code></pre></div>
+<p>That means Spark Connect sees result data as serialized Arrow
+streams, not row-by-row JSON or Python objects.</p>
+<figure>
+<img src="diagrams/03-diagram-04.svg" alt="Flowchart 03.4" />
+<figcaption aria-hidden="true">Flowchart 03.4</figcaption>
+</figure>
+<p>The row-count field is populated from <code>batch.num_rows()</code>,
+and empty result streams still emit an empty Arrow batch so the client
+receives schema-consistent output.</p>
+<h2 data-number="4.10" id="reattachable-operations"><span
+class="header-section-number">4.10</span> Reattachable Operations</h2>
+<p>Spark Connect supports reattachable execution. A client can
+disconnect and later resume reading from an operation. On the Python
+surface, related operation controls such as tags and interrupts are
+listed in the official <a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/spark_session.html">Spark
+Session API reference</a>.</p>
+<p>Sail tracks this with:</p>
+<ul>
+<li><code>operation_id</code></li>
+<li>response IDs</li>
+<li>an executor buffer</li>
+<li><code>SparkSession</code>’s executor map</li>
+</ul>
+<p>When <code>execute_plan</code> receives request options, it checks
+whether the operation is reattachable:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>reattachable<span class="op">:</span> is_reattachable(<span class="op">&amp;</span>request<span class="op">.</span>request_options)</span></code></pre></div>
+<p>If the operation is lazy, <code>handle_execute_plan</code> creates an
+<code>Executor</code>, starts it, and registers it in
+<code>SparkSession</code>:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> executor <span class="op">=</span> <span class="pp">Executor::</span>new(metadata<span class="op">,</span> stream<span class="op">,</span> heartbeat_interval)<span class="op">;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> rx <span class="op">=</span> executor<span class="op">.</span>start()<span class="op">?;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>spark<span class="op">.</span>add_executor(executor)<span class="op">?;</span></span></code></pre></div>
+<p>The executor saves outputs in a bounded buffer.
+<code>reattach_execute</code> pauses the running executor if necessary,
+releases already acknowledged responses, and starts the executor
+again:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>executor<span class="op">.</span>pause_if_running()<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>executor<span class="op">.</span>release(response_id)<span class="op">?;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> rx <span class="op">=</span> executor<span class="op">.</span>start()<span class="op">?;</span></span></code></pre></div>
+<p><code>release_execute</code> lets the client tell the server which
+buffered responses can be dropped.</p>
+<figure>
+<img src="diagrams/03-diagram-05.svg" alt="Sequence diagram 03.5" />
+<figcaption aria-hidden="true">Sequence diagram 03.5</figcaption>
+</figure>
+<p>This is a protocol-level feature, but it shapes execution internals.
+Sail cannot simply return an anonymous stream and forget it. It must
+store enough operation state in the Spark session to pause, replay,
+release, or interrupt it.</p>
+<h2 data-number="4.11" id="interrupts"><span
+class="header-section-number">4.11</span> Interrupts</h2>
+<p>The <code>interrupt</code> endpoint supports three modes,
+corresponding to Spark-session operation controls exposed in
+PySpark:</p>
+<ul>
+<li>Interrupt all operations in the session.</li>
+<li>Interrupt operations with a tag.</li>
+<li>Interrupt one operation ID.</li>
+</ul>
+<p>The service functions remove matching executors from
+<code>SparkSession</code>, pause them if running, and return interrupted
+operation IDs.</p>
+<p>This is another reason <code>SparkSession</code> is not just a bag of
+configuration. It is operational state for Spark Connect behavior.</p>
+<pre class="text"><code>InterruptRequest
+  -&gt; find executor(s)
+  -&gt; remove from session state
+  -&gt; pause if running
+  -&gt; return operation IDs</code></pre>
+<h2 data-number="4.12" id="analyze-plan"><span
+class="header-section-number">4.12</span> Analyze Plan</h2>
+<p><code>analyze_plan</code> serves Spark client introspection calls. It
+does not usually execute data. It answers questions about a plan. These
+calls back the ordinary PySpark APIs whose Spark Connect support is
+documented throughout the <a
+href="https://spark.apache.org/docs/latest/api/python/reference/index.html">PySpark
+API reference</a>.</p>
+<p>Implemented or partially implemented analysis handlers include:</p>
+<ul>
+<li><code>Schema</code></li>
+<li><code>Explain</code></li>
+<li><code>TreeString</code></li>
+<li><code>IsLocal</code></li>
+<li><code>IsStreaming</code></li>
+<li><code>SparkVersion</code></li>
+<li><code>DdlParse</code></li>
+<li><code>Persist</code></li>
+<li><code>Unpersist</code></li>
+<li><code>GetStorageLevel</code></li>
+<li><code>JsonToDdl</code></li>
+</ul>
+<p>The schema path is worth reading:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> resolver <span class="op">=</span> <span class="pp">PlanResolver::</span>new(ctx<span class="op">,</span> spark<span class="op">.</span>plan_config()<span class="op">?</span>)<span class="op">;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> NamedPlan <span class="op">{</span> plan<span class="op">,</span> fields <span class="op">}</span> <span class="op">=</span> resolver</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>resolve_named_plan(<span class="pp">spec::Plan::</span>Query(plan<span class="op">.</span>try_into()<span class="op">?</span>))</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> schema <span class="op">=</span> <span class="op">...</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>to_spark_schema(schema)</span></code></pre></div>
+<p>This uses Sail’s normal plan resolver, but stops at schema. That
+means analysis is semantically meaningful: schema answers come from the
+same resolution machinery that execution uses.</p>
+<p>Explain also routes through Sail planning:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>explain_string(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    ctx<span class="op">,</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    spark<span class="op">.</span>plan_config()<span class="op">?,</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">spec::Plan::</span>Query(plan<span class="op">.</span>try_into()<span class="op">?</span>)<span class="op">,</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    options<span class="op">,</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>)<span class="op">.</span><span class="kw">await</span></span></code></pre></div>
+<p>The Spark Connect layer therefore has two major plan paths:</p>
+<pre class="text"><code>execute_plan: convert -&gt; resolve -&gt; optimize -&gt; physical plan -&gt; execute
+analyze_plan: convert -&gt; resolve/explain/schema -&gt; response</code></pre>
+<p>Extensions must work in both. If an extension function works during
+execution but schema analysis cannot resolve it, PySpark users will
+still see failures because clients often ask for schema before
+collecting data.</p>
+<h2 data-number="4.13" id="config"><span
+class="header-section-number">4.13</span> Config</h2>
+<p>The <code>config</code> endpoint manipulates Spark runtime
+configuration stored in <code>SparkSession</code>. The user-facing API
+is <code>SparkSession.conf</code>, documented as part of the official <a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/spark_session.html">Spark
+Session reference</a>.</p>
+<p>Handlers in <code>config_manager.rs</code> implement:</p>
+<ul>
+<li><code>Get</code></li>
+<li><code>Set</code></li>
+<li><code>GetWithDefault</code></li>
+<li><code>GetOption</code></li>
+<li><code>GetAll</code></li>
+<li><code>Unset</code></li>
+<li><code>IsModifiable</code></li>
+</ul>
+<p>All of these retrieve the typed <code>SparkSession</code>
+extension:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> spark <span class="op">=</span> ctx<span class="op">.</span><span class="pp">extension::</span><span class="op">&lt;</span>SparkSession<span class="op">&gt;</span>()<span class="op">?;</span></span></code></pre></div>
+<p>Then they delegate to <code>SparkSession</code> methods such as
+<code>get_config</code>, <code>set_config</code>, and
+<code>unset_config</code>.</p>
+<p>This is separate from DataFusion’s <code>SessionConfig</code>
+options. That distinction matters:</p>
+<pre class="text"><code>Spark runtime config:
+  stored in SparkSession state
+  visible through Spark Connect config API
+  used to create PlanConfig during planning
+
+DataFusion SessionConfig:
+  created during session construction
+  stores DataFusion options and typed extensions
+  read by DataFusion planning/execution</code></pre>
+<p>Extensions often need both. A Spark-facing option might arrive
+through <code>spark.conf.set(...)</code>, but a DataFusion optimizer
+rule may need to read a typed extension or session option during
+planning.</p>
+<h2 data-number="4.14" id="data-types-and-spark-compatibility"><span
+class="header-section-number">4.14</span> Data Types and Spark
+Compatibility</h2>
+<p>Spark Connect forces Sail to translate types carefully. The official
+protocol definitions for types live in Spark’s <code>types.proto</code>
+under the <a
+href="https://github.com/apache/spark/tree/master/sql/connect/common/src/main/protobuf/spark/connect">Connect
+protobuf definitions</a>.</p>
+<p><code>proto/data_type_arrow.rs</code> maps Arrow fields and data
+types back into Spark Connect <code>DataType</code> messages. It handles
+ordinary Arrow types and extension cases such as:</p>
+<ul>
+<li>Spark UDT metadata.</li>
+<li>GeoArrow WKB extension types mapped to Spark
+geometry/geography.</li>
+<li>Variant extension types.</li>
+</ul>
+<p>This conversion sits on the output side of planning and execution.
+DataFusion and Arrow may represent a type one way, but PySpark expects
+Spark Connect’s data type model.</p>
+<p>One subtle example is timestamps:</p>
+<pre class="text"><code>Arrow Timestamp(Microsecond, None)
+  -&gt; Spark TimestampNtz
+
+Arrow Timestamp(Microsecond, Some(_))
+  -&gt; Spark Timestamp</code></pre>
+<p>The front door therefore constrains internal semantics. Sail can use
+Arrow/DataFusion internally, but it must preserve enough Spark meaning
+for the client.</p>
+<h2 data-number="4.15" id="errors-become-spark-exceptions"><span
+class="header-section-number">4.15</span> Errors Become Spark
+Exceptions</h2>
+<p>Spark Connect clients expect Spark-shaped errors, not arbitrary Rust
+error strings.</p>
+<p><code>crates/sail-spark-connect/src/error.rs</code> converts many
+internal errors into <code>SparkError</code>, then into
+<code>tonic::Status</code>.</p>
+<p>The mapping eventually produces a <code>SparkThrowable</code> with
+Spark/Java class names such as:</p>
+<ul>
+<li><code>org.apache.spark.sql.AnalysisException</code></li>
+<li><code>org.apache.spark.sql.execution.QueryExecutionException</code></li>
+<li><code>java.lang.IllegalArgumentException</code></li>
+<li><code>java.lang.ArithmeticException</code></li>
+<li><code>org.apache.spark.api.python.PythonException</code></li>
+<li><code>java.time.DateTimeException</code></li>
+<li><code>java.lang.UnsupportedOperationException</code></li>
+</ul>
+<p>The status conversion intentionally uses Spark-compatible error
+details:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>details<span class="op">.</span>set_error_info(class<span class="op">,</span> <span class="st">&quot;org.apache.spark&quot;</span><span class="op">,</span> metadata)<span class="op">;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="pp">Status::</span>with_error_details(<span class="pp">Code::</span>Internal<span class="op">,</span> message<span class="op">,</span> details)</span></code></pre></div>
+<p>It also truncates long gRPC messages to stay below metadata limits.
+That sounds mundane until you remember Python tracebacks can be long.
+Protocol compatibility includes boring survival details like this.</p>
+<h2 data-number="4.16" id="artifacts-and-python-distribution"><span
+class="header-section-number">4.16</span> Artifacts and Python
+Distribution</h2>
+<p>Spark Connect includes artifact upload and status endpoints. In Sail,
+<code>artifact_manager.rs</code> currently returns TODO errors for
+add/status handling. The user-facing artifact APIs are listed in the
+official <a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/spark_session.html">Spark
+Session API reference</a> as <code>addArtifact</code> and
+<code>addArtifacts</code>.</p>
+<p>This matters for the extension story. Spark’s artifact mechanism is
+one way clients distribute files, Python dependencies, or resources.
+Discussion #2001, however, focuses more directly on Python entry-point
+based extension discovery:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[project.entry-points.&quot;</span><span class="dt">pysail.extensions&quot;</span><span class="kw">]</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="dt">sedona</span> <span class="op">=</span> <span class="st">&quot;pysail_sedona:register&quot;</span></span></code></pre></div>
+<p>Those are different mechanisms:</p>
+<pre class="text"><code>Spark Connect artifacts:
+  client sends files/resources to a session
+
+Python entry-point extensions:
+  installed Python package contributes Sail extension behavior</code></pre>
+<p>A complete extension system may eventually touch both, but they solve
+different problems.</p>
+<h2 data-number="4.17" id="registering-functions-and-data-sources"><span
+class="header-section-number">4.17</span> Registering Functions and Data
+Sources</h2>
+<p>Spark Connect commands include function and data source
+registration.</p>
+<p><code>RegisterFunction</code> becomes a Sail command plan. The
+broader PySpark function registration APIs, including UDF and UDTF
+registration, are indexed in the official <a
+href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/index.html">PySpark
+SQL API reference</a>:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="pp">spec::CommandNode::</span>RegisterFunction(udf<span class="op">.</span>try_into()<span class="op">?</span>)</span></code></pre></div>
+<p>Then it runs through normal planning and command execution.</p>
+<p><code>RegisterDataSource</code> has a more direct session-scoped
+path. The handler extracts the pickled Python data source class and
+registers a <code>PythonTableFormat</code> in the session’s
+<code>TableFormatRegistry</code>:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> format <span class="op">=</span> <span class="pp">Arc::</span>new(<span class="pp">PythonTableFormat::</span>with_pickled_class(name<span class="op">.</span>clone()<span class="op">,</span> command))<span class="op">;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>registry<span class="op">.</span>register(format)</span></code></pre></div>
+<p>This is a small preview of extension behavior. A client can
+contribute behavior to a session, but the contribution is still routed
+through Sail’s typed session services and DataFusion planning
+interfaces.</p>
+<h2 data-number="4.18"
+id="what-spark-connect-means-for-extensions"><span
+class="header-section-number">4.18</span> What Spark Connect Means for
+Extensions</h2>
+<p>Discussion #2001 is not only about Rust-side plugin ergonomics. Spark
+Connect adds several extra requirements.</p>
+<p>First, extensions must be visible during analysis as well as
+execution.</p>
+<p>PySpark frequently asks for schema, explain output, local/streaming
+status, or type conversion before actual execution. An extension
+function has to resolve in <code>analyze_plan</code>, not just in
+<code>execute_plan</code>.</p>
+<p>Second, extension configuration may arrive through Spark config.</p>
+<p>If a user writes:</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>spark.conf.<span class="bu">set</span>(<span class="st">&quot;sail.sedona.join.index&quot;</span>, <span class="st">&quot;rtree&quot;</span>)</span></code></pre></div>
+<p>then the extension must decide how that value becomes available to
+the optimizer or physical planner. Storing it only in
+<code>SparkSession</code> may not be enough if DataFusion rules expect
+<code>SessionConfig</code> extensions.</p>
+<p>Third, extensions must preserve Spark Connect type compatibility.</p>
+<p>A spatial extension may expose geometry/geography types. Sail already
+maps GeoArrow metadata in the Arrow-to-Spark conversion path. A
+third-party extension must either reuse those conventions or provide a
+compatible type conversion story.</p>
+<p>Fourth, distributed execution still matters.</p>
+<p>Spark Connect receives one logical operation from PySpark, but Sail
+may execute it on remote workers. A function registered through Spark
+Connect must be available when the worker decodes and executes the
+physical plan.</p>
+<p>Fifth, Spark Connect itself provides extension hooks.</p>
+<p>The protocol defines <code>Relation.extension</code>,
+<code>Command.extension</code>, and <code>Expression.extension</code>,
+each typed as <code>google.protobuf.Any</code>. These let a client send
+an opaque payload that Sail can dispatch by <code>type_url</code>. Today
+Sail does not have a general dispatcher for these messages, but chapter
+13 proposes them as the natural plan-time extension boundary:
+protobuf-versioned, language-neutral, and already crossing every query.
+In that framing the Rust trait surface becomes the execution-time
+boundary, and Spark Connect dispatch becomes the plan-time one.</p>
+<figure>
+<img src="diagrams/03-diagram-06.svg" alt="Flowchart 03.6" />
+<figcaption aria-hidden="true">Flowchart 03.6</figcaption>
+</figure>
+<p>A good extension API must therefore cross the Spark Connect boundary,
+not sit behind it.</p>
+<h2 data-number="4.19" id="reading-exercises-1"><span
+class="header-section-number">4.19</span> Reading Exercises</h2>
+<ol type="1">
+<li>Read <code>crates/sail-spark-connect/src/server.rs</code>.
+<ul>
+<li>Find each gRPC method.</li>
+<li>For <code>execute_plan</code>, identify where session lookup happens
+and where relation/command dispatch happens.</li>
+</ul></li>
+<li>Read
+<code>crates/sail-spark-connect/src/service/plan_executor.rs</code>.
+<ul>
+<li>Follow <code>handle_execute_relation</code>.</li>
+<li>Follow <code>handle_execute_plan</code>.</li>
+<li>Compare <code>Lazy</code> and <code>EagerSilent</code>.</li>
+<li>Find reattach and release handling.</li>
+</ul></li>
+<li>Read <code>crates/sail-spark-connect/src/executor.rs</code>.
+<ul>
+<li>Find where schema is emitted.</li>
+<li>Find where <code>RecordBatch</code> becomes
+<code>ArrowBatch</code>.</li>
+<li>Find the executor buffer used for reattachable operations.</li>
+</ul></li>
+<li>Read <code>crates/sail-spark-connect/src/proto/plan.rs</code>.
+<ul>
+<li>Follow <code>TryFrom&lt;Relation&gt; for spec::Plan</code>.</li>
+<li>Pick one relation variant, such as <code>Project</code> or
+<code>Filter</code>, and trace the conversion into
+<code>spec::QueryNode</code>.</li>
+</ul></li>
+<li>Read
+<code>crates/sail-spark-connect/src/service/plan_analyzer.rs</code>.
+<ul>
+<li>Follow schema analysis.</li>
+<li>Follow explain analysis.</li>
+<li>Notice which analysis requests are TODOs or no-ops.</li>
+</ul></li>
+<li>Read <code>crates/sail-spark-connect/src/error.rs</code>.
+<ul>
+<li>Find how <code>PlanError</code> and <code>ExecutionError</code>
+become <code>SparkError</code>.</li>
+<li>Find how <code>SparkError</code> becomes a gRPC
+<code>Status</code>.</li>
+</ul></li>
+</ol>
+<h2 data-number="4.20" id="chapter-takeaways-2"><span
+class="header-section-number">4.20</span> Chapter Takeaways</h2>
+<p>Spark Connect is the compatibility contract between PySpark and Sail.
+It gives Sail a Spark-shaped protocol while letting the engine be Rust,
+Arrow, and DataFusion.</p>
+<p>Inside Sail, Spark Connect requests are translated into Sail specs,
+resolved into DataFusion plans, executed through a
+<code>JobRunner</code>, and streamed back as Arrow batches. Sessions
+carry Spark-specific state through typed DataFusion extensions.
+Analysis, configuration, reattach/release, interrupts, and errors are
+all part of the compatibility surface.</p>
+<p>For extensions, Spark Connect raises the bar. An extension must work
+during analysis, execution, configuration, output type conversion, error
+handling, and distributed worker execution. That is why the extension
+proposal cannot be just “let users register a UDF.” Spark Connect makes
+extension behavior user-visible before, during, and after query
+execution.</p>
+<p>The next chapter moves from the protocol front door to the Python
+experience: <code>pysail</code>, PySpark, Python UDFs, Python data
+sources, and how Python packaging could become the extension discovery
+mechanism.</p>
+</body>
+</html>

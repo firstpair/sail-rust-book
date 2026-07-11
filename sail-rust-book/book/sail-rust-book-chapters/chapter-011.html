@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 10: The Sail Spec And Plan Resolver</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-012.html" accesskey="n" rel="next">Chapter 11: Functions, UDFs, And Codecs</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-010.html" accesskey="p" rel="previous">Chapter 9: Shuffle And Data Movement</a>
+</span>
+</div>
+</nav>
+<h1 data-number="11" id="chapter-10"><span
+class="header-section-number">11</span> Chapter 10: The Sail Spec And
+Plan Resolver</h1>
+<p>Spark Connect sends unresolved intent. DataFusion executes resolved
+logical and physical plans. Sail’s plan layer is the translation space
+between those two worlds.</p>
+<p>This chapter is about that translation space.</p>
+<p>In previous chapters, we followed query execution once DataFusion had
+a physical plan. Now we step earlier in the life of a query, into the
+code that decides what a Spark Connect relation, SQL statement,
+unresolved column, function call, catalog command, or UDF registration
+actually means inside Sail.</p>
+<p>The central idea is simple but powerful:</p>
+<pre class="text"><code>Spark Connect proto or SQL
+  -&gt; Sail spec
+  -&gt; DataFusion LogicalPlan
+  -&gt; DataFusion optimizer
+  -&gt; Sail/DataFusion physical planning
+  -&gt; distributed execution</code></pre>
+<p>The Sail spec is not DataFusion’s logical plan. It is also not
+exactly Spark Connect’s protobuf model. It is Sail’s own unresolved
+intermediate representation, designed to be easy to parse, serialize,
+inspect, and resolve.</p>
+<p>That makes it one of the most important extension points in the whole
+architecture.</p>
+<h2 data-number="11.1" id="code-map-1"><span
+class="header-section-number">11.1</span> Code Map</h2>
+<p>The main files for this chapter are:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plan execution entry point</td>
+<td><code>crates/sail-plan/src/lib.rs</code></td>
+</tr>
+<tr>
+<td>Resolver entry point</td>
+<td><code>crates/sail-plan/src/resolver/plan.rs</code></td>
+</tr>
+<tr>
+<td>Resolver state</td>
+<td><code>crates/sail-plan/src/resolver/state.rs</code></td>
+</tr>
+<tr>
+<td>Query resolver dispatch</td>
+<td><code>crates/sail-plan/src/resolver/query/mod.rs</code></td>
+</tr>
+<tr>
+<td>Expression resolver dispatch</td>
+<td><code>crates/sail-plan/src/resolver/expression/mod.rs</code></td>
+</tr>
+<tr>
+<td>Command resolver dispatch</td>
+<td><code>crates/sail-plan/src/resolver/command/mod.rs</code></td>
+</tr>
+<tr>
+<td>Attribute resolution</td>
+<td><code>crates/sail-plan/src/resolver/expression/attribute.rs</code></td>
+</tr>
+<tr>
+<td>Function resolution</td>
+<td><code>crates/sail-plan/src/resolver/expression/function.rs</code></td>
+</tr>
+<tr>
+<td>Table and data source reads</td>
+<td><code>crates/sail-plan/src/resolver/query/read.rs</code></td>
+</tr>
+<tr>
+<td>Repartition nodes</td>
+<td><code>crates/sail-plan/src/resolver/query/repartition.rs</code></td>
+</tr>
+<tr>
+<td>WithRelations support</td>
+<td><code>crates/sail-plan/src/resolver/query/with_relations.rs</code></td>
+</tr>
+<tr>
+<td>Sail spec plan model</td>
+<td><code>crates/sail-common/src/spec/plan.rs</code></td>
+</tr>
+<tr>
+<td>Sail spec expression model</td>
+<td><code>crates/sail-common/src/spec/expression.rs</code></td>
+</tr>
+<tr>
+<td>Sail spec data types</td>
+<td><code>crates/sail-common/src/spec/data_type.rs</code></td>
+</tr>
+<tr>
+<td>Spark Connect relation conversion</td>
+<td><code>crates/sail-spark-connect/src/proto/plan.rs</code></td>
+</tr>
+<tr>
+<td>Spark Connect expression conversion</td>
+<td><code>crates/sail-spark-connect/src/proto/expression.rs</code></td>
+</tr>
+<tr>
+<td>Spark Connect execution handler</td>
+<td><code>crates/sail-spark-connect/src/service/plan_executor.rs</code></td>
+</tr>
+<tr>
+<td>DataFusion extension physical planner</td>
+<td><code>crates/sail-session/src/planner.rs</code></td>
+</tr>
+</tbody>
+</table>
+<p>Useful external references:</p>
+<ul>
+<li><a
+href="https://spark.apache.org/docs/latest/spark-connect-overview.html">Spark
+Connect Overview</a></li>
+<li><a href="https://spark.apache.org/spark-connect/">Apache Spark
+Connect architecture page</a></li>
+<li><a
+href="https://spark.apache.org/docs/4.1.1/app-dev-spark-connect.html">Application
+Development with Spark Connect</a></li>
+<li><a
+href="https://github.com/apache/spark/blob/master/sql/connect/common/src/main/protobuf/spark/connect/base.proto">Spark
+Connect <code>base.proto</code></a></li>
+<li><a
+href="https://github.com/apache/spark/blob/master/sql/connect/common/src/main/protobuf/spark/connect/relations.proto">Spark
+Connect <code>relations.proto</code></a></li>
+<li><a
+href="https://github.com/apache/spark/blob/master/sql/connect/common/src/main/protobuf/spark/connect/expressions.proto">Spark
+Connect <code>expressions.proto</code></a></li>
+</ul>
+<p>Spark’s own documentation describes Spark Connect as a client-server
+architecture where clients send unresolved logical plans over gRPC and
+receive Arrow-encoded batches back. Sail follows that same shape, but
+swaps Spark’s analyzer and engine for Sail’s resolver, DataFusion’s
+optimizer, and Sail’s distributed runtime.</p>
+<h2 data-number="11.2" id="why-sail-has-a-spec-layer"><span
+class="header-section-number">11.2</span> Why Sail Has A Spec Layer</h2>
+<p>The spec layer lives in <code>sail_common::spec</code>.</p>
+<p>At first glance, it may look like a reimplementation of Spark Connect
+relations and expressions. That is only partly true. The comment above
+<code>spec::Plan</code> explains the design: the starting point is Spark
+Connect’s <code>Relation</code> model, but Sail makes intentional
+changes.</p>
+<p>The spec layer:</p>
+<ul>
+<li>separates query plans from command plans,</li>
+<li>avoids raw SQL strings as unresolved plan nodes,</li>
+<li>uses parsed schemas rather than schema strings,</li>
+<li>prefers Rust naming and serde-friendly enum shapes,</li>
+<li>adds nodes needed by SQL and Sail that are not direct Spark Connect
+relation nodes,</li>
+<li>stores data types, literals, expressions, and plans in one common
+model.</li>
+</ul>
+<p>That gives Sail a stable internal contract:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> Plan <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    Query(QueryPlan)<span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    Command(CommandPlan)<span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Both query and command plans carry optional <code>plan_id</code>
+values:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> QueryPlan <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> node<span class="op">:</span> QueryNode<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> plan_id<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">i64</span><span class="op">&gt;,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> CommandPlan <span class="op">{</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> node<span class="op">:</span> CommandNode<span class="op">,</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> plan_id<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">i64</span><span class="op">&gt;,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Those plan IDs matter because Spark Connect clients often reference
+subplans and attributes by ID. Sail preserves that identity through
+conversion and uses it during resolution.</p>
+<h2 data-number="11.3" id="the-full-planning-pipeline"><span
+class="header-section-number">11.3</span> The Full Planning
+Pipeline</h2>
+<p>The public planning entry point is
+<code>resolve_and_execute_plan()</code> in
+<code>crates/sail-plan/src/lib.rs</code>.</p>
+<p>Despite the name, it does more than execute. It performs the whole
+plan path up to an executable physical plan:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> resolve_and_execute_plan(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    ctx<span class="op">:</span> <span class="op">&amp;</span>SessionContext<span class="op">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    config<span class="op">:</span> Arc<span class="op">&lt;</span>PlanConfig<span class="op">&gt;,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    plan<span class="op">:</span> <span class="pp">spec::</span>Plan<span class="op">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>(Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;,</span> <span class="dt">Vec</span><span class="op">&lt;</span>StringifiedPlan<span class="op">&gt;</span>)<span class="op">&gt;</span></span></code></pre></div>
+<p>The steps are:</p>
+<ol type="1">
+<li>Build a <code>PlanResolver</code>.</li>
+<li>Resolve a <code>spec::Plan</code> into a DataFusion
+<code>LogicalPlan</code>.</li>
+<li>Record the initial logical plan for explain output.</li>
+<li>Ask DataFusion to create a <code>DataFrame</code> from the logical
+plan.</li>
+<li>Optimize the logical plan with DataFusion’s session state.</li>
+<li>Rewrite streaming plans if needed.</li>
+<li>Ask the session query planner to create a physical plan.</li>
+<li>Rename physical output fields back to user-facing names when
+needed.</li>
+<li>Return the physical plan and plan strings.</li>
+</ol>
+<p>In diagram form:</p>
+<figure>
+<img src="diagrams/10-diagram-01.svg" alt="Flowchart 10.1" />
+<figcaption aria-hidden="true">Flowchart 10.1</figcaption>
+</figure>
+<p>This is the same boundary we saw from the other side in earlier
+chapters:</p>
+<ul>
+<li>Chapter 6 focused on DataFusion plans.</li>
+<li>Chapter 7 split physical plans into a job graph.</li>
+<li>This chapter explains how Sail gets to the logical plan in the first
+place.</li>
+</ul>
+<h2 data-number="11.4" id="spark-connect-to-sail-spec"><span
+class="header-section-number">11.4</span> Spark Connect To Sail
+Spec</h2>
+<p>Spark Connect requests arrive as generated protobuf Rust types in
+<code>crates/sail-spark-connect</code>. The conversion layer turns those
+types into Sail spec values.</p>
+<p>The important conversion file is:</p>
+<pre class="text"><code>crates/sail-spark-connect/src/proto/plan.rs</code></pre>
+<p>For relations:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> <span class="bu">TryFrom</span><span class="op">&lt;</span>Relation<span class="op">&gt;</span> <span class="cf">for</span> <span class="pp">spec::</span>Plan</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> <span class="bu">TryFrom</span><span class="op">&lt;</span>Relation<span class="op">&gt;</span> <span class="cf">for</span> <span class="pp">spec::</span>QueryPlan</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> <span class="bu">TryFrom</span><span class="op">&lt;</span>Relation<span class="op">&gt;</span> <span class="cf">for</span> <span class="pp">spec::</span>CommandPlan</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> <span class="bu">TryFrom</span><span class="op">&lt;</span>RelType<span class="op">&gt;</span> <span class="cf">for</span> RelationNode</span></code></pre></div>
+<p>This conversion has to make a decision: is a Spark Connect relation a
+query node or a command node?</p>
+<p>Sail uses an internal helper enum:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> RelationNode <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    Query(<span class="pp">spec::</span>QueryNode)<span class="op">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    Command(<span class="pp">spec::</span>CommandNode)<span class="op">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That matters because Spark Connect has several operation shapes. Some
+produce relations; others execute side effects or return command
+results. Sail normalizes them into <code>spec::Plan::Query</code> or
+<code>spec::Plan::Command</code>.</p>
+<p>For expressions, the conversion file is:</p>
+<pre class="text"><code>crates/sail-spark-connect/src/proto/expression.rs</code></pre>
+<p>There, Spark Connect expressions become <code>spec::Expr</code>:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> <span class="bu">TryFrom</span><span class="op">&lt;</span>Expression<span class="op">&gt;</span> <span class="cf">for</span> <span class="pp">spec::</span>Expr</span></code></pre></div>
+<p>Examples:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Spark Connect expression</th>
+<th>Sail spec expression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Literal</code></td>
+<td><code>spec::Expr::Literal</code></td>
+</tr>
+<tr>
+<td><code>UnresolvedAttribute</code></td>
+<td><code>spec::Expr::UnresolvedAttribute</code></td>
+</tr>
+<tr>
+<td><code>UnresolvedFunction</code></td>
+<td><code>spec::Expr::UnresolvedFunction</code></td>
+</tr>
+<tr>
+<td><code>ExpressionString</code></td>
+<td>parsed SQL expression, then Sail spec</td>
+</tr>
+<tr>
+<td><code>UnresolvedStar</code></td>
+<td><code>spec::Expr::UnresolvedStar</code></td>
+</tr>
+<tr>
+<td><code>Alias</code></td>
+<td><code>spec::Expr::Alias</code></td>
+</tr>
+<tr>
+<td><code>Cast</code></td>
+<td><code>spec::Expr::Cast</code></td>
+</tr>
+<tr>
+<td><code>Window</code></td>
+<td><code>spec::Expr::Window</code></td>
+</tr>
+<tr>
+<td><code>CommonInlineUserDefinedFunction</code></td>
+<td><code>spec::Expr::CommonInlineUserDefinedFunction</code></td>
+</tr>
+<tr>
+<td><code>SubqueryExpression</code></td>
+<td><code>spec::Expr::Subquery</code></td>
+</tr>
+</tbody>
+</table>
+<p>This is the first important lesson: Sail does not resolve columns or
+functions while converting protobuf messages. It only parses the
+client’s intent into Sail’s own unresolved representation.</p>
+<p>That keeps Spark Connect compatibility code separate from
+analysis.</p>
+<h2 data-number="11.5" id="sql-to-sail-spec"><span
+class="header-section-number">11.5</span> SQL To Sail Spec</h2>
+<p>Spark Connect is not the only source of spec plans. SQL also enters
+the same model.</p>
+<p>The conversion layer uses <code>sail_sql_analyzer</code> helpers such
+as:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>parse_one_statement</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>from_ast_statement</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>parse_expression</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>from_ast_expression</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>parse_object_name</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>from_ast_object_name</span></code></pre></div>
+<p>For example, Spark Connect may send an <code>ExpressionString</code>.
+Sail parses that expression string into an AST, then converts the AST
+into <code>spec::Expr</code>.</p>
+<p>The same pattern appears for SQL commands in
+<code>handle_execute_sql_command()</code>:</p>
+<pre class="text"><code>SQL string
+  -&gt; Spark Connect relation shape
+  -&gt; Sail spec plan
+  -&gt; resolver
+  -&gt; DataFusion logical plan</code></pre>
+<p>This unification is important. It means that SQL and DataFrame APIs
+meet before DataFusion planning, not after.</p>
+<figure>
+<img src="diagrams/10-diagram-02.svg" alt="Flowchart 10.2" />
+<figcaption aria-hidden="true">Flowchart 10.2</figcaption>
+</figure>
+<p>For extension authors, this is a clue: if an extension is only
+available through SQL, it is not really integrated with the Spark
+Connect-style architecture. A good extension should be expressible in
+the spec layer or reachable through a spec-producing parser.</p>
+<h2 data-number="11.6" id="the-resolver-entry-point"><span
+class="header-section-number">11.6</span> The Resolver Entry Point</h2>
+<p>The resolver itself is tiny at the top:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> PlanResolver<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    ctx<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> SessionContext<span class="op">,</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    config<span class="op">:</span> Arc<span class="op">&lt;</span>PlanConfig<span class="op">&gt;,</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>It holds:</p>
+<ul>
+<li>a DataFusion <code>SessionContext</code>,</li>
+<li>a <code>PlanConfig</code>.</li>
+</ul>
+<p>The main entry point is <code>resolve_named_plan()</code> in
+<code>crates/sail-plan/src/resolver/plan.rs</code>.</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> resolve_named_plan(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> plan<span class="op">:</span> <span class="pp">spec::</span>Plan) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>NamedPlan<span class="op">&gt;</span></span></code></pre></div>
+<p>It returns a <code>NamedPlan</code>:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> NamedPlan <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> plan<span class="op">:</span> LogicalPlan<span class="op">,</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> fields<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;&gt;,</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The <code>fields</code> value is subtle. Sail often gives internal
+columns opaque field IDs during analysis to avoid name collisions. But
+the user still expects Spark-like output names. For query plans,
+<code>resolve_named_plan()</code> captures the user-facing field names
+so the physical plan can later be renamed back.</p>
+<p>Commands do not get output field renaming in the same way:</p>
+<pre class="text"><code>spec::Plan::Query   -&gt; LogicalPlan plus user-facing fields
+spec::Plan::Command -&gt; LogicalPlan with fields = None</code></pre>
+<h2 data-number="11.7" id="resolver-state"><span
+class="header-section-number">11.7</span> Resolver State</h2>
+<p>Most of the interesting resolver behavior is not in
+<code>PlanResolver</code> itself. It is in
+<code>PlanResolverState</code>.</p>
+<p>The state tracks:</p>
+<ul>
+<li>generated internal field IDs,</li>
+<li>user-facing field names,</li>
+<li>hidden fields,</li>
+<li>plan IDs attached to fields,</li>
+<li>the outer query schema for correlated subqueries,</li>
+<li>aggregate resolution mode,</li>
+<li>CTEs,</li>
+<li><code>WithRelations</code> subquery references,</li>
+<li>temporary config flags,</li>
+<li>positional and named parameter values.</li>
+</ul>
+<p>The most important field-resolution trick is this:</p>
+<pre class="text"><code>user name: &quot;customer_id&quot;
+internal field ID: &quot;#7&quot;</code></pre>
+<p>The DataFusion logical plan may carry <code>#7</code>, but Sail
+remembers that the user-facing name is <code>customer_id</code>.</p>
+<p>Why do this? Because DataFrame plans can easily contain duplicate
+column names:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">left</span>.<span class="kw">id</span>, <span class="kw">right</span>.<span class="kw">id</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> <span class="kw">left</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> <span class="kw">right</span> <span class="kw">ON</span> <span class="kw">left</span>.<span class="kw">id</span> <span class="op">=</span> <span class="kw">right</span>.<span class="kw">id</span></span></code></pre></div>
+<p>If both columns were simply named <code>id</code>, subsequent
+resolution would become ambiguous too early or in the wrong way. Sail
+uses opaque internal names to keep the logical plan well-formed while
+preserving Spark-facing names for display and final output.</p>
+<figure>
+<img src="diagrams/10-diagram-03.svg" alt="Flowchart 10.3" />
+<figcaption aria-hidden="true">Flowchart 10.3</figcaption>
+</figure>
+<p>The state also records hidden fields. Hidden fields are temporary
+columns needed for analysis or execution but not intended to appear in
+the final output. For example, a join or sort rewrite may need to carry
+a helper field through a subplan.</p>
+<p>After resolving a query, <code>resolve_query_plan()</code> calls
+<code>remove_hidden_fields()</code> so the public logical plan does not
+expose those helper fields.</p>
+<h2 data-number="11.8" id="query-resolution"><span
+class="header-section-number">11.8</span> Query Resolution</h2>
+<p>The query resolver dispatch lives in:</p>
+<pre class="text"><code>crates/sail-plan/src/resolver/query/mod.rs</code></pre>
+<p>It is an async recursive dispatcher over
+<code>spec::QueryNode</code>.</p>
+<p>The main structure is:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">match</span> plan<span class="op">.</span>node <span class="op">{</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">QueryNode::</span><span class="bu">Read</span> <span class="op">{</span> <span class="op">..</span> <span class="op">}</span> <span class="op">=&gt;</span> <span class="op">...</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">QueryNode::</span>Project <span class="op">{</span> <span class="op">..</span> <span class="op">}</span> <span class="op">=&gt;</span> <span class="op">...</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">QueryNode::</span>Filter <span class="op">{</span> <span class="op">..</span> <span class="op">}</span> <span class="op">=&gt;</span> <span class="op">...</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">QueryNode::</span>Join(join) <span class="op">=&gt;</span> <span class="op">...</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">QueryNode::</span>Aggregate(aggregate) <span class="op">=&gt;</span> <span class="op">...</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="pp">QueryNode::</span>Repartition <span class="op">{</span> <span class="op">..</span> <span class="op">}</span> <span class="op">=&gt;</span> <span class="op">...</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="pp">QueryNode::</span>WithRelations <span class="op">{</span> <span class="op">..</span> <span class="op">}</span> <span class="op">=&gt;</span> <span class="op">...</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Each variant delegates to a focused resolver file:</p>
+<table>
+<thead>
+<tr>
+<th>Query shape</th>
+<th>Resolver file</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Read</code></td>
+<td><code>query/read.rs</code></td>
+</tr>
+<tr>
+<td><code>Project</code></td>
+<td><code>query/project.rs</code></td>
+</tr>
+<tr>
+<td><code>Filter</code></td>
+<td><code>query/filter.rs</code></td>
+</tr>
+<tr>
+<td><code>Join</code></td>
+<td><code>query/join.rs</code></td>
+</tr>
+<tr>
+<td><code>Aggregate</code></td>
+<td><code>query/aggregate.rs</code></td>
+</tr>
+<tr>
+<td><code>Sort</code></td>
+<td><code>query/sort.rs</code></td>
+</tr>
+<tr>
+<td><code>Limit</code></td>
+<td><code>query/limit.rs</code></td>
+</tr>
+<tr>
+<td><code>Repartition</code></td>
+<td><code>query/repartition.rs</code></td>
+</tr>
+<tr>
+<td><code>WithRelations</code></td>
+<td><code>query/with_relations.rs</code></td>
+</tr>
+<tr>
+<td><code>UDF</code> and <code>UDTF</code> plan forms</td>
+<td><code>query/udf.rs</code>, <code>query/udtf.rs</code></td>
+</tr>
+</tbody>
+</table>
+<p>After each query node is resolved, the dispatcher does two
+things:</p>
+<pre class="text"><code>verify_query_plan(plan, state)
+register_schema_with_plan_id(plan, plan_id, state)</code></pre>
+<p>That means every resolved plan must use fields known to the resolver
+state. If a new resolver creates a field and forgets to register it,
+Sail fails with an internal resolver error.</p>
+<p>That is a useful invariant. It catches bugs at the boundary where
+Spark-compatible names become DataFusion columns.</p>
+<h2 data-number="11.9" id="reading-tables-and-data-sources"><span
+class="header-section-number">11.9</span> Reading Tables And Data
+Sources</h2>
+<p><code>query/read.rs</code> is a rich file because reading is where
+catalogs, file formats, temporary views, CTEs, and dynamic table names
+meet.</p>
+<p>For a named table, Sail handles several cases:</p>
+<ol type="1">
+<li>If the name looks like <code>&lt;format&gt;.&lt;path&gt;</code> and
+the format is registered, treat it as a direct data source read.</li>
+<li>If the name matches a CTE, use the CTE plan.</li>
+<li>Otherwise, ask the <code>CatalogManager</code> for a table or
+view.</li>
+<li>For a table, build <code>SourceInfo</code> and ask
+<code>TableFormatRegistry</code> to create a source.</li>
+<li>For a persistent view, parse the stored SQL definition and resolve
+it.</li>
+<li>For a temporary view, clone and rename the stored logical plan.</li>
+</ol>
+<p>The rough flow:</p>
+<figure>
+<img src="diagrams/10-diagram-04.svg" alt="Flowchart 10.4" />
+<figcaption aria-hidden="true">Flowchart 10.4</figcaption>
+</figure>
+<p>This is where Sail’s session extensions begin to matter:</p>
+<ul>
+<li><code>CatalogManager</code> supplies table and view metadata.</li>
+<li><code>TableFormatRegistry</code> turns format-specific metadata into
+table sources.</li>
+<li><code>PlanService</code> provides display and formatting helpers
+elsewhere in resolution.</li>
+</ul>
+<p>Those are not global singletons. They are DataFusion session
+extensions. That design lets Sail attach Spark-compatible services to a
+normal DataFusion <code>SessionContext</code>.</p>
+<h2 data-number="11.10" id="project-resolution-and-rewriters"><span
+class="header-section-number">11.10</span> Project Resolution And
+Rewriters</h2>
+<p>Projection is deceptively complex. The <code>Project</code> node has
+to handle ordinary expressions, wildcard expansion, aliases, generators,
+windows, aggregate shortcuts, and Spark-specific functions like
+<code>spark_partition_id()</code>.</p>
+<p><code>resolve_query_project()</code> follows this pattern:</p>
+<ol type="1">
+<li>Resolve the input plan, or create a one-row empty input when the
+project has no input.</li>
+<li>Resolve each spec expression into a <code>NamedExpr</code>.</li>
+<li>Expand wildcards.</li>
+<li>Run projection rewriters.</li>
+<li>Rewrite multi-expression functions.</li>
+<li>If aggregate functions are present, rewrite the projection as an
+aggregate.</li>
+<li>Otherwise build a DataFusion <code>Projection</code>.</li>
+</ol>
+<p>The projection rewriters are especially instructive:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>MonotonicIdRewriter</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>SparkPartitionIdRewriter</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>ExplodeRewriter</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>WindowRewriter</span></code></pre></div>
+<p>They transform expressions that cannot remain as plain scalar
+expressions into plan shapes that DataFusion can execute.</p>
+<figure>
+<img src="diagrams/10-diagram-05.svg" alt="Flowchart 10.5" />
+<figcaption aria-hidden="true">Flowchart 10.5</figcaption>
+</figure>
+<p>This pattern appears across Sail: the spec layer preserves Spark
+intent, then the resolver reshapes that intent into
+DataFusion-compatible logical plans.</p>
+<h2 data-number="11.11" id="attribute-resolution"><span
+class="header-section-number">11.11</span> Attribute Resolution</h2>
+<p>Attributes are where users feel analysis quality most sharply.</p>
+<p>The resolver handles:</p>
+<ul>
+<li>case-insensitive matching,</li>
+<li>qualified names,</li>
+<li>nested struct fields,</li>
+<li>plan ID filtering,</li>
+<li>aggregate aliases,</li>
+<li>hidden fields,</li>
+<li>outer references for correlated subqueries.</li>
+</ul>
+<p>The central method is:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>resolve_expression_attribute(<span class="op">...</span>)</span></code></pre></div>
+<p>It tries candidates in a careful order:</p>
+<ol type="1">
+<li>Aggregate fields visible in <code>HAVING</code>.</li>
+<li>Normal fields and nested fields.</li>
+<li>Aggregate grouping fields.</li>
+<li>Hidden fields.</li>
+<li>Outer query fields.</li>
+</ol>
+<p>Nested-field resolution is Arrow-aware. For a struct field, Sail
+builds a DataFusion <code>get_field</code> scalar function expression
+rather than inventing a custom row accessor.</p>
+<p>For example:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> address.city <span class="kw">FROM</span> customers</span></code></pre></div>
+<p>becomes conceptually:</p>
+<pre class="text"><code>column(address)
+  -&gt; get_field(&quot;city&quot;)</code></pre>
+<p>Qualified matching supports forms like:</p>
+<pre class="text"><code>column
+table.column
+schema.table.column
+catalog.schema.table.column</code></pre>
+<p>The helper <code>qualifier_matches()</code> performs case-insensitive
+comparison against DataFusion <code>TableReference</code> values.</p>
+<p>This is one of the places where the resolver has to act more like
+Spark than vanilla DataFusion. The user’s unresolved expression is not
+just a name; it carries Spark resolution expectations.</p>
+<h2 data-number="11.12" id="function-resolution"><span
+class="header-section-number">11.12</span> Function Resolution</h2>
+<p>Function resolution lives mainly in:</p>
+<pre class="text"><code>crates/sail-plan/src/resolver/expression/function.rs
+crates/sail-plan/src/function/mod.rs</code></pre>
+<p>The function resolver follows a layered lookup:</p>
+<ol type="1">
+<li>Normalize the function name.</li>
+<li>Extract named arguments.</li>
+<li>Check the catalog for registered functions, including PySpark
+UDFs.</li>
+<li>Check Sail built-in scalar and generator functions.</li>
+<li>Check Sail built-in aggregate functions.</li>
+<li>Build a DataFusion expression.</li>
+<li>Format a Spark-like display name.</li>
+</ol>
+<p>The catalog lookup comes before built-ins because Spark Connect does
+not reliably mark all UDF calls in a way Sail can trust. The code even
+notes this:</p>
+<pre class="text"><code>is_user_defined_function is always false, so we need to check UDFs before built-in functions.</code></pre>
+<p>For built-ins, Sail has registries:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>BUILT_IN_SCALAR_FUNCTIONS</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>BUILT_IN_GENERATOR_FUNCTIONS</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>BUILT_IN_TABLE_FUNCTIONS</span></code></pre></div>
+<p>For aggregate functions, the resolver also handles clauses like:</p>
+<ul>
+<li><code>DISTINCT</code>,</li>
+<li><code>FILTER</code>,</li>
+<li><code>ORDER BY</code>,</li>
+<li><code>IGNORE NULLS</code>.</li>
+</ul>
+<p>For PySpark UDFs, Sail carries enough information to later execute
+Python code:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct</span> PythonUdf <span class="op">{</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> python_version<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> eval_type<span class="op">:</span> <span class="pp">spec::</span>PySparkUdfType<span class="op">,</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> command<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;,</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> output_type<span class="op">:</span> DataType<span class="op">,</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is the same pattern we saw in the PySpark chapter: the Python
+function is not run in the resolver. It is represented as a plan
+expression that later physical execution can evaluate.</p>
+<h2 data-number="11.13" id="commands-become-logical-plans-too"><span
+class="header-section-number">11.13</span> Commands Become Logical Plans
+Too</h2>
+<p>Commands enter through <code>spec::CommandPlan</code> and are
+resolved in:</p>
+<pre class="text"><code>crates/sail-plan/src/resolver/command/mod.rs</code></pre>
+<p>The command resolver handles catalog operations, writes, streaming
+writes, explains, inserts, merge, deletes, variables, and
+view/table/database DDL.</p>
+<p>Many catalog commands become DataFusion extension logical plans:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="pp">LogicalPlan::</span>Extension(Extension <span class="op">{</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    node<span class="op">:</span> <span class="pp">Arc::</span>new(<span class="pp">CatalogCommandNode::</span>try_new(<span class="kw">self</span><span class="op">.</span>ctx<span class="op">,</span> command)<span class="op">?</span>)<span class="op">,</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>)</span></code></pre></div>
+<p>Later, the physical planner recognizes
+<code>CatalogCommandNode</code> and turns it into:</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>CatalogCommandExec</span></code></pre></div>
+<p>This is the key pattern for command execution:</p>
+<figure>
+<img src="diagrams/10-diagram-06.svg" alt="Flowchart 10.6" />
+<figcaption aria-hidden="true">Flowchart 10.6</figcaption>
+</figure>
+<p>This lets Sail preserve DataFusion’s plan pipeline even for
+operations that are not ordinary relational queries.</p>
+<h2 data-number="11.14" id="logical-extension-nodes-1"><span
+class="header-section-number">11.14</span> Logical Extension Nodes</h2>
+<p>Sail uses DataFusion logical extension nodes for Spark-specific plan
+concepts that DataFusion does not natively model.</p>
+<p>Examples include:</p>
+<ul>
+<li><code>RangeNode</code>,</li>
+<li><code>ShowStringNode</code>,</li>
+<li><code>MapPartitionsNode</code>,</li>
+<li><code>MonotonicIdNode</code>,</li>
+<li><code>SparkPartitionIdNode</code>,</li>
+<li><code>SortWithinPartitionsNode</code>,</li>
+<li><code>SchemaPivotNode</code>,</li>
+<li><code>FileWriteNode</code>,</li>
+<li><code>FileDeleteNode</code>,</li>
+<li><code>MergeIntoNode</code>,</li>
+<li><code>ExplicitRepartitionNode</code>,</li>
+<li>streaming source/filter/limit/collector nodes,</li>
+<li><code>CatalogCommandNode</code>,</li>
+<li><code>BarrierNode</code>.</li>
+</ul>
+<p>These nodes are planned in
+<code>crates/sail-session/src/planner.rs</code> by
+<code>ExtensionPhysicalPlanner</code>.</p>
+<p>That planner is installed through <code>ExtensionQueryPlanner</code>,
+which builds a DataFusion <code>DefaultPhysicalPlanner</code> with
+extension planners:</p>
+<pre class="text"><code>lakehouse extension planners
+system table physical planner
+Sail extension physical planner</code></pre>
+<p>This is a crucial architectural point: Sail does not fork
+DataFusion’s planner. It uses DataFusion’s extension hooks.</p>
+<figure>
+<img src="diagrams/10-diagram-07.svg" alt="Flowchart 10.7" />
+<figcaption aria-hidden="true">Flowchart 10.7</figcaption>
+</figure>
+<p>For discussion #2001, this pattern is already half of the answer.
+Third-party integrations need a disciplined way to register logical and
+physical extension behavior without hard-coding every integration into
+<code>sail-session/src/planner.rs</code>.</p>
+<h2 data-number="11.15"
+id="repartition-as-a-bridge-to-distributed-execution"><span
+class="header-section-number">11.15</span> Repartition As A Bridge To
+Distributed Execution</h2>
+<p><code>query/repartition.rs</code> is a compact example that connects
+this chapter to the shuffle chapters.</p>
+<p>Spark-facing repartition intent becomes a Sail logical extension
+node:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="pp">ExplicitRepartitionNode::</span>new(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(input)<span class="op">,</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Some</span>(num_partitions)<span class="op">,</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">ExplicitRepartitionKind::</span>RoundRobin<span class="op">,</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">vec!</span>[]<span class="op">,</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>For <code>repartitionByExpression</code>, Sail resolves the partition
+expressions and creates:</p>
+<pre class="text"><code>ExplicitRepartitionKind::Hash</code></pre>
+<p>Later, <code>ExtensionPhysicalPlanner</code> turns
+<code>ExplicitRepartitionNode</code> into
+<code>ExplicitRepartitionExec</code>, using DataFusion physical
+expressions and partitioning:</p>
+<pre class="text"><code>RoundRobin -&gt; Partitioning::RoundRobinBatch
+Hash       -&gt; Partitioning::Hash
+Coalesce   -&gt; UnknownPartitioning with fewer partitions</code></pre>
+<p>Then Chapter 7’s job graph planner and Chapter 9’s shuffle operators
+take over.</p>
+<p>This path is worth memorizing:</p>
+<pre class="text"><code>Spark repartition call
+  -&gt; spec::QueryNode::Repartition
+  -&gt; ExplicitRepartitionNode
+  -&gt; ExplicitRepartitionExec
+  -&gt; distributed stage boundary
+  -&gt; ShuffleWriteExec / ShuffleReadExec</code></pre>
+<p>That is how a user-level API becomes data movement.</p>
+<h2 data-number="11.16" id="withrelations-and-plan-ids"><span
+class="header-section-number">11.16</span> WithRelations And Plan
+IDs</h2>
+<p>Spark Connect can send a root relation plus referenced relations.
+Sail models this as:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="pp">QueryNode::</span>WithRelations <span class="op">{</span> root<span class="op">,</span> references <span class="op">}</span></span></code></pre></div>
+<p>The resolver stores the references in <code>PlanResolverState</code>
+by <code>plan_id</code>.</p>
+<p>It also handles a useful PySpark pattern: SQL strings can refer to
+DataFrames passed as arguments. The conversion may wrap those DataFrames
+in <code>SubqueryAlias</code> nodes inside <code>WithRelations</code>.
+Sail resolves those references and registers them as CTE-like table
+names for the root query.</p>
+<p>The flow is:</p>
+<figure>
+<img src="diagrams/10-diagram-08.svg" alt="Flowchart 10.8" />
+<figcaption aria-hidden="true">Flowchart 10.8</figcaption>
+</figure>
+<p>The scoping helpers in <code>PlanResolverState</code> make this
+safe:</p>
+<ul>
+<li><code>enter_with_relations_scope()</code>,</li>
+<li><code>enter_cte_scope()</code>.</li>
+</ul>
+<p>Each helper restores the previous state on drop. This is a very
+Rust-flavored design: scope cleanup is tied to ownership and
+<code>Drop</code>, so temporary resolver state does not leak into the
+outer query.</p>
+<h2 data-number="11.17" id="commands-in-spark-connect-execution"><span
+class="header-section-number">11.17</span> Commands In Spark Connect
+Execution</h2>
+<p>The Spark Connect plan executor in:</p>
+<pre class="text"><code>crates/sail-spark-connect/src/service/plan_executor.rs</code></pre>
+<p>uses different modes for different operations.</p>
+<p>Normal relations are lazy:</p>
+<pre class="text"><code>handle_execute_relation
+  -&gt; relation.try_into()
+  -&gt; handle_execute_plan(..., Lazy)</code></pre>
+<p>Commands such as UDF registration and writes are eager and
+silent:</p>
+<pre class="text"><code>handle_execute_register_function
+handle_execute_write_operation
+handle_execute_create_dataframe_view
+handle_execute_write_operation_v2</code></pre>
+<p>They build a <code>spec::Plan::Command</code>, resolve it, execute
+it, drain the stream, and return completion metadata rather than a
+normal relation stream.</p>
+<p>SQL command handling has one extra twist. If a SQL string resolves to
+a command, Sail executes the command and returns a local relation
+containing the command result. That matches Spark Connect’s expectation
+that a SQL command can return an opaque relation for the client to
+use.</p>
+<h2 data-number="11.18"
+id="a-worked-example-dataframe-filter-and-project"><span
+class="header-section-number">11.18</span> A Worked Example: DataFrame
+Filter And Project</h2>
+<p>Consider a PySpark call:</p>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> spark.table(<span class="st">&quot;orders&quot;</span>).where(<span class="st">&quot;amount &gt; 100&quot;</span>).select(<span class="st">&quot;customer_id&quot;</span>, <span class="st">&quot;amount&quot;</span>)</span></code></pre></div>
+<p>Spark Connect sends an unresolved relation tree roughly like:</p>
+<pre class="text"><code>Project(customer_id, amount)
+  Filter(amount &gt; 100)
+    Read(NamedTable orders)</code></pre>
+<p>Sail first converts that into spec:</p>
+<pre class="text"><code>spec::QueryNode::Project
+  spec::QueryNode::Filter
+    spec::QueryNode::Read</code></pre>
+<p>Then the resolver walks bottom-up:</p>
+<ol type="1">
+<li><code>ReadNamedTable</code> asks the catalog for
+<code>orders</code>.</li>
+<li>The table source is created and fields are registered with internal
+IDs.</li>
+<li><code>Filter</code> resolves <code>amount</code> against the input
+schema.</li>
+<li><code>Project</code> resolves <code>customer_id</code> and
+<code>amount</code>.</li>
+<li>The final schema is verified.</li>
+<li>User-facing field names are captured for later physical
+renaming.</li>
+</ol>
+<p>The interesting part is the field mapping:</p>
+<pre class="text"><code>customer_id -&gt; #0
+amount      -&gt; #1</code></pre>
+<p>DataFusion sees stable internal columns. The Spark client eventually
+sees the expected names.</p>
+<h2 data-number="11.19"
+id="a-worked-example-repartition-by-customer"><span
+class="header-section-number">11.19</span> A Worked Example: Repartition
+By Customer</h2>
+<p>Now consider:</p>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>df.repartition(<span class="dv">16</span>, <span class="st">&quot;customer_id&quot;</span>)</span></code></pre></div>
+<p>At the spec level:</p>
+<pre class="text"><code>QueryNode::RepartitionByExpression {
+  partition_expressions: [UnresolvedAttribute(customer_id)],
+  num_partitions: Some(16),
+}</code></pre>
+<p>The resolver:</p>
+<ol type="1">
+<li>Resolves the input plan.</li>
+<li>Resolves <code>customer_id</code> into a DataFusion column
+expression.</li>
+<li>Builds an <code>ExplicitRepartitionNode</code> with
+<code>ExplicitRepartitionKind::Hash</code>.</li>
+</ol>
+<p>The physical planner:</p>
+<ol type="1">
+<li>Converts the logical expression into a physical expression.</li>
+<li>Builds <code>Partitioning::Hash(expressions, 16)</code>.</li>
+<li>Creates <code>ExplicitRepartitionExec</code>.</li>
+</ol>
+<p>The distributed planner:</p>
+<ol type="1">
+<li>Sees the repartition boundary.</li>
+<li>Creates producer and consumer stages.</li>
+<li>Schedules shuffle channels.</li>
+<li>Uses the runtime shuffle read/write path from Chapter 9.</li>
+</ol>
+<p>One user-level method call has passed through four layers:</p>
+<figure>
+<img src="diagrams/10-diagram-09.svg" alt="Flowchart 10.9" />
+<figcaption aria-hidden="true">Flowchart 10.9</figcaption>
+</figure>
+<h2 data-number="11.20"
+id="a-worked-example-registered-python-udf"><span
+class="header-section-number">11.20</span> A Worked Example: Registered
+Python UDF</h2>
+<p>A registered Python UDF follows a different path.</p>
+<p>First, Spark Connect sends a register-function command. Sail
+builds:</p>
+<pre class="text"><code>spec::Plan::Command(
+  spec::CommandNode::RegisterFunction(...)
+)</code></pre>
+<p>The command resolver stores the function in the catalog.</p>
+<p>Later, a query calls the function:</p>
+<div class="sourceCode" id="cb49"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>spark.sql(<span class="st">&quot;SELECT my_udf(x) FROM t&quot;</span>)</span></code></pre></div>
+<p>The expression resolver sees:</p>
+<pre class="text"><code>spec::Expr::UnresolvedFunction(&quot;my_udf&quot;, [x])</code></pre>
+<p>It checks the catalog before built-ins, finds the PySpark unresolved
+UDF, resolves the argument expressions, and builds a Python UDF
+expression that can be planned and executed later.</p>
+<p>The UDF command bytes stay as bytes. The resolver does not
+deserialize Python logic or execute Python code. It only creates a typed
+plan representation.</p>
+<p>That distinction is vital for distributed execution. Workers need a
+serializable plan and enough metadata to run the UDF in the right
+execution context.</p>
+<h2 data-number="11.21" id="extension-implications-3"><span
+class="header-section-number">11.21</span> Extension Implications</h2>
+<p>Discussion #2001 asks for an extension API for third-party DataFusion
+integrations:</p>
+<ul>
+<li>UDFs,</li>
+<li>optimizer rules,</li>
+<li>planner extensions,</li>
+<li>probably catalog/session configuration hooks,</li>
+<li>and Python-discoverable packages such as a hypothetical
+<code>pysail-sedona</code>.</li>
+</ul>
+<p>This chapter reveals why the extension story cannot be only a
+function registry.</p>
+<p>Extensions may need to participate in several phases:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Why extensions need it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spark Connect conversion</td>
+<td>To accept custom relation, expression, or command messages.</td>
+</tr>
+<tr>
+<td>Sail spec</td>
+<td>To represent extension intent in a language-neutral, serializable
+form.</td>
+</tr>
+<tr>
+<td>SQL analysis</td>
+<td>To parse extension SQL syntax or functions.</td>
+</tr>
+<tr>
+<td>Logical resolution</td>
+<td>To bind names, tables, functions, and types.</td>
+</tr>
+<tr>
+<td>Logical optimization</td>
+<td>To rewrite extension plans before physical planning.</td>
+</tr>
+<tr>
+<td>Physical planning</td>
+<td>To turn extension logical nodes into execution plans.</td>
+</tr>
+<tr>
+<td>Plan encoding</td>
+<td>To send physical expressions or nodes to workers.</td>
+</tr>
+<tr>
+<td>Worker registration</td>
+<td>To ensure workers can execute extension functions and
+operators.</td>
+</tr>
+</tbody>
+</table>
+<p>The current architecture has useful internal patterns, but most of
+them are wired into Sail itself:</p>
+<ul>
+<li>built-in function registries are static maps,</li>
+<li>logical extension nodes are known to Sail crates,</li>
+<li><code>ExtensionPhysicalPlanner</code> has hard-coded downcasts,</li>
+<li>lakehouse planners are installed through a dedicated helper,</li>
+<li>PySpark UDFs are special-cased in resolver paths,</li>
+<li>Spark Connect custom extension handling is not a general plugin
+registry.</li>
+</ul>
+<p>A mature extension design would turn those internal patterns into
+explicit contracts.</p>
+<h2 data-number="11.22"
+id="a-proposed-resolver-side-extension-shape"><span
+class="header-section-number">11.22</span> A Proposed Resolver-Side
+Extension Shape</h2>
+<p>One possible architecture is a staged extension trait family rather
+than one giant trait.</p>
+<p>For example:</p>
+<div class="sourceCode" id="cb51"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SailPlanExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> FunctionRegistry) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>()<span class="op">&gt;;</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_table_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> TableFunctionRegistry) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>()<span class="op">&gt;;</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> logical_resolvers(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionLogicalResolver<span class="op">&gt;&gt;;</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> logical_optimizer_rules(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> LogicalRewriter<span class="op">&gt;&gt;;</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> physical_planners(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;;</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> codecs(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionCodec<span class="op">&gt;&gt;;</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The goal would be to let an extension say:</p>
+<pre class="text"><code>I know how to parse or receive this intent.
+I know how to resolve it into a logical node.
+I know how to optimize it.
+I know how to plan it physically.
+I know how to encode it for workers.</code></pre>
+<p>For Spark Connect specifically, extensions also need a protocol
+story. Spark Connect’s own extension guidance defines
+<code>Relation.extension</code>, <code>Command.extension</code>, and
+<code>Expression.extension</code>, each typed as
+<code>google.protobuf.Any</code>. Sail’s spec layer can mirror that by
+introducing a <code>type_url</code>-indexed dispatcher in the
+resolver:</p>
+<pre class="text"><code>Connect Relation/Expression/Command .extension
+  -&gt; SparkConnectExtensionDispatcher::dispatch(type_url, payload)
+  -&gt; extension handler resolves payload
+  -&gt; either:
+       spec::QueryNode built from existing operators (pattern A, plan-time only),
+     or:
+       spec::QueryNode::Extension { ... } for a logical extension node (pattern B)
+  -&gt; normal Sail planning and DataFusion execution</code></pre>
+<p>Pattern A extensions never need an execution-time integration.
+Pattern B extensions hand off to a logical extension node and the rest
+of the chapter 13 extension stack. This makes the resolver the dispatch
+point for what chapter 13 calls the <em>plan-time extension
+boundary</em>: a stable, protobuf-versioned, language-neutral channel
+that is independent of the Rust/DataFusion-FFI work needed for custom
+physical operators. Chapter 13 develops the full dispatcher design.</p>
+<h2 data-number="11.23" id="design-rules-for-future-extensions"><span
+class="header-section-number">11.23</span> Design Rules For Future
+Extensions</h2>
+<p>The resolver code suggests several design rules.</p>
+<p>First, preserve unresolved intent until enough context exists. The
+protobuf conversion layer should parse and normalize, but not bind names
+too early.</p>
+<p>Second, keep Spark-facing names separate from engine-facing names.
+Any extension that creates fields should register them through resolver
+state or an equivalent API.</p>
+<p>Third, distinguish query nodes from command nodes. Side-effecting
+extensions should not pretend to be ordinary projections.</p>
+<p>Fourth, make worker compatibility explicit. If an extension creates
+physical operators, workers must have the same extension and codec
+registrations.</p>
+<p>Fifth, use DataFusion extension hooks where possible. Sail’s strength
+is that it extends DataFusion rather than replacing it.</p>
+<p>Sixth, expose ordering and collision rules. Function names, optimizer
+rules, and physical planners all need deterministic registration
+behavior.</p>
+<h2 data-number="11.24" id="reading-exercise-1"><span
+class="header-section-number">11.24</span> Reading Exercise</h2>
+<p>Trace a simple query:</p>
+<div class="sourceCode" id="cb54"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> customer_id, <span class="fu">count</span>(<span class="op">*</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> orders</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> customer_id</span></code></pre></div>
+<p>Suggested path:</p>
+<ol type="1">
+<li>Start in <code>crates/sail-spark-connect/src/proto/plan.rs</code> if
+the query arrives through Spark Connect, or in the SQL analyzer path if
+it starts as SQL.</li>
+<li>Find the resulting <code>spec::QueryNode</code> and
+<code>spec::Expr</code> values.</li>
+<li>Open <code>crates/sail-plan/src/resolver/plan.rs</code>.</li>
+<li>Follow <code>resolve_named_plan()</code> into
+<code>resolve_query_plan()</code>.</li>
+<li>In <code>query/read.rs</code>, follow table resolution for
+<code>orders</code>.</li>
+<li>In <code>expression/attribute.rs</code>, follow
+<code>customer_id</code>.</li>
+<li>In <code>expression/function.rs</code>, follow
+<code>count</code>.</li>
+<li>In <code>query/aggregate.rs</code>, follow group-by planning.</li>
+<li>Return to <code>resolve_and_execute_plan()</code> and see how
+DataFusion optimization begins.</li>
+</ol>
+<p>The core question is:</p>
+<pre class="text"><code>At this line, are we still describing user intent, or have we bound that intent to a
+DataFusion plan object?</code></pre>
+<p>Once you can answer that, the resolver stops feeling like a forest
+and starts feeling like a set of well-marked trails.</p>
+<h2 data-number="11.25" id="takeaways-5"><span
+class="header-section-number">11.25</span> Takeaways</h2>
+<p>The Sail spec and resolver form the semantic center of the
+engine:</p>
+<ul>
+<li>Spark Connect protobufs and SQL both become Sail spec plans.</li>
+<li>The Sail spec is an unresolved, serializable representation of
+Spark-compatible query and command intent.</li>
+<li><code>PlanResolver</code> turns spec plans into DataFusion logical
+plans.</li>
+<li><code>PlanResolverState</code> tracks internal field IDs,
+user-facing names, hidden fields, plan IDs, CTEs, subqueries, and
+temporary scopes.</li>
+<li>Query, expression, and command resolution are split into focused
+modules.</li>
+<li>Sail uses DataFusion logical extension nodes for Spark-specific
+behavior.</li>
+<li>The session physical planner turns those extension nodes into Sail
+physical execution plans.</li>
+<li>Extension proposal #2001 should build on these existing boundaries
+rather than bypassing them.</li>
+</ul>
+<p>The next chapter turns from plans to callable behavior: functions,
+UDFs, UDAFs, UDTFs, codecs, and why distributed execution makes
+serialization and worker-side registration non-negotiable.</p>
+</body>
+</html>

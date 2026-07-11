@@ -1,0 +1,49 @@
+/* Diagram rendering for EPUB / MOBI. */
+
+/* Pandoc wraps images in <figure>...</figure>; make the whole figure block
+   center its contents and not exceed the viewport. */
+figure {
+  display: block;
+  margin: 1em auto;
+  text-align: center;
+  page-break-inside: avoid;
+}
+
+figure img,
+img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+}
+
+figcaption {
+  display: block;
+  text-align: center;
+  font-style: italic;
+  margin-top: 0.4em;
+  font-size: 90%;
+}
+
+/* Pandoc occasionally emits a bare <p><img/></p>; center those too. */
+p > img {
+  display: block;
+  margin: 1em auto;
+}
+
+p:has(> img:only-child) {
+  text-align: center;
+}
+
+/* Some readers (Kindle) interpret SVG width attributes literally and clip
+   the displayed area; force the layout engine to honor max-width by
+   un-setting any explicit dimensions on the rendered image. */
+img[src$=".svg"] {
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}

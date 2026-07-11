@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 15: Custom Nodes And Optimizers</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-017.html" accesskey="n" rel="next">Chapter 16: Local And Streaming Execution</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-015.html" accesskey="p" rel="previous">Chapter 14: Arrow Flight SQL</a>
+</span>
+</div>
+</nav>
+<h1 data-number="16" id="chapter-15"><span
+class="header-section-number">16</span> Chapter 15: Custom Nodes And
+Optimizers</h1>
+<p>Sail uses DataFusion as its query kernel, but Spark compatibility
+requires plan constructs DataFusion does not provide directly. The
+solution is a set of custom logical nodes, custom physical plans,
+logical optimizer rules, physical optimizer rules, and extension
+planners that connect the pieces.</p>
+<p>This chapter collects that machinery in one place. Earlier chapters
+introduced it as part of DataFusion and plan resolution; here we treat
+it as a contributor’s map.</p>
+<h2 data-number="16.1" id="code-map-6"><span
+class="header-section-number">16.1</span> Code Map</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logical nodes</td>
+<td><code>crates/sail-logical-plan/src/</code></td>
+</tr>
+<tr>
+<td>Physical nodes</td>
+<td><code>crates/sail-physical-plan/src/</code></td>
+</tr>
+<tr>
+<td>Logical optimizer rules</td>
+<td><code>crates/sail-logical-optimizer/src/lib.rs</code></td>
+</tr>
+<tr>
+<td>Lakehouse optimizer rule</td>
+<td><code>crates/sail-plan-lakehouse/src/optimizer.rs</code></td>
+</tr>
+<tr>
+<td>Physical optimizer rules</td>
+<td><code>crates/sail-physical-optimizer/src/</code></td>
+</tr>
+<tr>
+<td>Physical optimizer pipeline</td>
+<td><code>crates/sail-physical-optimizer/src/lib.rs</code></td>
+</tr>
+<tr>
+<td>Extension physical planner</td>
+<td><code>crates/sail-session/src/planner.rs</code></td>
+</tr>
+<tr>
+<td>Session optimizer registration</td>
+<td><code>crates/sail-session/src/session_factory/server.rs</code></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="16.2" id="the-pattern"><span
+class="header-section-number">16.2</span> The Pattern</h2>
+<p>A Spark-specific plan feature usually crosses five layers:</p>
+<pre class="text"><code>spec node or resolver condition
+  -&gt; DataFusion LogicalPlan::Extension(UserDefinedLogicalNodeCore)
+  -&gt; optional logical optimizer rewrite
+  -&gt; ExtensionPhysicalPlanner downcast
+  -&gt; DataFusion ExecutionPlan
+  -&gt; optional physical optimizer rewrite</code></pre>
+<p>That is a lot of plumbing, but it buys a clear boundary: Sail can
+keep using DataFusion’s optimizer and execution APIs while adding
+Spark-shaped behavior.</p>
+<h2 data-number="16.3" id="logical-node-inventory"><span
+class="header-section-number">16.3</span> Logical Node Inventory</h2>
+<p>The current Sail logical extension nodes include:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Logical node</th>
+<th>Main purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RangeNode</code></td>
+<td>Spark <code>range</code></td>
+</tr>
+<tr>
+<td><code>ExplicitRepartitionNode</code></td>
+<td><code>repartition</code>, <code>coalesce</code>,
+<code>repartitionByRange</code></td>
+</tr>
+<tr>
+<td><code>ShowStringNode</code></td>
+<td><code>df.show()</code> table-string formatting</td>
+</tr>
+<tr>
+<td><code>MapPartitionsNode</code></td>
+<td>stream and Python/Pandas map-style UDF execution</td>
+</tr>
+<tr>
+<td><code>FileWriteNode</code></td>
+<td>writes through table/data-source formats</td>
+</tr>
+<tr>
+<td><code>FileDeleteNode</code></td>
+<td>DELETE planning</td>
+</tr>
+<tr>
+<td><code>MergeIntoNode</code></td>
+<td>MERGE planning before row-level expansion</td>
+</tr>
+<tr>
+<td><code>MonotonicIdNode</code></td>
+<td><code>monotonically_increasing_id()</code></td>
+</tr>
+<tr>
+<td><code>SparkPartitionIdNode</code></td>
+<td><code>spark_partition_id()</code></td>
+</tr>
+<tr>
+<td><code>SortWithinPartitionsNode</code></td>
+<td>Spark partition-preserving sort</td>
+</tr>
+<tr>
+<td><code>SchemaPivotNode</code></td>
+<td>schema-producing pivot behavior</td>
+</tr>
+<tr>
+<td><code>CatalogCommandNode</code></td>
+<td>DDL/catalog commands as physical work</td>
+</tr>
+<tr>
+<td><code>BarrierNode</code></td>
+<td>streaming barrier/checkpoint coordination</td>
+</tr>
+<tr>
+<td>streaming source/filter/limit/collector nodes</td>
+<td>structured streaming flow-event plans</td>
+</tr>
+</tbody>
+</table>
+<p>The exact list can change, so readers should treat
+<code>crates/sail-session/src/planner.rs</code> as the authoritative
+dispatch table. If a logical node cannot be downcast there, it will not
+become a physical plan.</p>
+<h2 data-number="16.4" id="example-range"><span
+class="header-section-number">16.4</span> Example: Range</h2>
+<p><code>spark.range(start, end, step, numPartitions)</code> is a good
+first node because it is a leaf plan. The logical node carries the range
+parameters and schema. The physical planner downcasts it and constructs
+<code>RangeExec</code>.</p>
+<p>The lesson is simple:</p>
+<pre class="text"><code>Spark has a relation; Sail models it as a DataFusion extension node; physical
+planning turns it into an executable operator.</code></pre>
+<p><code>Range</code> also contains partitioning logic, which makes it
+distributed-friendly. Each partition receives a slice of the range
+rather than every worker scanning the whole sequence.</p>
+<h2 data-number="16.5" id="example-explicit-repartition"><span
+class="header-section-number">16.5</span> Example: Explicit
+Repartition</h2>
+<p>Spark repartitioning semantics are more explicit than DataFusion’s
+default optimizer choices. Sail models user-requested repartitioning as
+<code>ExplicitRepartitionNode</code>.</p>
+<p>That node survives logical planning so the physical optimizer can
+later decide the right concrete physical shape:</p>
+<ul>
+<li>hash repartition,</li>
+<li>round-robin repartition,</li>
+<li>coalesce,</li>
+<li>or passthrough.</li>
+</ul>
+<p>This is a recurring Sail technique: preserve Spark intent long enough
+that a later stage can lower it correctly.</p>
+<h2 data-number="16.6" id="the-extension-physical-planner"><span
+class="header-section-number">16.6</span> The Extension Physical
+Planner</h2>
+<p><code>ExtensionPhysicalPlanner</code> in <code>sail-session</code> is
+the central bridge. It implements DataFusion’s
+<code>ExtensionPlanner</code> trait and performs a sequence of
+downcasts:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>RangeNode<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>ShowStringNode<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>MapPartitionsNode<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is not glamorous code, but it is one of the most important files
+in Sail. It tells you which extension nodes are executable and where
+each one enters the physical layer.</p>
+<p>The planner chain is assembled in
+<code>ExtensionQueryPlanner</code>:</p>
+<pre class="text"><code>lakehouse extension planners
+  -&gt; system table planner
+  -&gt; listing table planner
+  -&gt; Sail custom extension physical planner</code></pre>
+<p>Ordering matters. Delta and Iceberg table planners get a chance to
+handle table- format-specific nodes before the generic Sail planner
+handles ordinary logical extension nodes.</p>
+<h2 data-number="16.7" id="logical-optimizers-1"><span
+class="header-section-number">16.7</span> Logical Optimizers</h2>
+<p>Sail has a small logical optimizer layer in front of DataFusion’s
+defaults.</p>
+<p><code>DecorrelateLateralProjection</code> handles a Spark
+lateral-subquery case before DataFusion’s broader decorrelation rule
+runs. The important point is not just the rule itself, but its
+placement. It must run before DataFusion’s
+<code>DecorrelateLateralJoin</code> because it handles a simpler
+projection-only case.</p>
+<p>Lakehouse writes add another logical rule:
+<code>ExpandRowLevelOp</code>. It rewrites lakehouse <code>MERGE</code>
+and <code>DELETE</code> nodes into row-level write plans that
+format-specific planners can execute.</p>
+<p>That rule is the bridge between Spark SQL commands and Delta/Iceberg
+physical planning.</p>
+<h2 data-number="16.8" id="physical-optimizers-1"><span
+class="header-section-number">16.8</span> Physical Optimizers</h2>
+<p>Sail’s physical optimizer pipeline is more deliberate than “append
+some rules to DataFusion.” <code>sail-physical-optimizer</code>
+reconstructs the DataFusion rule order and adds Sail-specific rules at
+selected points.</p>
+<p>The custom rules include:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>JoinReorder</code></td>
+<td>Dynamic-programming join reorder with safeguards</td>
+</tr>
+<tr>
+<td><code>RewriteExplicitRepartition</code></td>
+<td>Lowers Sail’s explicit repartition placeholder</td>
+</tr>
+<tr>
+<td><code>RewriteCollectLeftHashJoin</code></td>
+<td>Ensures collect-left joins have valid partitioning</td>
+</tr>
+<tr>
+<td><code>EnforceBarrierPartitioning</code></td>
+<td>Enforces streaming barrier partition requirements</td>
+</tr>
+</tbody>
+</table>
+<p>This means contributors must distinguish logical optimizer changes
+from physical optimizer changes. A logical rule rewrites
+<code>LogicalPlan</code>. A physical rule rewrites
+<code>ExecutionPlan</code>.</p>
+<h2 data-number="16.9" id="contributor-checklist"><span
+class="header-section-number">16.9</span> Contributor Checklist</h2>
+<p>When adding a new custom operator, ask:</p>
+<ol type="1">
+<li>Does the Sail spec need a new representation?</li>
+<li>Does the resolver need to produce a logical extension node?</li>
+<li>Does the logical node implement
+<code>UserDefinedLogicalNodeCore</code> correctly?</li>
+<li>Does projection pushdown need
+<code>necessary_children_exprs</code>?</li>
+<li>Does the physical node implement <code>ExecutionPlan</code> and
+declare <code>PlanProperties</code>?</li>
+<li>Does <code>ExtensionPhysicalPlanner</code> downcast and plan
+it?</li>
+<li>Does the physical plan need codec support for distributed
+execution?</li>
+<li>Does it need logical or physical optimizer support?</li>
+<li>Does it need tests in local and cluster execution?</li>
+</ol>
+<p>The codec question is easy to miss. A node that works locally can
+still fail in cluster mode if workers cannot decode it.</p>
+<h2 data-number="16.10" id="extension-implications-6"><span
+class="header-section-number">16.10</span> Extension Implications</h2>
+<p>Third-party extensions need this same multi-layer path. A physical
+operator alone is not enough. A logical optimizer rule alone is not
+enough. A function registry entry alone is not enough if the physical
+plan later runs on a worker that cannot decode it.</p>
+<p>That is why the extension architecture chapter treats extension
+registration as a bundle of contributions:</p>
+<ul>
+<li>functions,</li>
+<li>logical rules,</li>
+<li>physical rules,</li>
+<li>extension planners,</li>
+<li>session config,</li>
+<li>table formats,</li>
+<li>codecs.</li>
+</ul>
+<h2 data-number="16.11" id="takeaways-8"><span
+class="header-section-number">16.11</span> Takeaways</h2>
+<p>Custom nodes are the places where Spark semantics become
+DataFusion-compatible plans. Optimizer rules preserve or lower those
+semantics at the right stage. <code>sail-session/src/planner.rs</code>
+is the physical dispatch map, and
+<code>sail-physical-optimizer/src/lib.rs</code> is the physical rewrite
+map.</p>
+<p>Navigation: <a href="chapter-015.html#chapter-14">Previous: Chapter
+14, Arrow Flight SQL</a> | <a href="chapter-017.html#chapter-16">Next:
+Chapter 16, Local And Streaming Execution</a> | <a
+href="chapter-001.html#chapter-00">Reader Guide</a></p>
+</body>
+</html>

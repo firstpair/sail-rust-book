@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 17: Testing Spark Compatibility</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-019.html" accesskey="n" rel="next">Chapter 18: Feature Playbooks</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-017.html" accesskey="p" rel="previous">Chapter 16: Local And Streaming Execution</a>
+</span>
+</div>
+</nav>
+<h1 data-number="18" id="chapter-17"><span
+class="header-section-number">18</span> Chapter 17: Testing Spark
+Compatibility</h1>
+<p>Sail’s promise is compatibility with Spark-facing behavior, not
+merely successful Rust compilation. Testing therefore has to compare
+Sail against Spark semantics: SQL output, DataFrame behavior, functions,
+errors, type coercion, schema names, streaming state, and protocol
+responses.</p>
+<p>This chapter gives contributors a testing map.</p>
+<h2 data-number="18.1" id="code-map-8"><span
+class="header-section-number">18.1</span> Code Map</h2>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>File or directory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gold test crate</td>
+<td><code>crates/sail-gold-test/</code></td>
+</tr>
+<tr>
+<td>Spark gold data scripts</td>
+<td><code>scripts/spark-gold-data/</code></td>
+</tr>
+<tr>
+<td>Common gold report scripts</td>
+<td><code>scripts/common-gold-data/</code></td>
+</tr>
+<tr>
+<td>PySpark tests</td>
+<td><code>python/pysail/tests/spark/</code></td>
+</tr>
+<tr>
+<td>Flight tests</td>
+<td><code>python/pysail/tests/flight/</code></td>
+</tr>
+<tr>
+<td>Streaming tests</td>
+<td><code>python/pysail/tests/spark/streaming/</code></td>
+</tr>
+<tr>
+<td>SQL docs and feature docs</td>
+<td><code>docs/guide/sql/</code></td>
+</tr>
+<tr>
+<td>Spark test recipes</td>
+<td><code>docs/development/spark-tests/</code></td>
+</tr>
+<tr>
+<td>Function support utilities</td>
+<td><code>python/pysail/spark/utils/</code></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="18.2" id="the-test-pyramid"><span
+class="header-section-number">18.2</span> The Test Pyramid</h2>
+<p>Sail has several useful test layers:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What it catches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rust unit tests</td>
+<td>local invariants, parser behavior, optimizer rewrites, codecs</td>
+</tr>
+<tr>
+<td>Gold tests</td>
+<td>Spark SQL/function output compatibility</td>
+</tr>
+<tr>
+<td>PySpark integration tests</td>
+<td>DataFrame API, Connect behavior, Python UDFs</td>
+</tr>
+<tr>
+<td>Flight tests</td>
+<td>Flight SQL protocol and Arrow transport</td>
+</tr>
+<tr>
+<td>Feature files</td>
+<td>behavior-oriented execution scenarios</td>
+</tr>
+<tr>
+<td>Manual plan inspection</td>
+<td>logical/physical plan regressions</td>
+</tr>
+</tbody>
+</table>
+<p>No single layer is enough. A function can pass unit tests and still
+fail Spark compatibility because Spark’s null handling, string
+formatting, overflow behavior, or timestamp display rules differ from
+DataFusion defaults.</p>
+<h2 data-number="18.3" id="gold-tests"><span
+class="header-section-number">18.3</span> Gold Tests</h2>
+<p>Gold tests are the strongest compatibility signal. The workflow
+is:</p>
+<ol type="1">
+<li>Run real Spark examples or documentation-derived queries.</li>
+<li>Store the expected output.</li>
+<li>Replay the same query through Sail.</li>
+<li>Compare schemas, values, ordering behavior, and display
+semantics.</li>
+</ol>
+<p>The point is not only “does this expression run?” The point is “does
+this expression behave like Spark?”</p>
+<p>This is especially important for:</p>
+<ul>
+<li>string functions,</li>
+<li>timestamp and interval functions,</li>
+<li>decimal precision/scale,</li>
+<li>arrays/maps/structs,</li>
+<li>aggregate edge cases,</li>
+<li>null handling,</li>
+<li>ANSI versus non-ANSI behavior.</li>
+</ul>
+<h2 data-number="18.4" id="parser-round-trips"><span
+class="header-section-number">18.4</span> Parser Round Trips</h2>
+<p>The SQL parser has a second testing dimension: syntax preservation.
+<code>TreeText</code> lets tests parse SQL and unparse it back to
+normalized text.</p>
+<p>Round-trip tests catch grammar regressions that a semantic query test
+might miss. For example, a parser can still produce a plan for a common
+query while losing support for a rare Spark syntax form.</p>
+<p>Use parser round trips for:</p>
+<ul>
+<li>DDL syntax,</li>
+<li>Hive compatibility clauses,</li>
+<li>interval literals,</li>
+<li>complex expressions,</li>
+<li>identifiers and quoting,</li>
+<li>function-call variants.</li>
+</ul>
+<h2 data-number="18.5" id="pyspark-integration-tests"><span
+class="header-section-number">18.5</span> PySpark Integration Tests</h2>
+<p>The Python tests exercise the surface users actually touch. They are
+especially important for:</p>
+<ul>
+<li>Spark Connect DataFrame APIs,</li>
+<li>Python UDF registration and execution,</li>
+<li>Pandas and Arrow UDF paths,</li>
+<li>UDTFs,</li>
+<li>streaming commands,</li>
+<li>config behavior,</li>
+<li>error messages as seen by PySpark.</li>
+</ul>
+<p>When a test failure shows up here, debug the path in layers:</p>
+<pre class="text"><code>PySpark call
+  -&gt; Spark Connect protobuf
+  -&gt; proto-to-spec conversion
+  -&gt; PlanResolver
+  -&gt; DataFusion plan
+  -&gt; JobRunner
+  -&gt; Arrow IPC response
+  -&gt; PySpark decoding</code></pre>
+<p>Do not assume the bug is in the final function implementation. Many
+compatibility bugs are conversion or type-resolution bugs.</p>
+<h2 data-number="18.6" id="flight-tests"><span
+class="header-section-number">18.6</span> Flight Tests</h2>
+<p>Flight SQL tests should verify:</p>
+<ul>
+<li><code>GetFlightInfo</code> schema,</li>
+<li>ticket creation,</li>
+<li><code>DoGet</code> fetch behavior,</li>
+<li>handle consumption,</li>
+<li>command execution,</li>
+<li>Arrow batch encoding,</li>
+<li>basic session/catalog state expectations.</li>
+</ul>
+<p>Flight SQL enters through SQL, so it shares parser/analyzer coverage
+with Spark SQL. Its unique risk is protocol handling and Arrow Flight
+framing.</p>
+<h2 data-number="18.7" id="plan-inspection"><span
+class="header-section-number">18.7</span> Plan Inspection</h2>
+<p>Sail records plan strings for explain output:</p>
+<ul>
+<li>initial logical plan,</li>
+<li>final logical plan,</li>
+<li>final physical plan.</li>
+</ul>
+<p>Plan inspection is useful when the output is wrong but no panic
+occurs. Ask:</p>
+<ol type="1">
+<li>Did the proto or SQL path produce the right <code>spec</code>?</li>
+<li>Did the resolver choose the right DataFusion expression or Sail
+extension node?</li>
+<li>Did the optimizer rewrite away something Spark required?</li>
+<li>Did physical planning choose the expected custom operator?</li>
+<li>Did cluster execution introduce a repartition or shuffle issue?</li>
+</ol>
+<p>Plan bugs often look like data bugs until you inspect the tree.</p>
+<h2 data-number="18.8" id="local-versus-cluster-testing"><span
+class="header-section-number">18.8</span> Local Versus Cluster
+Testing</h2>
+<p>Local mode is necessary but not sufficient. Cluster mode adds:</p>
+<ul>
+<li>physical plan encoding and decoding,</li>
+<li>worker session setup,</li>
+<li>function re-resolution,</li>
+<li>stream locations,</li>
+<li>shuffle channels,</li>
+<li>task attempts,</li>
+<li>remote data movement.</li>
+</ul>
+<p>Any feature that creates a custom physical operator, UDF, UDAF, table
+format, or shuffle-sensitive distribution should be tested in cluster
+mode before being treated as complete.</p>
+<h2 data-number="18.9" id="testing-new-functions"><span
+class="header-section-number">18.9</span> Testing New Functions</h2>
+<p>For a new Spark function:</p>
+<ol type="1">
+<li>Add focused Rust unit tests for implementation details.</li>
+<li>Add gold examples based on Spark behavior.</li>
+<li>Test nulls, empty inputs, nested types, and edge values.</li>
+<li>Verify type coercion and return type.</li>
+<li>Test both SQL and DataFrame entry paths if they differ.</li>
+<li>If the function creates a UDF or aggregate state, verify distributed
+execution.</li>
+</ol>
+<p>Spark compatibility failures tend to hide in boring edge cases. That
+is where the tests earn their keep.</p>
+<h2 data-number="18.10" id="testing-new-table-formats-or-catalogs"><span
+class="header-section-number">18.10</span> Testing New Table Formats Or
+Catalogs</h2>
+<p>For storage work, test both metadata and execution:</p>
+<ul>
+<li>name resolution,</li>
+<li>create/list/drop behavior,</li>
+<li>schema conversion,</li>
+<li>path and option handling,</li>
+<li>table properties,</li>
+<li>scan projection and filters,</li>
+<li>write modes,</li>
+<li>row-level operations if supported,</li>
+<li>object-store URI behavior.</li>
+</ul>
+<p>Catalog code can be correct while the resulting
+<code>TableProvider</code> is wrong. Table format code can scan
+correctly while catalog metadata is wrong. Test both sides of the
+boundary.</p>
+<h2 data-number="18.11" id="testing-extensions"><span
+class="header-section-number">18.11</span> Testing Extensions</h2>
+<p>An extension test matrix should include:</p>
+<table>
+<thead>
+<tr>
+<th>Extension contribution</th>
+<th>Required tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scalar function</td>
+<td>SQL, DataFrame, local, cluster if encoded</td>
+</tr>
+<tr>
+<td>Aggregate/window function</td>
+<td>partial aggregation and cluster merge</td>
+</tr>
+<tr>
+<td>Logical optimizer rule</td>
+<td>before/after logical plan</td>
+</tr>
+<tr>
+<td>Physical planner</td>
+<td>local physical execution and cluster codec</td>
+</tr>
+<tr>
+<td>Table format</td>
+<td>read/write plus catalog integration</td>
+</tr>
+<tr>
+<td>Python discovery</td>
+<td>package import and registration</td>
+</tr>
+</tbody>
+</table>
+<p>An extension that only works in a custom local binary has not met
+Sail’s likely extension bar.</p>
+<h2 data-number="18.12" id="takeaways-10"><span
+class="header-section-number">18.12</span> Takeaways</h2>
+<p>Testing Sail means testing conversions. Every query crosses protocol,
+spec, planning, execution, Arrow, and client boundaries. Good tests
+identify which boundary failed.</p>
+<p>Navigation: <a href="chapter-017.html#chapter-16">Previous: Chapter
+16, Local And Streaming Execution</a> | <a
+href="chapter-019.html#chapter-18">Next: Chapter 18, Feature
+Playbooks</a> | <a href="chapter-001.html#chapter-00">Reader
+Guide</a></p>
+</body>
+</html>

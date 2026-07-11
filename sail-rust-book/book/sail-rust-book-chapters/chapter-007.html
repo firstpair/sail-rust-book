@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 6: Apache DataFusion</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-008.html" accesskey="n" rel="next">Chapter 7: From Physical Plan To Job Graph</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-006.html" accesskey="p" rel="previous">Chapter 5: Apache Arrow</a>
+</span>
+</div>
+</nav>
+<h1 data-number="7" id="chapter-06"><span
+class="header-section-number">7</span> Chapter 6: Apache DataFusion</h1>
+<p>DataFusion is Sail’s execution kernel.</p>
+<p>Spark Connect gives Sail the client protocol. PySpark gives Sail a
+familiar Python API. Arrow gives Sail the in-memory format. DataFusion
+gives Sail the query engine: logical plans, expressions, optimizers,
+physical planning, partitioned execution, vectorized functions, file
+format integration, and <code>RecordBatch</code> streams.</p>
+<p>Sail is not a thin wrapper around DataFusion, though. Sail is a
+Spark-compatible system built on DataFusion. That distinction matters.
+Spark compatibility requires Spark-shaped plans, Spark function
+semantics, Spark catalog behavior, Spark error behavior, Spark UDF
+behavior, Spark streaming concepts, and a distributed execution model.
+DataFusion supplies the engine primitives; Sail supplies the Spark
+interpretation and the distributed control plane.</p>
+<p>The question for this chapter is:</p>
+<blockquote>
+<p>How does Sail turn Spark-compatible plans into DataFusion execution
+without losing Spark semantics?</p>
+</blockquote>
+<h2 data-number="7.1" id="definitive-references-1"><span
+class="header-section-number">7.1</span> Definitive References</h2>
+<p>Keep these references nearby:</p>
+<ul>
+<li><a
+href="https://datafusion.apache.org/user-guide/introduction.html">DataFusion
+introduction</a></li>
+<li><a
+href="https://datafusion.apache.org/library-user-guide/index.html">DataFusion
+library user guide</a></li>
+<li><a
+href="https://datafusion.apache.org/library-user-guide/building-logical-plans.html">Building
+logical plans</a></li>
+<li><a
+href="https://datafusion.apache.org/library-user-guide/using-the-dataframe-api.html">Using
+the DataFrame API</a></li>
+<li><a
+href="https://datafusion.apache.org/library-user-guide/functions/adding-udfs.html">Adding
+user-defined functions</a></li>
+<li><a
+href="https://datafusion.apache.org/library-user-guide/extending-operators.html">Extending
+operators</a></li>
+<li><a
+href="https://datafusion.apache.org/library-user-guide/query-optimizer.html">Query
+optimizer</a></li>
+<li><a
+href="https://docs.rs/datafusion/latest/datafusion/physical_plan/trait.ExecutionPlan.html">ExecutionPlan
+API docs</a></li>
+<li><a
+href="https://docs.rs/datafusion/latest/datafusion/execution/context/trait.QueryPlanner.html">QueryPlanner
+API docs</a></li>
+</ul>
+<p>The DataFusion introduction describes DataFusion as an extensible
+Rust query engine using Arrow’s in-memory format. That one sentence
+captures why Sail can exist: DataFusion is fast enough and flexible
+enough to serve as the execution core for a Spark-compatible system.</p>
+<p>Sail currently depends on DataFusion <code>53.1.0</code> in the
+workspace <code>Cargo.toml</code>. The exact APIs will evolve, but the
+architectural ideas in this chapter are stable: session state, logical
+plans, optimizer rules, physical plans, extension planners, and Arrow
+batch streams.</p>
+<h2 data-number="7.2" id="where-datafusion-lives-in-sail"><span
+class="header-section-number">7.2</span> Where DataFusion Lives In
+Sail</h2>
+<p>The main files for this chapter are:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Area</th>
+<th>Files</th>
+<th>DataFusion role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plan resolution and execution</td>
+<td><code>crates/sail-plan/src/lib.rs</code></td>
+<td>Converts Sail specs to DataFusion logical plans, optimizes them, and
+creates physical plans</td>
+</tr>
+<tr>
+<td>Session construction</td>
+<td><code>crates/sail-session/src/session_factory/server.rs</code></td>
+<td>Builds <code>SessionConfig</code>, <code>SessionState</code>,
+runtime env, rules, query planner, and Sail session extensions</td>
+</tr>
+<tr>
+<td>Custom query planner</td>
+<td><code>crates/sail-session/src/planner.rs</code></td>
+<td>Installs extension physical planners and maps Sail logical extension
+nodes to physical operators</td>
+</tr>
+<tr>
+<td>Session extension helper</td>
+<td><code>crates/sail-common-datafusion/src/extension.rs</code></td>
+<td>Provides typed access to DataFusion session extensions from
+<code>SessionContext</code>, <code>SessionState</code>, and
+<code>TaskContext</code></td>
+</tr>
+<tr>
+<td>Logical extension nodes</td>
+<td><code>crates/sail-logical-plan/src/*.rs</code></td>
+<td>Defines Sail-specific logical nodes such as range, repartition,
+barrier, map partitions, and streaming nodes</td>
+</tr>
+<tr>
+<td>Physical extension nodes</td>
+<td><code>crates/sail-physical-plan/src/*.rs</code></td>
+<td>Implements custom <code>ExecutionPlan</code> nodes</td>
+</tr>
+<tr>
+<td>Physical optimizer rules</td>
+<td><code>crates/sail-physical-optimizer/src/*.rs</code></td>
+<td>Adds or adjusts DataFusion physical optimization behavior</td>
+</tr>
+<tr>
+<td>Spark function mapping</td>
+<td><code>crates/sail-plan/src/function/*.rs</code></td>
+<td>Maps Spark function names and semantics to DataFusion expressions
+and UDFs</td>
+</tr>
+<tr>
+<td>Function kernels</td>
+<td><code>crates/sail-function/src/*.rs</code></td>
+<td>Implements vectorized DataFusion UDFs for Spark-compatible
+functions</td>
+</tr>
+<tr>
+<td>Table functions</td>
+<td><code>crates/sail-plan/src/function/table/range.rs</code></td>
+<td>Implements DataFusion <code>TableFunctionImpl</code> and
+<code>TableProvider</code> patterns</td>
+</tr>
+</tbody>
+</table>
+<p>The short version:</p>
+<figure>
+<img src="diagrams/06-diagram-01.svg" alt="Flowchart 06.1" />
+<figcaption aria-hidden="true">Flowchart 06.1</figcaption>
+</figure>
+<p>DataFusion owns the core plan abstractions in the middle. Sail owns
+the translation into those abstractions and the custom nodes around the
+edges.</p>
+<h2 data-number="7.3"
+id="the-critical-function-resolve_and_execute_plan"><span
+class="header-section-number">7.3</span> The Critical Function:
+<code>resolve_and_execute_plan</code></h2>
+<p>The most compact tour of Sail’s DataFusion integration is
+<code>crates/sail-plan/src/lib.rs</code>.</p>
+<p>The key function is:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> resolve_and_execute_plan(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    ctx<span class="op">:</span> <span class="op">&amp;</span>SessionContext<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    config<span class="op">:</span> Arc<span class="op">&lt;</span>PlanConfig<span class="op">&gt;,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    plan<span class="op">:</span> <span class="pp">spec::</span>Plan<span class="op">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span>(Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;,</span> <span class="dt">Vec</span><span class="op">&lt;</span>StringifiedPlan<span class="op">&gt;</span>)<span class="op">&gt;</span></span></code></pre></div>
+<p>This is the bridge from Sail’s Spark-compatible plan spec to a
+DataFusion physical plan. It performs these steps:</p>
+<ol type="1">
+<li>Create a <code>PlanResolver</code>.</li>
+<li>Resolve the Sail <code>spec::Plan</code> into a named DataFusion
+<code>LogicalPlan</code>.</li>
+<li>Store the initial logical plan for explain output.</li>
+<li>Ask the <code>SessionContext</code> to execute the logical plan into
+a <code>DataFrame</code>.</li>
+<li>Pull the <code>SessionState</code> and logical plan back out of the
+<code>DataFrame</code>.</li>
+<li>Run DataFusion logical optimization.</li>
+<li>Rewrite streaming plans if necessary.</li>
+<li>Use the session’s query planner to create a physical plan.</li>
+<li>Rename physical output fields if Spark field names require it.</li>
+<li>Store the final physical plan for explain output.</li>
+</ol>
+<p>In code:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> resolver <span class="op">=</span> <span class="pp">PlanResolver::</span>new(ctx<span class="op">,</span> config)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> NamedPlan <span class="op">{</span> plan<span class="op">,</span> fields <span class="op">}</span> <span class="op">=</span> resolver<span class="op">.</span>resolve_named_plan(plan)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> df <span class="op">=</span> execute_logical_plan(ctx<span class="op">,</span> plan)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> (session_state<span class="op">,</span> plan) <span class="op">=</span> df<span class="op">.</span>into_parts()<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> session_state<span class="op">.</span>optimize(<span class="op">&amp;</span>plan)<span class="op">?;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> session_state</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>query_planner()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>create_physical_plan(<span class="op">&amp;</span>plan<span class="op">,</span> <span class="op">&amp;</span>session_state)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span></code></pre></div>
+<p>This is a beautiful little funnel:</p>
+<figure>
+<img src="diagrams/06-diagram-02.svg" alt="Flowchart 06.2" />
+<figcaption aria-hidden="true">Flowchart 06.2</figcaption>
+</figure>
+<p>The <code>DataFrame</code> step may look surprising. Sail already has
+a logical plan, so why ask the context to execute it into a DataFrame
+and then split it apart? Because
+<code>SessionContext::execute_logical_plan</code> lets DataFusion apply
+its normal session machinery: analyzer behavior, catalog/function
+binding, and context state. Sail then takes back the plan and drives the
+rest of the pipeline.</p>
+<h2 data-number="7.4"
+id="sessioncontext-sessionstate-and-sessionconfig"><span
+class="header-section-number">7.4</span> <code>SessionContext</code>,
+<code>SessionState</code>, And <code>SessionConfig</code></h2>
+<p>DataFusion’s session types are the engine’s ambient context:</p>
+<ul>
+<li><code>SessionConfig</code> stores configuration options and
+extension objects.</li>
+<li><code>SessionState</code> stores the config, runtime env, optimizer
+rules, function registries, catalog state, and query planner.</li>
+<li><code>SessionContext</code> is the user-facing handle around session
+state.</li>
+<li><code>TaskContext</code> is the execution-time context available to
+physical operators.</li>
+</ul>
+<p>Sail constructs these deliberately in
+<code>crates/sail-session/src/session_factory/server.rs</code>.</p>
+<p>The server session factory creates a <code>SessionContext</code> like
+this:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> create(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> info<span class="op">:</span> ServerSessionInfo) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SessionContext<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> state <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>create_session_state(<span class="op">&amp;</span>info)<span class="op">?;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> context <span class="op">=</span> <span class="pp">SessionContext::</span>new_with_state(state)<span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    context<span class="op">.</span>state_ref()<span class="op">.</span>write()<span class="op">.</span>register_udaf(first_value_udaf())<span class="op">?;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(context)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The registration of <code>first_value_udaf</code> is a telling
+detail. Sail does not simply enable all DataFusion defaults. It builds a
+session with selected behavior and then patches in assumptions required
+by its chosen optimizer rules.</p>
+<p>The session config contains Sail services as DataFusion
+extensions:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">SessionConfig::</span>new()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_create_default_catalog_and_schema(<span class="cn">false</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_information_schema(<span class="cn">false</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(create_table_format_registry()<span class="op">?</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(create_catalog_manager(<span class="op">...</span>)<span class="op">?</span>))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">ActivityTracker::</span>new()))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">JobService::</span>new(job_runner)))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">RepartitionBufferConfig::</span>new(<span class="op">...</span>)))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="kw">self</span><span class="op">.</span>create_system_table_service(info)<span class="op">?</span>))</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">DeltaTableCache::</span><span class="kw">default</span>()))<span class="op">;</span></span></code></pre></div>
+<p>That list is a capsule summary of Sail’s architecture:</p>
+<ul>
+<li>Sail manages catalogs itself.</li>
+<li>Sail manages table formats itself.</li>
+<li>Sail tracks session activity.</li>
+<li>Sail installs a job service.</li>
+<li>Sail controls repartition buffering.</li>
+<li>Sail exposes system tables.</li>
+<li>Sail caches Delta table state.</li>
+</ul>
+<p>DataFusion supplies the typed extension slot. Sail uses it as
+session-local dependency injection.</p>
+<h2 data-number="7.5" id="typed-session-extensions-1"><span
+class="header-section-number">7.5</span> Typed Session Extensions</h2>
+<p>The helper in
+<code>crates/sail-common-datafusion/src/extension.rs</code> makes
+DataFusion extensions feel typed:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SessionExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">+</span> <span class="ot">&#39;static</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name() <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SessionExtensionAccessor <span class="op">{</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> extension<span class="op">&lt;</span>T<span class="op">:</span> SessionExtension<span class="op">&gt;</span>(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span>T<span class="op">&gt;&gt;;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> runtime_env(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> Arc<span class="op">&lt;</span>RuntimeEnv<span class="op">&gt;;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Sail implements <code>SessionExtensionAccessor</code> for:</p>
+<ul>
+<li><code>SessionContext</code></li>
+<li><code>SessionState</code></li>
+<li><code>&amp;dyn Session</code></li>
+<li><code>TaskContext</code></li>
+</ul>
+<p>That matters because different parts of the engine are at different
+layers:</p>
+<ul>
+<li>Planning code often has <code>SessionContext</code> or
+<code>SessionState</code>.</li>
+<li>Table providers receive <code>&amp;dyn Session</code>.</li>
+<li>Physical operators receive <code>TaskContext</code>.</li>
+</ul>
+<p>The same pattern works everywhere:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> service <span class="op">=</span> ctx<span class="op">.</span><span class="pp">extension::</span><span class="op">&lt;</span>JobService<span class="op">&gt;</span>()<span class="op">?;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> registry <span class="op">=</span> session_state<span class="op">.</span><span class="pp">extension::</span><span class="op">&lt;</span>TableFormatRegistry<span class="op">&gt;</span>()<span class="op">?;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> config <span class="op">=</span> task_context<span class="op">.</span><span class="pp">extension::</span><span class="op">&lt;</span>RepartitionBufferConfig<span class="op">&gt;</span>()<span class="op">?;</span></span></code></pre></div>
+<p>This is one of Sail’s cleanest Rust patterns. DataFusion gives an
+untyped extension store; Sail wraps it with a trait that produces a
+useful error and a typed <code>Arc&lt;T&gt;</code>.</p>
+<p>For the extension proposal later in the book, this pattern is a key
+precedent. Third-party integrations will need a way to store per-session
+services and configuration. Sail already has the mechanism; the open
+question is how to make registration public, ordered, discoverable, and
+distributed-safe.</p>
+<h2 data-number="7.6" id="sails-query-planner"><span
+class="header-section-number">7.6</span> Sail’s Query Planner</h2>
+<p>DataFusion lets a session install a custom query planner. Sail does
+this in <code>ServerSessionFactory::create_session_state</code>:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> builder <span class="op">=</span> <span class="pp">SessionStateBuilder::</span>new()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_config(config)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_runtime_env(runtime)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_analyzer_rules(default_analyzer_rules())</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_optimizer_rules(default_optimizer_rules())</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_physical_optimizer_rules(get_physical_optimizers(<span class="op">...</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_query_planner(new_query_planner())<span class="op">;</span></span></code></pre></div>
+<p><code>new_query_planner</code> returns
+<code>ExtensionQueryPlanner</code> from
+<code>crates/sail-session/src/planner.rs</code>.</p>
+<p>That planner is small, but strategically important:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> QueryPlanner <span class="cf">for</span> ExtensionQueryPlanner <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> create_physical_plan(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        logical_plan<span class="op">:</span> <span class="op">&amp;</span>LogicalPlan<span class="op">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        session_state<span class="op">:</span> <span class="op">&amp;</span>SessionState<span class="op">,</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="kw">mut</span> extension_planners <span class="op">=</span> new_lakehouse_extension_planners()<span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        extension_planners<span class="op">.</span>push(<span class="pp">Arc::</span>new(SystemTablePhysicalPlanner))<span class="op">;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        extension_planners<span class="op">.</span>push(<span class="pp">Arc::</span>new(ExtensionPhysicalPlanner))<span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> planner <span class="op">=</span> <span class="pp">DefaultPhysicalPlanner::</span>with_extension_planners(extension_planners)<span class="op">;</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        planner<span class="op">.</span>create_physical_plan(<span class="op">&amp;</span>logical_plan<span class="op">,</span> session_state)<span class="op">.</span><span class="kw">await</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is Sail’s physical planning strategy:</p>
+<ol type="1">
+<li>Use DataFusion’s <code>DefaultPhysicalPlanner</code>.</li>
+<li>Add extension planners for lakehouse tables.</li>
+<li>Add an extension planner for system tables.</li>
+<li>Add Sail’s own catch-all extension planner.</li>
+</ol>
+<p>DataFusion still handles normal logical plan nodes: projections,
+filters, aggregates, joins, sorts, limits, scans, and so on. Sail
+handles custom logical extension nodes that DataFusion does not know how
+to plan.</p>
+<figure>
+<img src="diagrams/06-diagram-03.svg" alt="Flowchart 06.3" />
+<figcaption aria-hidden="true">Flowchart 06.3</figcaption>
+</figure>
+<p>The extension proposal in discussion #2001 wants to generalize this
+seam. Today the list is hard-coded. A third-party extension API would
+let packages add their own extension planners without editing Sail
+core.</p>
+<h2 data-number="7.7" id="logical-extension-nodes"><span
+class="header-section-number">7.7</span> Logical Extension Nodes</h2>
+<p>DataFusion has built-in logical plan nodes, but it also supports
+user-defined logical nodes. Sail uses those for Spark concepts that do
+not map directly to a single built-in DataFusion logical plan node.</p>
+<p><code>RangeNode</code> in
+<code>crates/sail-logical-plan/src/range.rs</code> is the friendliest
+example:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> RangeNode <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    range<span class="op">:</span> Range<span class="op">,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    num_partitions<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    schema<span class="op">:</span> DFSchemaRef<span class="op">,</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>It implements <code>UserDefinedLogicalNodeCore</code>:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> UserDefinedLogicalNodeCore <span class="cf">for</span> RangeNode <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Range&quot;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> inputs(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;&amp;</span>LogicalPlan<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[]</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> schema(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span>DFSchemaRef <span class="op">{</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">.</span>schema</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The node carries:</p>
+<ul>
+<li>Spark range parameters,</li>
+<li>target partition count,</li>
+<li>and a DataFusion schema.</li>
+</ul>
+<p>It is logical because it says what should happen, not yet how to
+produce the Arrow batches.</p>
+<p>Other Sail logical extension nodes include:</p>
+<ul>
+<li><code>ExplicitRepartitionNode</code></li>
+<li><code>BarrierNode</code></li>
+<li><code>MapPartitionsNode</code></li>
+<li><code>ShowStringNode</code></li>
+<li><code>SchemaPivotNode</code></li>
+<li><code>SortWithinPartitionsNode</code></li>
+<li><code>SparkPartitionIdNode</code></li>
+<li>streaming source/filter/limit/collector nodes</li>
+<li>file write/delete and row-level write nodes</li>
+</ul>
+<p>These nodes are Spark compatibility pressure made visible. When Spark
+semantics fit DataFusion’s built-in logical plan, Sail uses DataFusion’s
+built-in logical plan. When they do not, Sail introduces a logical
+extension node and teaches the physical planner what to do with it.</p>
+<h2 data-number="7.8" id="physical-extension-planning"><span
+class="header-section-number">7.8</span> Physical Extension
+Planning</h2>
+<p><code>ExtensionPhysicalPlanner</code> is the function table from Sail
+logical extension nodes to physical execution nodes.</p>
+<p>For <code>RangeNode</code>, it builds <code>RangeExec</code>:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>RangeNode<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> schema <span class="op">=</span> <span class="pp">UserDefinedLogicalNode::</span>schema(node)<span class="op">.</span>inner()<span class="op">.</span>clone()<span class="op">;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> projection <span class="op">=</span> (<span class="dv">0</span><span class="op">..</span>schema<span class="op">.</span>fields()<span class="op">.</span>len())<span class="op">.</span>collect()<span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(<span class="pp">RangeExec::</span>try_new(</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        node<span class="op">.</span>range()<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        node<span class="op">.</span>num_partitions()<span class="op">,</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        schema<span class="op">,</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        projection<span class="op">,</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    )<span class="op">?</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>For <code>MapPartitionsNode</code>, it uses the physical input and
+wraps it in <code>MapPartitionsExec</code>:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> [input] <span class="op">=</span> physical_inputs <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="pp">internal_err!</span>(<span class="st">&quot;MapPartitionsExec requires exactly one physical input&quot;</span>)<span class="op">;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="pp">Arc::</span>new(<span class="pp">MapPartitionsExec::</span>new(</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    input<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    node<span class="op">.</span>udf()<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="pp">UserDefinedLogicalNode::</span>schema(node)<span class="op">.</span>inner()<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div>
+<p>For <code>SortWithinPartitionsNode</code>, it does not need a custom
+physical operator. It uses DataFusion’s <code>SortExec</code> with
+<code>preserve_partitioning</code>:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> sort <span class="op">=</span> <span class="pp">SortExec::</span>new(ordering<span class="op">,</span> input<span class="op">.</span>clone())</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_fetch(node<span class="op">.</span>fetch())</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_preserve_partitioning(<span class="cn">true</span>)<span class="op">;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="pp">Arc::</span>new(sort)</span></code></pre></div>
+<p>This is the architectural sweet spot:</p>
+<ul>
+<li>Use custom logical nodes to preserve Spark intent.</li>
+<li>Use built-in DataFusion physical operators whenever they already
+match.</li>
+<li>Use custom Sail physical operators only when necessary.</li>
+</ul>
+<figure>
+<img src="diagrams/06-diagram-04.svg" alt="Flowchart 06.4" />
+<figcaption aria-hidden="true">Flowchart 06.4</figcaption>
+</figure>
+<p>The result is less code than a from-scratch engine, but more semantic
+control than a simple SQL translation layer.</p>
+<h2 data-number="7.9" id="physical-plans-and-executionplan"><span
+class="header-section-number">7.9</span> Physical Plans And
+<code>ExecutionPlan</code></h2>
+<p>DataFusion physical operators implement <code>ExecutionPlan</code>.
+The most important method is:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> execute(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    partition<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    context<span class="op">:</span> Arc<span class="op">&lt;</span>TaskContext<span class="op">&gt;,</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SendableRecordBatchStream<span class="op">&gt;</span></span></code></pre></div>
+<p>You saw this in Chapter 5, but now we can place it in DataFusion’s
+architecture. An <code>ExecutionPlan</code> describes a partitioned
+physical computation. It knows its schema, children, properties,
+partitioning, boundedness, and how to execute one partition.</p>
+<p>Sail custom physical nodes follow the same contract.
+<code>RangeExec</code>:</p>
+<ol type="1">
+<li>Checks the partition number.</li>
+<li>Computes a partition-specific range.</li>
+<li>Builds Arrow arrays and batches.</li>
+<li>Returns a <code>RecordBatchStreamAdapter</code>.</li>
+</ol>
+<p><code>ExplicitRepartitionExec</code>:</p>
+<ol type="1">
+<li>Wraps an input plan.</li>
+<li>Creates output channels per target partition.</li>
+<li>Executes all input partitions cooperatively.</li>
+<li>Sends partitioned <code>RecordBatch</code> values to receivers.</li>
+<li>Returns a stream for the requested output partition.</li>
+</ol>
+<p><code>ShuffleWriteExec</code> and <code>ShuffleReadExec</code> in
+<code>sail-execution</code> also implement the same contract, which is
+why the distributed runtime can insert them into a DataFusion physical
+plan. DataFusion’s abstraction is local and partitioned; Sail’s
+distributed planner can split it into stages and reconnect it with
+shuffle nodes.</p>
+<h2 data-number="7.10"
+id="plan-properties-partitioning-boundedness-emission"><span
+class="header-section-number">7.10</span> Plan Properties: Partitioning,
+Boundedness, Emission</h2>
+<p>DataFusion physical plans carry <code>PlanProperties</code>. Sail
+uses those properties carefully because distributed execution depends on
+them.</p>
+<p>For example, <code>RangeExec</code> creates:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">PlanProperties::</span>new(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">EquivalenceProperties::</span>new(projected_schema<span class="op">.</span>clone())<span class="op">,</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Partitioning::</span>RoundRobinBatch(num_partitions)<span class="op">,</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">EmissionType::</span>Both<span class="op">,</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Boundedness::</span>Bounded<span class="op">,</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>That tells the optimizer and scheduler:</p>
+<ul>
+<li>the output schema’s equivalence properties,</li>
+<li>the number and kind of output partitions,</li>
+<li>whether the operator emits incrementally or finally,</li>
+<li>and whether it is bounded.</li>
+</ul>
+<p><code>ShuffleWriteExec</code> uses different properties. It returns
+an empty stream from <code>execute</code>, but the side effect is
+writing shuffle data. Its properties reflect the input partition count
+rather than the shuffle output count, because each input partition
+execution writes many shuffle output streams.</p>
+<p>These details matter. A distributed engine cannot safely insert
+exchanges, coalesce partitions, reorder joins, or execute streaming
+plans unless physical operators accurately describe themselves.</p>
+<h2 data-number="7.11" id="logical-optimizers"><span
+class="header-section-number">7.11</span> Logical Optimizers</h2>
+<p>Sail installs analyzer and optimizer rules in
+<code>crates/sail-session/src/optimizer.rs</code>:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> default_analyzer_rules() <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> AnalyzerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">sail_logical_optimizer::</span>default_analyzer_rules()</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> default_optimizer_rules() <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> OptimizerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> rules <span class="op">=</span> <span class="pp">sail_logical_optimizer::</span>default_optimizer_rules()<span class="op">;</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> custom <span class="op">=</span> <span class="pp">sail_plan_lakehouse::</span>lakehouse_optimizer_rules()<span class="op">;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    custom<span class="op">.</span>extend(</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        rules</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>into_iter()</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>filter(<span class="op">|</span>r<span class="op">|</span> r<span class="op">.</span>name() <span class="op">!=</span> <span class="st">&quot;push_down_leaf_projections&quot;</span>)<span class="op">,</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    )<span class="op">;</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    custom</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Two things are happening here:</p>
+<ol type="1">
+<li>Sail delegates most rule construction to
+<code>sail_logical_optimizer</code>.</li>
+<li>Sail prepends lakehouse optimizer rules and filters out one
+built-in-style rule by name.</li>
+</ol>
+<p>The test asserts that <code>expand_row_level_op</code> runs first.
+That is a Spark and lakehouse semantic requirement: row-level operations
+such as MERGE/DELETE/UPDATE must be expanded before generic optimizers
+obscure the structure needed for correct planning.</p>
+<p>This is an important DataFusion lesson: optimizer rule order is part
+of engine semantics. For extensions, “add my optimizer rule” is not
+sufficient. The API must answer where it runs, what it can assume, and
+which rules it must precede or follow.</p>
+<h2 data-number="7.12" id="physical-optimizers"><span
+class="header-section-number">7.12</span> Physical Optimizers</h2>
+<p>Sail also customizes physical optimization in
+<code>crates/sail-physical-optimizer/src/lib.rs</code>.</p>
+<p>The rule list includes DataFusion’s standard physical optimizer rules
+in the same order, then adds Sail-specific rules:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rules<span class="op">.</span>push(<span class="pp">Arc::</span>new(<span class="pp">RewriteExplicitRepartition::</span>new()))<span class="op">;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>rules<span class="op">.</span>push(<span class="pp">Arc::</span>new(<span class="pp">RewriteCollectLeftHashJoin::</span>new()))<span class="op">;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>rules<span class="op">.</span>push(<span class="pp">Arc::</span>new(<span class="pp">EnforceBarrierPartitioning::</span>new()))<span class="op">;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>rules<span class="op">.</span>push(<span class="pp">Arc::</span>new(<span class="pp">SanityCheckPlan::</span>new()))<span class="op">;</span></span></code></pre></div>
+<p>The test compares Sail’s rule order with DataFusion’s default
+physical optimizer to ensure Sail does not accidentally reorder
+DataFusion defaults.</p>
+<p><code>RewriteExplicitRepartition</code> is a good example. During
+physical planning, Sail creates an <code>ExplicitRepartitionExec</code>
+placeholder. Later, the physical optimizer rewrites it:</p>
+<ul>
+<li>hash partitioning -&gt; DataFusion <code>RepartitionExec</code></li>
+<li>unknown partitioning to one partition -&gt;
+<code>CoalescePartitionsExec</code></li>
+<li>unknown partitioning to fewer partitions -&gt; Sail
+<code>CoalesceExec</code></li>
+<li>unknown partitioning to at least the input partition count -&gt;
+remove the node</li>
+<li>round-robin -&gt; keep Sail’s explicit repartition node</li>
+</ul>
+<p>Why not decide all of that immediately in the physical planner?
+Because the optimizer sees the larger physical plan and can make a more
+context-aware choice. This keeps planning declarative and lets rewrite
+rules simplify the physical plan after DataFusion has done its own
+work.</p>
+<p><code>EnforceBarrierPartitioning</code> is another
+distributed-execution hint. It rewrites <code>BarrierExec</code>
+preconditions so all precondition partitions complete before the actual
+plan begins. That behavior matters for Spark-like commands where one
+operation must finish globally before another starts.</p>
+<h2 data-number="7.13"
+id="function-mapping-spark-names-to-datafusion-expressions"><span
+class="header-section-number">7.13</span> Function Mapping: Spark Names
+To DataFusion Expressions</h2>
+<p>Spark has a large function surface. DataFusion has its own function
+surface. Sail sits in between.</p>
+<p>The function registry in
+<code>crates/sail-plan/src/function/mod.rs</code> collects built-in
+scalar, generator, aggregate, table, and window functions:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="pp">lazy_static!</span> <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw">ref</span> BUILT_IN_SCALAR_FUNCTIONS<span class="op">:</span> HashMap<span class="op">&lt;&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">,</span> ScalarFunction<span class="op">&gt;</span> <span class="op">=</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">HashMap::</span>from_iter(<span class="pp">scalar::</span>list_built_in_scalar_functions())<span class="op">;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw">ref</span> BUILT_IN_GENERATOR_FUNCTIONS<span class="op">:</span> HashMap<span class="op">&lt;&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">,</span> ScalarFunction<span class="op">&gt;</span> <span class="op">=</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>        <span class="pp">HashMap::</span>from_iter(<span class="pp">generator::</span>list_built_in_generator_functions())<span class="op">;</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">static</span> <span class="kw">ref</span> BUILT_IN_TABLE_FUNCTIONS<span class="op">:</span> HashMap<span class="op">&lt;&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">,</span> Arc<span class="op">&lt;</span>TableFunction<span class="op">&gt;&gt;</span> <span class="op">=</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        <span class="pp">HashMap::</span>from_iter(<span class="pp">table::</span>list_built_in_table_functions())<span class="op">;</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The type alias for scalar planning functions is:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> ScalarFunction <span class="op">=</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    Arc<span class="op">&lt;</span><span class="kw">dyn</span> <span class="bu">Fn</span>(ScalarFunctionInput) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span><span class="pp">expr::</span>Expr<span class="op">&gt;</span> <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;;</span></span></code></pre></div>
+<p>This means Sail’s “function registry” is not only a map from name to
+UDF. It is a map from Spark function name to a small planning function
+that can:</p>
+<ul>
+<li>validate argument count,</li>
+<li>inspect Spark planning config,</li>
+<li>use the current schema,</li>
+<li>rewrite arguments,</li>
+<li>call a DataFusion built-in,</li>
+<li>call a Sail UDF,</li>
+<li>or construct a larger expression tree.</li>
+</ul>
+<p>For simple cases, <code>ScalarFunctionBuilder::udf</code> wraps a
+<code>ScalarUDFImpl</code>:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> udf<span class="op">&lt;</span>F<span class="op">&gt;</span>(f<span class="op">:</span> F) <span class="op">-&gt;</span> ScalarFunction</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">where</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    F<span class="op">:</span> ScalarUDFImpl <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">+</span> <span class="ot">&#39;static</span><span class="op">,</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> func <span class="op">=</span> <span class="pp">ScalarUDF::</span>from(f)<span class="op">;</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(<span class="kw">move</span> <span class="op">|</span>input<span class="op">|</span> <span class="cn">Ok</span>(func<span class="op">.</span>call(input<span class="op">.</span>arguments)))</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>For more complex Spark functions, Sail uses custom builders that
+produce DataFusion expressions directly. This planning-time layer is one
+of the main places Spark semantics are preserved.</p>
+<h2 data-number="7.14" id="vectorized-udfs"><span
+class="header-section-number">7.14</span> Vectorized UDFs</h2>
+<p>The DataFusion UDF documentation explains that scalar UDFs are
+vectorized: they receive Arrow arrays and return Arrow arrays. Sail’s
+function kernels follow that model.</p>
+<p><code>SparkMask</code> in
+<code>crates/sail-function/src/scalar/string/spark_mask.rs</code>
+implements <code>ScalarUDFImpl</code>:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> ScalarUDFImpl <span class="cf">for</span> SparkMask <span class="op">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">{</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;spark_mask&quot;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> signature(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span>Signature <span class="op">{</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">.</span>signature</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> return_type(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> arg_types<span class="op">:</span> <span class="op">&amp;</span>[DataType]) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>DataType<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">...</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> invoke_with_args(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> args<span class="op">:</span> ScalarFunctionArgs) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>ColumnarValue<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">...</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The return type function is a planning/type-checking hook. The
+<code>invoke_with_args</code> function is the execution hook. It
+receives <code>ColumnarValue</code> arguments, which may be scalar
+values or Arrow arrays.</p>
+<p>The <code>Explode</code> function in
+<code>crates/sail-function/src/scalar/explode.rs</code> shows a
+different pattern:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> invoke_with_args(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> _<span class="op">:</span> ScalarFunctionArgs) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>ColumnarValue<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">plan_err!</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;{} should be rewritten during logical plan analysis&quot;</span><span class="op">,</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">self</span><span class="op">.</span>name()</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><code>explode</code> is represented like a function for analysis, but
+it should not execute as a normal scalar UDF. It must be rewritten into
+a plan shape that can expand rows. This is a good example of Spark
+semantics not fitting a plain expression kernel.</p>
+<h2 data-number="7.15" id="table-functions-and-providers"><span
+class="header-section-number">7.15</span> Table Functions And
+Providers</h2>
+<p>DataFusion table functions return <code>TableProvider</code> objects.
+Sail’s range table function in
+<code>crates/sail-plan/src/function/table/range.rs</code> is a small
+complete example.</p>
+<p><code>RangeTableFunction</code> implements
+<code>TableFunctionImpl</code>:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> TableFunctionImpl <span class="cf">for</span> RangeTableFunction <span class="op">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> call(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> args<span class="op">:</span> <span class="op">&amp;</span>[Expr]) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> TableProvider<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">...</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> node <span class="op">=</span> <span class="pp">RangeNode::</span>try_new(<span class="st">&quot;id&quot;</span><span class="op">.</span>to_string()<span class="op">,</span> start<span class="op">,</span> end<span class="op">,</span> step<span class="op">,</span> num_partitions)<span class="op">?;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Ok</span>(<span class="pp">Arc::</span>new(RangeTableProvider <span class="op">{</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>            node<span class="op">:</span> <span class="pp">Arc::</span>new(node)<span class="op">,</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span>))</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The provider exposes both a logical and physical path:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> get_logical_plan(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span>Cow<span class="op">&lt;</span><span class="ot">&#39;_</span><span class="op">,</span> LogicalPlan<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Some</span>(<span class="pp">Cow::</span>Owned(<span class="pp">LogicalPlan::</span>Extension(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">logical_plan::</span>Extension <span class="op">{</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>            node<span class="op">:</span> <span class="kw">self</span><span class="op">.</span>node<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">},</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    )))</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">fn</span> scan(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(<span class="pp">Arc::</span>new(<span class="pp">RangeExec::</span>try_new(<span class="op">...</span>)<span class="op">?</span>))</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is a useful pattern for extension authors:</p>
+<ul>
+<li>If the planner wants a logical plan, provide a logical extension
+node.</li>
+<li>If DataFusion asks for a scan directly, provide an
+<code>ExecutionPlan</code>.</li>
+<li>Keep the shared semantic payload in a small node object.</li>
+</ul>
+<p>Range is simple, but the shape generalizes to custom table-valued
+functions, specialized data sources, and extension-backed virtual
+tables.</p>
+<h2 data-number="7.16"
+id="datafusion-as-local-engine-sail-as-distributed-engine"><span
+class="header-section-number">7.16</span> DataFusion As Local Engine,
+Sail As Distributed Engine</h2>
+<p>DataFusion’s <code>ExecutionPlan</code> API is partitioned and
+asynchronous, but DataFusion itself is not Sail’s whole distributed
+runtime. Sail builds a distributed layer around DataFusion physical
+plans.</p>
+<p>The boundary is visible in
+<code>ServerSessionFactory::create_job_runner</code>:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> job_runner<span class="op">:</span> <span class="dt">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> JobRunner<span class="op">&gt;</span> <span class="op">=</span> <span class="cf">match</span> <span class="kw">self</span><span class="op">.</span>config<span class="op">.</span>mode <span class="op">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">ExecutionMode::</span>Local <span class="op">=&gt;</span> <span class="dt">Box</span><span class="pp">::</span>new(<span class="pp">LocalJobRunner::</span>new())<span class="op">,</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">ExecutionMode::</span>LocalCluster <span class="op">=&gt;</span> <span class="dt">Box</span><span class="pp">::</span>new(<span class="pp">ClusterJobRunner::</span>new(<span class="op">...</span>))<span class="op">,</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">ExecutionMode::</span>KubernetesCluster <span class="op">=&gt;</span> <span class="dt">Box</span><span class="pp">::</span>new(<span class="pp">ClusterJobRunner::</span>new(<span class="op">...</span>))<span class="op">,</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p><code>JobService</code> is placed in <code>SessionConfig</code> as an
+extension. Later, Spark Connect and Flight SQL can retrieve it from the
+session and execute a physical plan.</p>
+<p>This separation is one of Sail’s strongest design choices:</p>
+<ul>
+<li>DataFusion plans and executes partitioned operators.</li>
+<li>Sail decides whether those operators run locally or as a distributed
+job.</li>
+<li>The same logical and physical plan pipeline feeds both modes.</li>
+</ul>
+<figure>
+<img src="diagrams/06-diagram-05.svg" alt="Flowchart 06.5" />
+<figcaption aria-hidden="true">Flowchart 06.5</figcaption>
+</figure>
+<p>The next chapters will zoom into that distributed layer. For now,
+remember that DataFusion’s physical plan is the unit Sail
+distributes.</p>
+<h2 data-number="7.17" id="spark-semantics-on-a-datafusion-kernel"><span
+class="header-section-number">7.17</span> Spark Semantics On A
+DataFusion Kernel</h2>
+<p>Sail’s DataFusion integration repeatedly follows this pattern:</p>
+<ol type="1">
+<li>Resolve Spark/Sail input into a DataFusion-compatible plan.</li>
+<li>Preserve Spark-only semantics in extension nodes or metadata.</li>
+<li>Let DataFusion optimize and plan what it understands.</li>
+<li>Intercept extension nodes with custom planners.</li>
+<li>Implement missing execution behavior with custom
+<code>ExecutionPlan</code> nodes.</li>
+<li>Return Arrow batch streams to the protocol layer.</li>
+</ol>
+<p>Some examples:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Spark/Sail concept</th>
+<th>DataFusion integration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spark range</td>
+<td><code>RangeNode</code> -&gt; <code>RangeExec</code></td>
+</tr>
+<tr>
+<td>Spark repartition/coalesce</td>
+<td><code>ExplicitRepartitionNode</code> -&gt;
+<code>ExplicitRepartitionExec</code> -&gt; physical optimizer
+rewrite</td>
+</tr>
+<tr>
+<td>Sort within partitions</td>
+<td>logical extension -&gt; DataFusion <code>SortExec</code> with
+preserved partitioning</td>
+</tr>
+<tr>
+<td>Spark built-in functions</td>
+<td>planning registry -&gt; DataFusion expressions or Sail
+<code>ScalarUDFImpl</code></td>
+</tr>
+<tr>
+<td>Spark generator functions</td>
+<td>analyzed as functions, then rewritten into plan structure</td>
+</tr>
+<tr>
+<td>Catalog commands</td>
+<td>logical command nodes -&gt; <code>CatalogCommandExec</code></td>
+</tr>
+<tr>
+<td>Lakehouse row-level operations</td>
+<td>lakehouse optimizer rules before generic optimizer rules</td>
+</tr>
+<tr>
+<td>System tables</td>
+<td>system table extension planner and <code>TableProvider</code></td>
+</tr>
+</tbody>
+</table>
+<p>That table is the heart of the chapter. Sail is not asking DataFusion
+to become Spark. Sail is using DataFusion as a powerful substrate and
+adding Spark compatibility at well-defined seams.</p>
+<h2 data-number="7.18" id="extension-implications"><span
+class="header-section-number">7.18</span> Extension Implications</h2>
+<p>The extensions proposal in discussion #2001 is largely about opening
+the seams this chapter has exposed.</p>
+<p>Today, Sail has internal extension points:</p>
+<ul>
+<li>session config extensions via <code>with_extension</code>,</li>
+<li>typed access via <code>SessionExtensionAccessor</code>,</li>
+<li>built-in function registries,</li>
+<li>analyzer and optimizer rule lists,</li>
+<li>physical optimizer rules,</li>
+<li><code>DefaultPhysicalPlanner::with_extension_planners</code>,</li>
+<li><code>UserDefinedLogicalNodeCore</code>,</li>
+<li>custom <code>ExecutionPlan</code> nodes,</li>
+<li>table functions and table providers,</li>
+<li>physical-plan codecs for distributed workers.</li>
+</ul>
+<p>But those points are mostly wired inside Sail. A third-party
+extension API would need to make them explicit and safe.</p>
+<p>For example, a Sedona-style spatial extension might need to
+register:</p>
+<ul>
+<li>scalar functions such as <code>ST_Area</code>,
+<code>ST_Intersects</code>, <code>ST_GeomFromWKB</code>,</li>
+<li>aggregate functions such as <code>ST_Union_Aggr</code>,</li>
+<li>logical optimizer rules for spatial predicate rewrites,</li>
+<li>custom physical planner nodes for spatial joins,</li>
+<li>Arrow extension type handling for GeoArrow metadata,</li>
+<li>Python package entry points for PySpark compatibility,</li>
+<li>distributed codecs so workers can deserialize custom physical
+nodes,</li>
+<li>and session config defaults.</li>
+</ul>
+<p>DataFusion already has many of the underlying concepts. Sail’s
+challenge is to wrap them in an API that respects Spark compatibility
+and distributed execution.</p>
+<h2 data-number="7.19" id="reading-exercise-trace-range"><span
+class="header-section-number">7.19</span> Reading Exercise: Trace
+<code>range</code></h2>
+<p>Follow Spark’s <code>range</code> from function to execution:</p>
+<ol type="1">
+<li>Start in
+<code>crates/sail-plan/src/function/table/mod.rs</code>.</li>
+<li>See <code>range</code> registered as a built-in table function.</li>
+<li>Open <code>crates/sail-plan/src/function/table/range.rs</code>.</li>
+<li>Read <code>RangeTableFunction::call</code>.</li>
+<li>Follow <code>RangeNode::try_new</code> in
+<code>crates/sail-logical-plan/src/range.rs</code>.</li>
+<li>Jump to <code>ExtensionPhysicalPlanner</code> in
+<code>crates/sail-session/src/planner.rs</code>.</li>
+<li>Find the <code>RangeNode</code> downcast.</li>
+<li>Follow <code>RangeExec::try_new</code> and
+<code>RangeExec::execute</code>.</li>
+<li>Observe the final <code>SendableRecordBatchStream</code>.</li>
+</ol>
+<p>You have now traced a Spark-compatible table function through
+DataFusion’s logical and physical extension APIs.</p>
+<h2 data-number="7.20" id="reading-exercise-trace-repartition"><span
+class="header-section-number">7.20</span> Reading Exercise: Trace
+<code>repartition</code></h2>
+<p>Follow explicit repartitioning:</p>
+<ol type="1">
+<li>Start in
+<code>crates/sail-logical-plan/src/repartition.rs</code>.</li>
+<li>Find <code>ExplicitRepartitionNode</code>.</li>
+<li>Jump to <code>ExtensionPhysicalPlanner</code>.</li>
+<li>Find the <code>ExplicitRepartitionNode</code> case.</li>
+<li>Read <code>plan_explicit_partitioning</code>.</li>
+<li>Open <code>crates/sail-physical-plan/src/repartition.rs</code>.</li>
+<li>Read <code>ExplicitRepartitionExec</code>.</li>
+<li>Open
+<code>crates/sail-physical-optimizer/src/explicit_repartition.rs</code>.</li>
+<li>Observe how the placeholder is rewritten to DataFusion or Sail
+physical operators depending on partitioning.</li>
+</ol>
+<p>This trace teaches the difference between preserving user intent and
+choosing the final execution shape.</p>
+<h2 data-number="7.21"
+id="reading-exercise-trace-a-spark-function"><span
+class="header-section-number">7.21</span> Reading Exercise: Trace A
+Spark Function</h2>
+<p>Pick a function such as <code>mask</code>:</p>
+<ol type="1">
+<li>Start in
+<code>crates/sail-plan/src/function/scalar/mod.rs</code>.</li>
+<li>Find where string functions are added.</li>
+<li>Open
+<code>crates/sail-plan/src/function/scalar/string.rs</code>.</li>
+<li>Find the mapping to <code>SparkMask</code>.</li>
+<li>Open
+<code>crates/sail-function/src/scalar/string/spark_mask.rs</code>.</li>
+<li>Read <code>return_type</code> and
+<code>invoke_with_args</code>.</li>
+<li>Notice how planning-time Spark semantics and execution-time Arrow
+kernels live in different crates.</li>
+</ol>
+<p>This is the pattern most third-party scalar functions will want to
+follow.</p>
+<h2 data-number="7.22" id="takeaways-1"><span
+class="header-section-number">7.22</span> Takeaways</h2>
+<p>DataFusion gives Sail its query engine, but Sail decides how Spark
+semantics enter and leave that engine.</p>
+<p>The central pipeline is: Sail spec -&gt; DataFusion logical plan
+-&gt; logical optimization -&gt; Sail/DataFusion physical planning -&gt;
+physical optimization -&gt; <code>ExecutionPlan</code> -&gt; Arrow
+<code>RecordBatch</code> stream.</p>
+<p>Sail customizes DataFusion through session extensions, analyzer and
+optimizer rules, function planning registries, extension logical nodes,
+extension physical planners, custom physical operators, and physical
+optimizer rules. Those are the same seams the extension architecture
+must eventually expose to third-party packages.</p>
+<p>The next chapter moves from “how does Sail get a physical plan?” to
+“how does Sail split that physical plan into a distributed job
+graph?”</p>
+</body>
+</html>

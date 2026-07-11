@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 16: Local And Streaming Execution</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-018.html" accesskey="n" rel="next">Chapter 17: Testing Spark Compatibility</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-016.html" accesskey="p" rel="previous">Chapter 15: Custom Nodes And Optimizers</a>
+</span>
+</div>
+</nav>
+<h1 data-number="17" id="chapter-16"><span
+class="header-section-number">17</span> Chapter 16: Local And Streaming
+Execution</h1>
+<p>The distributed chapters explain the cluster path in detail: job
+graphs, drivers, workers, task regions, streams, and shuffles. This
+chapter fills in two execution views that deserve their own concise
+treatment:</p>
+<ul>
+<li>local execution, where Sail directly asks DataFusion to execute a
+physical plan,</li>
+<li>structured streaming, where Sail rewrites a logical plan into a
+flow-event plan before physical execution.</li>
+</ul>
+<p>Both use the same <code>JobRunner</code> abstraction, which is
+exactly why the abstraction is valuable.</p>
+<h2 data-number="17.1" id="code-map-7"><span
+class="header-section-number">17.1</span> Code Map</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Job runner trait</td>
+<td><code>crates/sail-common-datafusion/src/session/job.rs</code></td>
+</tr>
+<tr>
+<td>Local and cluster runners</td>
+<td><code>crates/sail-execution/src/job_runner.rs</code></td>
+</tr>
+<tr>
+<td>Streaming rewriter</td>
+<td><code>crates/sail-plan/src/streaming/rewriter.rs</code></td>
+</tr>
+<tr>
+<td>Streaming source trait</td>
+<td><code>crates/sail-common-datafusion/src/streaming/source.rs</code></td>
+</tr>
+<tr>
+<td>Flow event schema</td>
+<td><code>crates/sail-common-datafusion/src/streaming/event/schema.rs</code></td>
+</tr>
+<tr>
+<td>Flow event streams</td>
+<td><code>crates/sail-common-datafusion/src/streaming/event/stream.rs</code></td>
+</tr>
+<tr>
+<td>Streaming logical nodes</td>
+<td><code>crates/sail-logical-plan/src/streaming/</code></td>
+</tr>
+<tr>
+<td>Streaming physical nodes</td>
+<td><code>crates/sail-physical-plan/src/streaming/</code></td>
+</tr>
+<tr>
+<td>Streaming query manager</td>
+<td><code>crates/sail-spark-connect/src/streaming.rs</code></td>
+</tr>
+<tr>
+<td>Rate source</td>
+<td><code>crates/sail-data-source/src/formats/rate/reader.rs</code></td>
+</tr>
+<tr>
+<td>Socket source</td>
+<td><code>crates/sail-data-source/src/formats/socket/reader.rs</code></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="17.2" id="one-trait-two-execution-modes"><span
+class="header-section-number">17.2</span> One Trait, Two Execution
+Modes</h2>
+<p>The <code>JobRunner</code> trait hides the execution backend:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span><span class="pp">tonic::</span>async_trait<span class="at">]</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> JobRunner<span class="op">:</span> StateObservable<span class="op">&lt;</span>JobRunnerObserver<span class="op">&gt;</span> <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">+</span> <span class="ot">&#39;static</span> <span class="op">{</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> execute(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        ctx<span class="op">:</span> <span class="op">&amp;</span>SessionContext<span class="op">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        plan<span class="op">:</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SendableRecordBatchStream<span class="op">&gt;;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> stop(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> history<span class="op">:</span> <span class="pp">oneshot::</span>Sender<span class="op">&lt;</span>JobRunnerHistory<span class="op">&gt;</span>)<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The local and cluster runners implement the same method. Protocol
+code does not need to know which mode is active. It retrieves
+<code>JobService</code> from the session and calls:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>service<span class="op">.</span>runner()<span class="op">.</span>execute(ctx<span class="op">,</span> plan)<span class="op">.</span><span class="kw">await</span></span></code></pre></div>
+<p>That line is one of Sail’s key architecture compression points.</p>
+<h2 data-number="17.3" id="local-execution"><span
+class="header-section-number">17.3</span> Local Execution</h2>
+<p><code>LocalJobRunner</code> is intentionally small:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> trace_execution_plan(plan<span class="op">,</span> options)<span class="op">?;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cn">Ok</span>(execute_stream(plan<span class="op">,</span> ctx<span class="op">.</span>task_ctx())<span class="op">?</span>)</span></code></pre></div>
+<p>The runner wraps the plan with telemetry tracing and then delegates
+to DataFusion’s <code>execute_stream</code>. DataFusion handles
+partition execution inside the process, and Sail receives a
+<code>SendableRecordBatchStream</code>.</p>
+<p>Local mode is not a lesser engine. It is the same planning path with
+a simpler execution backend. That makes it useful for:</p>
+<ul>
+<li>development,</li>
+<li>compatibility tests,</li>
+<li>small deployments,</li>
+<li>debugging physical plans before cluster concerns enter.</li>
+</ul>
+<h2 data-number="17.4" id="cluster-execution"><span
+class="header-section-number">17.4</span> Cluster Execution</h2>
+<p><code>ClusterJobRunner</code> sends the physical plan to the driver
+actor:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>driver<span class="op">.</span>send(<span class="pp">DriverEvent::</span>ExecuteJob <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    plan<span class="op">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    context<span class="op">:</span> ctx<span class="op">.</span>task_ctx()<span class="op">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    result<span class="op">:</span> tx<span class="op">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span></code></pre></div>
+<p>The driver builds a job graph and eventually returns a stream. From
+the caller’s perspective, local and cluster modes both produce
+<code>SendableRecordBatchStream</code>.</p>
+<p>The difference is below the trait boundary.</p>
+<h2 data-number="17.5" id="streaming-starts-as-a-logical-rewrite"><span
+class="header-section-number">17.5</span> Streaming Starts As A Logical
+Rewrite</h2>
+<p>Streaming is not a different protocol. A streaming query still enters
+through Spark Connect, resolves to a logical plan, and becomes a
+physical plan. The key difference is that Sail rewrites the logical plan
+before physical planning:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> <span class="cf">if</span> is_streaming_plan(<span class="op">&amp;</span>plan)<span class="op">?</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    rewrite_streaming_plan(plan)<span class="op">?</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    plan</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p>The rewriter turns ordinary plan nodes into streaming-aware extension
+nodes where needed. For example:</p>
+<ul>
+<li>batch table scans over streaming sources become
+<code>StreamSourceWrapperNode</code>,</li>
+<li><code>RangeNode</code> can be wrapped by
+<code>StreamSourceAdapterNode</code>,</li>
+<li>filters and limits become streaming filter/limit nodes,</li>
+<li>sinks and display paths use collectors and barriers.</li>
+</ul>
+<h2 data-number="17.6" id="stream-sources"><span
+class="header-section-number">17.6</span> Stream Sources</h2>
+<p>A streaming source implements <code>StreamSource</code>:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span><span class="pp">async_trait::</span>async_trait<span class="at">]</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> StreamSource<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">+</span> <span class="pp">fmt::</span><span class="bu">Debug</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> data_schema(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> SchemaRef<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> scan(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        state<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> Session<span class="op">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        projection<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;&amp;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">usize</span><span class="op">&gt;&gt;,</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        filters<span class="op">:</span> <span class="op">&amp;</span>[Expr]<span class="op">,</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        limit<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">usize</span><span class="op">&gt;,</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The source returns an <code>ExecutionPlan</code>, not a raw stream.
+That keeps it inside the DataFusion physical-planning model. Current
+concrete examples include Sail’s rate and socket sources.</p>
+<h2 data-number="17.7" id="flow-event-schema"><span
+class="header-section-number">17.7</span> Flow Event Schema</h2>
+<p>Streaming records carry more than user columns. Sail prepends
+flow-event fields:</p>
+<pre class="text"><code>_marker
+_retracted
+&lt;user columns...&gt;</code></pre>
+<p><code>_marker</code> is for control messages. <code>_retracted</code>
+distinguishes normal insert events from retraction/delete events.</p>
+<p>This design lets streaming physical operators process one Arrow
+<code>RecordBatch</code> shape while preserving event semantics. It also
+gives future stateful operators a place to represent retract-mode
+updates.</p>
+<h2 data-number="17.8" id="streaming-physical-nodes"><span
+class="header-section-number">17.8</span> Streaming Physical Nodes</h2>
+<p>The streaming logical nodes are planned by
+<code>ExtensionPhysicalPlanner</code>, just like other custom nodes.
+Their physical counterparts live under
+<code>crates/sail-physical-plan/src/streaming/</code>.</p>
+<p>The important nodes are:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Node</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StreamSourceWrapperNode</code></td>
+<td>Scans a real streaming source</td>
+</tr>
+<tr>
+<td><code>StreamSourceAdapterNode</code></td>
+<td>Adapts a bounded source into flow events</td>
+</tr>
+<tr>
+<td><code>StreamFilterNode</code></td>
+<td>Filters flow-event batches</td>
+</tr>
+<tr>
+<td><code>StreamLimitNode</code></td>
+<td>Applies streaming limit/offset behavior</td>
+</tr>
+<tr>
+<td><code>StreamCollectorNode</code></td>
+<td>Collects or strips flow-event fields near output</td>
+</tr>
+</tbody>
+</table>
+<p><code>BarrierNode</code> and <code>BarrierExec</code> provide
+checkpoint-like coordination points.</p>
+<h2 data-number="17.9" id="streaming-query-lifecycle"><span
+class="header-section-number">17.9</span> Streaming Query Lifecycle</h2>
+<p>Spark Connect exposes streaming operations such as start, stop,
+status, and await. Sail tracks running queries with
+<code>StreamingQuery</code> and <code>StreamingQueryManager</code>.</p>
+<p>The lifecycle uses asynchronous coordination primitives:</p>
+<ul>
+<li><code>watch</code> channels for stopped/error state,</li>
+<li><code>oneshot</code> channels for stop signals,</li>
+<li><code>JoinHandle</code> for the background task.</li>
+</ul>
+<p>The manager lives in <code>SparkSessionState</code>, so streaming
+query state is scoped to the Spark session.</p>
+<h2 data-number="17.10" id="current-boundaries"><span
+class="header-section-number">17.10</span> Current Boundaries</h2>
+<p>Streaming support is real, but not all Spark streaming semantics are
+complete. Readers should distinguish:</p>
+<ul>
+<li>the architecture, which is present and coherent,</li>
+<li>the feature surface, which is still evolving.</li>
+</ul>
+<p>The flow-event schema, streaming rewriter, and query manager are the
+architectural foundation. Full stateful aggregations, event-time
+triggers, and continuous-mode coverage are areas to verify against the
+current code before making claims.</p>
+<h2 data-number="17.11" id="takeaways-9"><span
+class="header-section-number">17.11</span> Takeaways</h2>
+<p>Local execution and cluster execution share <code>JobRunner</code>.
+Streaming and batch execution share the planning/execution stack below a
+logical rewrite. That is the pattern to preserve: new execution behavior
+should enter through clear boundaries, not by bypassing the common plan
+and stream model.</p>
+<p>Navigation: <a href="chapter-016.html#chapter-15">Previous: Chapter
+15, Custom Nodes And Optimizers</a> | <a
+href="chapter-018.html#chapter-17">Next: Chapter 17, Testing Spark
+Compatibility</a> | <a href="chapter-001.html#chapter-00">Reader
+Guide</a></p>
+</body>
+</html>

@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 13: Extension Architecture: From Proposal To
+Design</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-015.html" accesskey="n" rel="next">Chapter 14: Arrow Flight SQL</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-013.html" accesskey="p" rel="previous">Chapter 12: Catalogs, Lakehouse Tables, And File Formats</a>
+</span>
+</div>
+</nav>
+<h1 data-number="14" id="chapter-13"><span
+class="header-section-number">14</span> Chapter 13: Extension
+Architecture: From Proposal To Design</h1>
+<p>The first twelve chapters treated Sail as a system to read. This
+final chapter treats it as a system to extend.</p>
+<p>The extension proposal in discussion #2001 is titled “Extension API
+for third-party DataFusion integrations (UDFs, optimizer rules, planner
+extensions).” It starts from a practical problem: integrating a real
+DataFusion extension, such as Apache SedonaDB, currently requires
+editing Sail internals across multiple crates. A useful extension does
+not only add one function. It may add scalar functions, aggregate
+functions, table functions, session configuration, logical optimizer
+rules, physical planner extensions, physical operators, and distributed
+codec behavior.</p>
+<p>That is the key lesson of the whole book. In Sail, an extension is
+not a plugin point. It is a path through the query engine.</p>
+<pre class="text"><code>client API
+  -&gt; Spark Connect request
+  -&gt; Sail spec
+  -&gt; plan resolver
+  -&gt; DataFusion logical plan
+  -&gt; analyzer and optimizer rules
+  -&gt; physical planner extension
+  -&gt; physical optimizer rules
+  -&gt; distributed codec
+  -&gt; worker session
+  -&gt; Arrow batch execution</code></pre>
+<p>If an extension works only on the driver, it is not a distributed
+extension. If it works only during planning, it is not an executable
+extension. If it works only in a custom Rust binary, it does not solve
+the <code>pip install pysail pysail-sedona</code> user experience that
+the proposal calls out.</p>
+<p>This chapter proposes an architecture for Sail extensions by
+assembling the patterns we have already seen.</p>
+<h2 data-number="14.1" id="code-map-4"><span
+class="header-section-number">14.1</span> Code Map</h2>
+<p>The main files for this chapter are:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Proposal touch point: session mutator</td>
+<td><code>crates/sail-session/src/session_factory/server.rs</code></td>
+</tr>
+<tr>
+<td>Proposal touch point: query planner chain</td>
+<td><code>crates/sail-session/src/planner.rs</code></td>
+</tr>
+<tr>
+<td>Proposal touch point: logical optimizer list</td>
+<td><code>crates/sail-session/src/optimizer.rs</code></td>
+</tr>
+<tr>
+<td>Proposal touch point: scalar and table function maps</td>
+<td><code>crates/sail-plan/src/function/mod.rs</code></td>
+</tr>
+<tr>
+<td>Proposal touch point: aggregate function map</td>
+<td><code>crates/sail-plan/src/function/aggregate.rs</code></td>
+</tr>
+<tr>
+<td>Proposal touch point: window function map</td>
+<td><code>crates/sail-plan/src/function/window.rs</code></td>
+</tr>
+<tr>
+<td>Proposal touch point: distributed physical codec</td>
+<td><code>crates/sail-execution/src/codec.rs</code></td>
+</tr>
+<tr>
+<td>Existing extension pattern: session extensions</td>
+<td><code>crates/sail-common-datafusion/src/extension.rs</code></td>
+</tr>
+<tr>
+<td>Existing extension pattern: table format registry</td>
+<td><code>crates/sail-common-datafusion/src/datasource.rs</code></td>
+</tr>
+<tr>
+<td>Existing extension pattern: format registration</td>
+<td><code>crates/sail-session/src/formats.rs</code></td>
+</tr>
+<tr>
+<td>Existing extension pattern: Python data source discovery</td>
+<td><code>crates/sail-data-source/src/formats/python/discovery.rs</code></td>
+</tr>
+<tr>
+<td>Existing extension pattern: Python table format</td>
+<td><code>crates/sail-data-source/src/formats/python/table_format.rs</code></td>
+</tr>
+<tr>
+<td>Existing extension pattern: lakehouse planners</td>
+<td><code>crates/sail-plan-lakehouse/src/lib.rs</code></td>
+</tr>
+<tr>
+<td>Existing extension pattern: physical plan nodes</td>
+<td><code>crates/sail-physical-plan/src/</code></td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="14.2" id="what-the-proposal-is-really-asking-for"><span
+class="header-section-number">14.2</span> What The Proposal Is Really
+Asking For</h2>
+<p>Discussion #2001 describes a third-party extension that needs all of
+these dimensions:</p>
+<ul>
+<li>scalar UDFs at plan time,</li>
+<li>aggregate UDAFs at plan time,</li>
+<li>window UDFs at plan time,</li>
+<li>generator and table functions,</li>
+<li>session configuration extensions,</li>
+<li>logical optimizer rules,</li>
+<li>physical optimizer rules,</li>
+<li>physical extension planners,</li>
+<li>distributed worker re-resolution of UDFs and UDAFs,</li>
+<li>Python entry-point discovery for <code>pysail</code> users.</li>
+</ul>
+<p>SedonaDB is the motivating example. A spatial query may start as
+normal SQL:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> points p, polygons g</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> ST_Intersects(p.geom, g.geom)</span></code></pre></div>
+<p>Without an extension-aware planner, this can look like a cross join
+plus a filter. With the right functions and optimizer rules, it can
+become a spatial join:</p>
+<pre class="text"><code>CrossJoin + ST_Intersects filter
+  -&gt; logical optimizer rule
+  -&gt; SpatialJoinPlanNode
+  -&gt; extension physical planner
+  -&gt; SpatialJoinExec</code></pre>
+<p>That single improvement needs more than one hook. The function
+resolver must know <code>ST_Intersects</code>. The optimizer must know
+the function is spatial and join-like. The physical planner must know
+how to create <code>SpatialJoinExec</code>. The distributed codec must
+know how to serialize and deserialize any extension physical plan that
+reaches a worker.</p>
+<p>The proposal’s important insight is that these hooks should be
+registered together. The extension author should not need to chase every
+hardcoded map and planner list in the Sail workspace.</p>
+<h2 data-number="14.3" id="two-boundaries-not-one"><span
+class="header-section-number">14.3</span> Two Boundaries, Not One</h2>
+<p>The list above looks like one extension surface. It is actually
+two.</p>
+<pre class="text"><code>plan-time boundary             execution-time boundary
+client expresses intent        operators run on Arrow batches
+Sail resolves it               workers re-resolve UDFs and plans
+-&gt; once per query              -&gt; once per batch
+-&gt; stability matters           -&gt; performance matters
+-&gt; performance does not        -&gt; version coupling tolerable</code></pre>
+<p>These two boundaries pull a stable plugin ABI in opposite
+directions.</p>
+<p>The plan-time boundary wants forward and backward wire compatibility,
+language neutrality, and a format that survives across years of Sail
+releases. A user writing
+<code>SELECT ST_Intersects(p.geom, g.geom)</code> should not care which
+DataFusion version the server was built against, or whether their
+extension was compiled with a different Rust toolchain than Sail
+itself.</p>
+<p>The execution-time boundary wants zero-copy access to Arrow buffers,
+direct DataFusion <code>ExecutionPlan</code> integration, and native
+function dispatch. It cannot afford a protobuf round trip per record
+batch, and it has no realistic way to remain ABI-stable across major
+DataFusion upgrades without recompilation.</p>
+<p>Discussion #2001 implicitly conflates these. A unified
+<code>SailExtension</code> trait is one way to register both, but the
+mechanism for <em>crossing</em> each boundary can be different. The
+recommended architecture in this chapter uses:</p>
+<ul>
+<li>a plan-time extension surface built on Spark Connect’s existing
+extension messages,</li>
+<li>an execution-time extension surface built on Sail traits that
+resolve to DataFusion FFI when packaged for distribution,</li>
+<li>one in-memory <code>SailExtension</code> object that registers
+contributions to both.</li>
+</ul>
+<p>Some extensions only use one boundary. A library of <code>ST_*</code>
+scalar functions that decomposes into existing DataFusion expressions
+never needs execution-time integration. A custom physical operator like
+<code>SpatialJoinExec</code> needs both, because workers must
+reconstruct it from a wire format the codec understands.</p>
+<p>The rest of the chapter develops each side. Sections from “The Core
+Trait” through “Physical Codec Extensions” cover the execution-time
+half. The section on “Spark Connect As The Plan-Time Extension Surface”
+covers the plan-time half. The “Versioning And ABI” section then
+explains why the two halves should carry different version stories.</p>
+<h2 data-number="14.4" id="existing-patterns-worth-keeping"><span
+class="header-section-number">14.4</span> Existing Patterns Worth
+Keeping</h2>
+<p>Sail already has several good extension shapes.</p>
+<h3 data-number="14.4.1" id="session-extensions"><span
+class="header-section-number">14.4.1</span> Session Extensions</h3>
+<p>Sail stores session-scoped services in DataFusion
+<code>SessionConfig</code> extensions. We saw this repeatedly:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>with_extension(create_table_format_registry()<span class="op">?</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(create_catalog_manager(<span class="op">...</span>)<span class="op">?</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">ActivityTracker::</span>new()))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">JobService::</span>new(job_runner)))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">RepartitionBufferConfig::</span>new(<span class="op">...</span>)))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">SystemTableService::</span>new(<span class="op">...</span>)))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">DeltaTableCache::</span><span class="kw">default</span>()))</span></code></pre></div>
+<p>This is a strong pattern because downstream code can ask for typed
+services:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> registry <span class="op">=</span> ctx<span class="op">.</span><span class="pp">extension::</span><span class="op">&lt;</span>TableFormatRegistry<span class="op">&gt;</span>()<span class="op">?;</span></span></code></pre></div>
+<p>Extension APIs should lean into this rather than inventing a separate
+global plugin container.</p>
+<h3 data-number="14.4.2" id="table-format-registry"><span
+class="header-section-number">14.4.2</span> Table Format Registry</h3>
+<p><code>TableFormatRegistry</code> is a compact example of a capability
+registry:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>registry<span class="op">.</span>register(<span class="pp">Arc::</span>new(<span class="pp">ParquetTableFormat::</span><span class="kw">default</span>()))<span class="op">?;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="pp">DeltaTableFormat::</span>register(registry)<span class="op">?;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="pp">IcebergTableFormat::</span>register(registry)<span class="op">?;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="pp">PythonTableFormat::</span>register_all(registry)<span class="op">?;</span></span></code></pre></div>
+<p>The registry owns a map from name to
+<code>Arc&lt;dyn TableFormat&gt;</code>. That is the right shape for
+plugin-contributed capabilities:</p>
+<ul>
+<li>names are explicit,</li>
+<li>implementations are trait objects,</li>
+<li>registration happens during session construction,</li>
+<li>use happens through a typed lookup.</li>
+</ul>
+<h3 data-number="14.4.3" id="python-entry-point-discovery"><span
+class="header-section-number">14.4.3</span> Python Entry-Point
+Discovery</h3>
+<p>Python data sources already demonstrate runtime discovery:</p>
+<pre class="text"><code>entry point group: pysail.datasources
+  -&gt; importlib.metadata.entry_points(...)
+  -&gt; load Python class
+  -&gt; validate class
+  -&gt; pickle class
+  -&gt; register PythonTableFormat</code></pre>
+<p>This is not the same as native Rust extension discovery, but it
+proves an important user experience: a package can be installed into the
+Python environment and become available to Sail without editing Sail’s
+source.</p>
+<p>The proposed <code>pysail.extensions</code> group is a broader
+version of the same idea.</p>
+<h3 data-number="14.4.4" id="lakehouse-planner-chain"><span
+class="header-section-number">14.4.4</span> Lakehouse Planner Chain</h3>
+<p>Lakehouse planning already contributes physical planners:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">vec!</span>[</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(<span class="pp">sail_delta_lake::planner::</span>DeltaTablePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(<span class="pp">sail_iceberg::</span>IcebergTablePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(DeltaExtensionPlanner)<span class="op">,</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div>
+<p>The session query planner combines these with the system table
+planner and the general Sail extension planner.</p>
+<p>This tells us that extension planner ordering is not theoretical. It
+already matters. Lakehouse planners need a chance to handle lakehouse
+nodes before the fallback Sail planner handles ordinary extension
+nodes.</p>
+<h3 data-number="14.4.5" id="spark-connect-extension-messages"><span
+class="header-section-number">14.4.5</span> Spark Connect Extension
+Messages</h3>
+<p>Spark Connect’s protobuf already has the hooks we need on the
+plan-time side. Three messages carry opaque
+<code>google.protobuf.Any</code> payloads:</p>
+<pre class="text"><code>Relation.extension       custom logical relation
+Command.extension        custom session or catalog command
+Expression.extension     custom expression or function call</code></pre>
+<p>These exist for the same reason Sail’s logical extension nodes exist:
+to let new operations enter the planner without changing the planner’s
+core types. Chapter 10 notes this in passing - “Spark Connect’s own
+extension guidance talks about extending the protocol through relation,
+expression, and command operation types” - and proposes that Sail’s spec
+layer could mirror that shape. This chapter takes that proposal as a
+first-class architecture decision.</p>
+<p>Sail’s resolver is the natural dispatch point. Today the resolver
+converts every well-known Spark Connect relation into a
+<code>spec::QueryNode</code>. An <code>Any</code> payload could be
+dispatched to a registered handler keyed by the message’s
+<code>type_url</code>. The handler returns either a Sail spec node, a
+DataFusion logical plan, or a logical extension node that the rest of
+the pipeline already knows how to carry.</p>
+<p>This pattern has properties the in-process trait does not have:</p>
+<ul>
+<li>the wire format is protobuf, so forward and backward compatibility
+follow standard proto rules,</li>
+<li>extension authors do not need to link any Sail crate, so a
+Python-only extension can emit Spark Connect messages and dispatch
+entirely on Sail’s side,</li>
+<li>the same extension proto can target any Spark-Connect-compatible
+engine, not only Sail,</li>
+<li>worker compatibility is reduced to “the worker can decode whatever
+the driver shipped”, which is the codec problem chapter 11 already
+covers.</li>
+</ul>
+<p>What it does not solve is execution. Once the resolver has dispatched
+an <code>Any</code> payload into a logical extension node, the rest of
+the pipeline still needs the node, its physical equivalent, and its
+codec. Spark Connect is a plan-time channel, not an execution-time
+one.</p>
+<p>The “Spark Connect As The Plan-Time Extension Surface” section later
+in this chapter develops the dispatcher design.</p>
+<h2 data-number="14.5" id="current-gaps"><span
+class="header-section-number">14.5</span> Current Gaps</h2>
+<p>The proposal identifies several hardcoded areas. Reading the current
+code confirms the shape of the gap.</p>
+<p>Function registration is static:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">static</span> <span class="kw">ref</span> BUILT_IN_SCALAR_FUNCTIONS<span class="op">:</span> HashMap<span class="op">&lt;&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">,</span> ScalarFunction<span class="op">&gt;</span> <span class="op">=</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">HashMap::</span>from_iter(<span class="pp">scalar::</span>list_built_in_scalar_functions())<span class="op">;</span></span></code></pre></div>
+<p>Aggregate and window functions have similar built-in maps. That is
+fine for Sail’s own compatibility functions, but awkward for third-party
+functions.</p>
+<p>Session mutation exists:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> ServerSessionMutator<span class="op">:</span> <span class="bu">Send</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> mutate_config(<span class="op">...</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> mutate_state(<span class="op">...</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> mutate_runtime_env(<span class="op">...</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That is useful for embedders that build Sail as a library, but it
+does not provide a complete plugin system:</p>
+<ul>
+<li>it does not expose plan-time function registries,</li>
+<li>it does not expose codec fallback registries,</li>
+<li>it does not help <code>sail</code> CLI or <code>pysail</code> users
+discover installed extensions,</li>
+<li>it does not bundle all extension dimensions under one name.</li>
+</ul>
+<p>The physical codec is also hardcoded.
+<code>RemoteExecutionCodec</code> knows how to encode and decode Sail’s
+physical plan nodes and UDFs. That is necessary, but a third-party
+operator needs some way to participate in the same serialization
+path.</p>
+<p>The planner chain has one more issue from the proposal: an extension
+planner that does not recognize a node should return
+<code>Ok(None)</code> so DataFusion can try the next planner. If Sail’s
+fallback planner returns an internal error for every unknown node, then
+third-party planners must always be ordered before it or planning
+short-circuits with a confusing error.</p>
+<p>That is a small mechanical fix, but it is also a design principle:
+extension chains must compose by declining work, not by failing on
+unfamiliar work.</p>
+<p>Finally, Spark Connect’s <code>Relation.extension</code>,
+<code>Command.extension</code>, and <code>Expression.extension</code>
+fields exist in the protocol but have no general dispatcher on Sail’s
+side. Today an extension that wants to express a custom relation has to
+contribute Rust code in a Sail crate, because there is no other way for
+an opaque <code>Any</code> payload to reach a handler. That gap is what
+makes the plan-time boundary feel like the same problem as the
+execution-time boundary - it is not, but Sail does not yet have the
+dispatcher that would let them be solved separately.</p>
+<h2 data-number="14.6" id="design-goal"><span
+class="header-section-number">14.6</span> Design Goal</h2>
+<p>The goal is not “allow plugins.” That phrase is too vague.</p>
+<p>The goal is:</p>
+<blockquote>
+<p>Let a third-party crate or Python package contribute a named,
+version-compatible set of query capabilities to Sail, and make those
+capabilities available consistently during planning, optimization,
+physical planning, distributed serialization, worker execution, and
+user-facing discovery.</p>
+</blockquote>
+<p>That implies five requirements:</p>
+<ol type="1">
+<li>One extension object should describe all of its contributions.</li>
+<li>Contributions should register into existing Sail and DataFusion
+registries.</li>
+<li>Driver and worker sessions should load compatible extension
+sets.</li>
+<li>Distributed plans should encode enough information for workers to
+rebuild extension functions and physical nodes.</li>
+<li>Conflicts and ordering should be explicit.</li>
+</ol>
+<h2 data-number="14.7" id="the-core-trait"><span
+class="header-section-number">14.7</span> The Core Trait</h2>
+<p><code>SailExtension</code> is the in-process object that registers an
+extension’s contributions. It is not the stable plugin ABI by itself -
+the plan-time boundary uses Spark Connect protobuf and the
+execution-time boundary uses DataFusion FFI when packaged across
+processes - but inside a single Sail server it is the one place an
+extension declares what it provides.</p>
+<p>A reasonable first draft is:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SailExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> version(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">&gt;</span> <span class="op">{</span> <span class="cn">None</span> <span class="op">}</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> configure_session(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> config<span class="op">:</span> SessionConfig) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SessionConfig<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Ok</span>(config)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Plan-time boundary: Spark Connect protobuf dispatch.</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> spark_connect_relations(<span class="op">&amp;</span><span class="kw">self</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> SparkConnectRelationExtension<span class="op">&gt;&gt;</span> <span class="op">{</span> <span class="pp">vec!</span>[] <span class="op">}</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> spark_connect_commands(<span class="op">&amp;</span><span class="kw">self</span>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> SparkConnectCommandExtension<span class="op">&gt;&gt;</span> <span class="op">{</span> <span class="pp">vec!</span>[] <span class="op">}</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> spark_connect_expressions(<span class="op">&amp;</span><span class="kw">self</span>)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> SparkConnectExpressionExtension<span class="op">&gt;&gt;</span> <span class="op">{</span> <span class="pp">vec!</span>[] <span class="op">}</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Execution-time boundary: DataFusion-shaped contributions.</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> FunctionExtensionRegistry) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Ok</span>(())</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_table_formats(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span>TableFormatRegistry) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Ok</span>(())</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_catalogs(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> CatalogExtensionRegistry) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Ok</span>(())</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> analyzer_rules(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> AnalyzerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[]</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> logical_optimizer_rules(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> OptimizerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[]</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> physical_optimizer_rules(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> PhysicalOptimizerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[]</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> extension_planners(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[]</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> physical_codecs(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> PhysicalPlanCodecExtension<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[]</span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This trait deliberately does not make every extension implement every
+concern. Most methods return empty contributions. A pure plan-time
+extension might only implement <code>spark_connect_relations</code> and
+resolve into existing DataFusion operators. A data source extension
+might only register table formats. A spatial extension might use both
+halves: Spark Connect dispatch for the user-visible DataFrame syntax,
+plus functions, optimizer rules, a planner, and a codec for execution. A
+catalog extension might register a catalog provider factory and nothing
+else.</p>
+<h2 data-number="14.8" id="extension-registry"><span
+class="header-section-number">14.8</span> Extension Registry</h2>
+<p>The session factory should not pass around loose vectors of
+everything. It should own one extension registry:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> SailExtensionRegistry <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    extensions<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> SailExtension<span class="op">&gt;&gt;,</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>It can expose typed collection methods:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> SailExtensionRegistry <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> configure_session(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> config<span class="op">:</span> SessionConfig) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SessionConfig<span class="op">&gt;;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> spark_connect_dispatcher(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> Arc<span class="op">&lt;</span>SparkConnectExtensionDispatcher<span class="op">&gt;;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> register_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> FunctionExtensionRegistry) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> register_table_formats(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span>TableFormatRegistry) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> analyzer_rules(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> AnalyzerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> logical_optimizer_rules(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> OptimizerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> physical_optimizer_rules(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> PhysicalOptimizerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;;</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> extension_planners(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> physical_codecs(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> PhysicalPlanCodecExtension<span class="op">&gt;&gt;;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The <code>SparkConnectExtensionDispatcher</code> is a
+<code>type_url</code>-indexed map of the plan-time handlers contributed
+by every loaded extension. The resolver calls it when it encounters a
+<code>Relation.extension</code>, <code>Command.extension</code>, or
+<code>Expression.extension</code> payload; the section below details its
+shape.</p>
+<p>The registry should itself be stored as a session extension so
+planning and codec code can reach it:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(extension_registry<span class="op">.</span>clone()))</span></code></pre></div>
+<p>The important thing is that the registry is not just a startup
+helper. It is a runtime service.</p>
+<h2 data-number="14.9" id="function-registration"><span
+class="header-section-number">14.9</span> Function Registration</h2>
+<p>The current function maps are built-in and static. A future design
+can preserve fast built-in lookup while adding extension lookup.</p>
+<p>One option is a layered function registry:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> FunctionExtensionRegistry <span class="op">{</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    scalar<span class="op">:</span> HashMap<span class="op">&lt;</span><span class="dt">String</span><span class="op">,</span> Arc<span class="op">&lt;</span>ScalarUDF<span class="op">&gt;&gt;,</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    aggregate<span class="op">:</span> HashMap<span class="op">&lt;</span><span class="dt">String</span><span class="op">,</span> Arc<span class="op">&lt;</span>AggregateUDF<span class="op">&gt;&gt;,</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    window<span class="op">:</span> HashMap<span class="op">&lt;</span><span class="dt">String</span><span class="op">,</span> Arc<span class="op">&lt;</span>WindowUDF<span class="op">&gt;&gt;,</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    generators<span class="op">:</span> HashMap<span class="op">&lt;</span><span class="dt">String</span><span class="op">,</span> ScalarFunction<span class="op">&gt;,</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    table<span class="op">:</span> HashMap<span class="op">&lt;</span><span class="dt">String</span><span class="op">,</span> Arc<span class="op">&lt;</span>TableFunction<span class="op">&gt;&gt;,</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Resolution order should be documented. I would choose:</p>
+<pre class="text"><code>temporary/session registered functions
+  -&gt; extension functions
+  -&gt; Sail built-ins</code></pre>
+<p>That makes explicit extension loading meaningful while preserving
+user-level session overrides. It also keeps Sail built-ins as the
+baseline.</p>
+<p>Collision policy should be chosen at registration time, not hidden at
+lookup time. A useful default:</p>
+<pre class="text"><code>same extension registers same name twice: error
+two extensions register same name: error unless an override policy is configured
+extension overrides Sail built-in: allowed only with explicit override flag
+session function overrides extension function: allowed, matching Spark-style session behavior</code></pre>
+<p>The reason to avoid silent last-writer-wins is simple: distributed
+engines are hard enough to debug without guessing which implementation
+of <code>ST_Distance</code> ran on the worker.</p>
+<h2 data-number="14.10" id="optimizer-rules"><span
+class="header-section-number">14.10</span> Optimizer Rules</h2>
+<p>Extension optimizer rules need ordering.</p>
+<p>The simplest design appends rules in extension registration
+order:</p>
+<pre class="text"><code>Sail required early rules
+  -&gt; extension logical rules
+  -&gt; Sail default logical rules</code></pre>
+<p>But the lakehouse optimizer already shows that some rules must run
+early. The <code>expand_row_level_op</code> rule is expected to run
+before built-in optimizers. A spatial extension may have the same need:
+merge a spatial predicate into a join before a general rule rewrites or
+pushes down expressions.</p>
+<p>So the API should allow rule phases:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> OptimizerPhase <span class="op">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    BeforeSailDefaults<span class="op">,</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    AfterSailDefaults<span class="op">,</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    Final<span class="op">,</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> OrderedOptimizerRule <span class="op">{</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> phase<span class="op">:</span> OptimizerPhase<span class="op">,</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> rule<span class="op">:</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> OptimizerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;,</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>For a first implementation, phase plus extension registration order
+is probably enough. More complex dependency constraints can wait until a
+real extension needs them.</p>
+<h2 data-number="14.11" id="extension-physical-planners"><span
+class="header-section-number">14.11</span> Extension Physical
+Planners</h2>
+<p>DataFusion’s extension planner chain is already the right
+mechanism:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="pp">DefaultPhysicalPlanner::</span>with_extension_planners(extension_planners)</span></code></pre></div>
+<p>The design rule is:</p>
+<pre class="text"><code>extension planners
+  -&gt; lakehouse planners
+  -&gt; system table planner
+  -&gt; Sail built-in extension planner</code></pre>
+<p>The exact placement of lakehouse planners is a policy decision. If
+lakehouse remains a built-in Sail capability, it can stay before
+third-party planners. If a third-party extension needs to override
+lakehouse behavior, that should require an explicit planner ordering
+option.</p>
+<p>Every planner in the chain should follow the DataFusion
+convention:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> I recognize this node <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(<span class="cn">Some</span>(plan))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(<span class="cn">None</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Only recognized but invalid nodes should produce errors.</p>
+<h2 data-number="14.12" id="physical-codec-extensions"><span
+class="header-section-number">14.12</span> Physical Codec
+Extensions</h2>
+<p>Distributed execution is where extension APIs often become too
+optimistic.</p>
+<p>Sail serializes physical plans so workers can execute them. A
+physical extension node that exists only as an
+<code>Arc&lt;dyn ExecutionPlan&gt;</code> on the driver cannot magically
+cross the network.</p>
+<p>The codec needs an extension registry:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> PhysicalPlanCodecExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> try_encode(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>        node<span class="op">:</span> Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;,</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>        codec<span class="op">:</span> <span class="op">&amp;</span>RemoteExecutionCodec<span class="op">,</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Option</span><span class="op">&lt;</span>ExtensionPlanPayload<span class="op">&gt;&gt;;</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> try_decode(</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>        payload<span class="op">:</span> <span class="op">&amp;</span>ExtensionPlanPayload<span class="op">,</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>        inputs<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;,</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>        ctx<span class="op">:</span> <span class="op">&amp;</span>SessionContext<span class="op">,</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>        codec<span class="op">:</span> <span class="op">&amp;</span>RemoteExecutionCodec<span class="op">,</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Option</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;&gt;;</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The payload should include:</p>
+<ul>
+<li>extension name,</li>
+<li>extension version or ABI marker,</li>
+<li>node type name,</li>
+<li>serialized node bytes,</li>
+<li>child plan references or encoded child plans,</li>
+<li>optional schema and statistics metadata.</li>
+</ul>
+<p>The worker must have a compatible extension loaded. If not, the error
+should be clear:</p>
+<pre class="text"><code>Cannot decode extension physical plan &#39;sedona::SpatialJoinExec&#39;.
+The worker session does not have extension &#39;sedona&#39; version &#39;x.y.z&#39; loaded.</code></pre>
+<p>The same problem applies to UDF re-resolution. Built-in functions can
+be rebuilt by name, but extension functions need their registry
+available on the worker.</p>
+<h2 data-number="14.13" id="driver-and-worker-symmetry"><span
+class="header-section-number">14.13</span> Driver And Worker
+Symmetry</h2>
+<p>The extension registry must be available in both server sessions and
+worker sessions.</p>
+<p>In local mode, that is easy. In cluster mode, it becomes a deployment
+contract:</p>
+<pre class="text"><code>driver process
+  has extension registry A
+  encodes plan requiring extension sedona
+
+worker process
+  must start with compatible extension registry A
+  decodes sedona functions and physical nodes</code></pre>
+<p>This has operational consequences:</p>
+<ul>
+<li>Kubernetes worker images must include the same extension
+packages.</li>
+<li>Local-cluster workers must inherit the same extension loading
+configuration.</li>
+<li>Python extension discovery must happen for workers as well as the
+driver if Python extension code participates in execution.</li>
+<li>The plan codec should record required extension names so missing
+extensions fail before deep execution.</li>
+</ul>
+<p>An extension manifest can help. A minimum useful form carries the
+extension identity, the plan-time <code>type_url</code> claims, and an
+optional native execution surface:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> ExtensionManifest <span class="op">{</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> name<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> version<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> spark_connect_relations<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span>    <span class="co">// type_urls</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> spark_connect_commands<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> spark_connect_expressions<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> execution_surface<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>ExecutionSurface<span class="op">&gt;,</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The “Versioning And ABI” section below details
+<code>ExecutionSurface</code> and explains why the two halves carry
+different version rules. The manifest is not only documentation. It is
+runtime compatibility data, and the driver should refuse to dispatch a
+plan that requires an extension manifest the workers do not also
+hold.</p>
+<h2 data-number="14.14" id="python-entry-point-discovery-1"><span
+class="header-section-number">14.14</span> Python Entry-Point
+Discovery</h2>
+<p>The proposal’s Python story is:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[project.entry-points.&quot;</span><span class="dt">pysail.extensions&quot;</span><span class="kw">]</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="dt">sedona</span> <span class="op">=</span> <span class="st">&quot;pysail_sedona:register&quot;</span></span></code></pre></div>
+<p>At startup, <code>pysail</code> discovers installed entry points:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> importlib.metadata <span class="im">import</span> entry_points</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ep <span class="kw">in</span> entry_points(group<span class="op">=</span><span class="st">&quot;pysail.extensions&quot;</span>):</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    extension <span class="op">=</span> ep.load()()</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    register(extension)</span></code></pre></div>
+<p>The hard part is not Python discovery. Sail already does that for
+data sources. The hard part is what crosses the Python/Rust
+boundary.</p>
+<p>If <code>register()</code> returns a Rust-backed extension object
+through PyO3, then the native types crossing the boundary are
+version-coupled:</p>
+<ul>
+<li><code>Arc&lt;dyn SailExtension&gt;</code>,</li>
+<li>DataFusion UDF types,</li>
+<li>optimizer rule traits,</li>
+<li>physical planner traits,</li>
+<li>Arrow and DataFusion schema and expression types.</li>
+</ul>
+<p>Rust has no stable ABI for arbitrary trait objects. That means
+<code>pysail-sedona</code> must be built against compatible versions of
+<code>pysail</code>, Sail, DataFusion, Arrow, and PyO3. This is
+acceptable if it is documented and enforced. It is dangerous if users
+only discover it through crashes.</p>
+<p>A practical Python extension loading flow:</p>
+<figure>
+<img src="diagrams/13-diagram-01.svg" alt="Flowchart 13.1" />
+<figcaption aria-hidden="true">Flowchart 13.1</figcaption>
+</figure>
+<p>The extension loader should validate manifests before registering
+capabilities.</p>
+<h2 data-number="14.15"
+id="spark-connect-as-the-plan-time-extension-surface"><span
+class="header-section-number">14.15</span> Spark Connect As The
+Plan-Time Extension Surface</h2>
+<p>This section develops the plan-time half of the two boundaries.</p>
+<p>The plan-time channel needs to be stable across DataFusion and Arrow
+upgrades, hospitable to cross-language authors, and free of
+recompilation pressure when Sail releases a new version. Spark Connect
+already meets those needs.</p>
+<p>Three facts make it the right channel. Every query already crosses
+it: PySpark, SQL, and DataFrame calls all serialize through Spark
+Connect protobuf or its companion messages. Protobuf is forward and
+backward compatible by construction, including for unknown fields, so an
+extension protocol bumped from <code>v1</code> to <code>v2</code> does
+not break older Sail servers in unrelated ways. And Spark Connect
+already defines extension hooks - <code>Relation.extension</code>,
+<code>Command.extension</code>, and <code>Expression.extension</code>,
+each typed as <code>google.protobuf.Any</code> - so Sail does not need
+new wire surface area, only a dispatcher.</p>
+<h3 data-number="14.15.1" id="dispatcher-traits"><span
+class="header-section-number">14.15.1</span> Dispatcher Traits</h3>
+<p>A plan-time extension dispatcher has a small interface:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SparkConnectRelationExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> type_url(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> resolve(</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>        payload<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]<span class="op">,</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>        ctx<span class="op">:</span> <span class="op">&amp;</span>ResolverContext<span class="op">,</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>        inputs<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="pp">spec::</span>QueryNode<span class="op">&gt;,</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span><span class="pp">spec::</span>QueryNode<span class="op">&gt;;</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SparkConnectExpressionExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> type_url(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> resolve(</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>        payload<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]<span class="op">,</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>        ctx<span class="op">:</span> <span class="op">&amp;</span>ResolverContext<span class="op">,</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>        arguments<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="pp">spec::</span>Expression<span class="op">&gt;,</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span><span class="pp">spec::</span>Expression<span class="op">&gt;;</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SparkConnectCommandExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> type_url(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> resolve(</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>        payload<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]<span class="op">,</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>        ctx<span class="op">:</span> <span class="op">&amp;</span>ResolverContext<span class="op">,</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> PlanResult<span class="op">&lt;</span><span class="pp">spec::</span>CommandNode<span class="op">&gt;;</span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Each handler claims a <code>type_url</code>. The resolver routes by
+<code>type_url</code> and falls through with a clear error when no
+handler matches. The error should name the missing extension so users
+diagnose installation problems before they diagnose plan errors:</p>
+<pre class="text"><code>No extension handler is registered for Spark Connect Relation.extension
+with type_url &#39;apache.sedona/SpatialJoin&#39;. Install pysail-sedona, or check
+that &#39;sedona&#39; appears in sail.extensions.enabled.</code></pre>
+<h3 data-number="14.15.2" id="two-resolution-patterns"><span
+class="header-section-number">14.15.2</span> Two Resolution
+Patterns</h3>
+<p>There are two useful patterns for what a handler returns.</p>
+<p>Pattern A decomposes the extension call into existing relations,
+expressions, and commands:</p>
+<pre class="text"><code>Relation.extension(&quot;example.com/JsonScan&quot;)
+  -&gt; JsonScanExtension::resolve(...)
+  -&gt; spec::QueryNode::Read { format: &quot;json&quot;, path: ... }
+  -&gt; normal Sail and DataFusion execution</code></pre>
+<p>The rest of Sail does not know an extension was involved. Pattern A
+extensions need no execution-time integration at all. They are pure
+plan-time additions. A surprising amount of useful behavior fits here:
+configurable readers, custom SQL-shaped commands, expression sugar that
+expands into well-known DataFusion expressions.</p>
+<p>Pattern B emits a logical extension node and hands off to the
+execution-time half of the extension:</p>
+<pre class="text"><code>Relation.extension(&quot;apache.sedona/SpatialJoin&quot;)
+  -&gt; SpatialJoinExtension::resolve(...)
+  -&gt; spec::QueryNode::Extension { node: SpatialJoinNode { ... } }
+  -&gt; Sedona optimizer rules
+  -&gt; SpatialJoinExec
+  -&gt; Sedona codec</code></pre>
+<p>Pattern B is what discussion #2001 implicitly assumed for everything.
+Pattern A is what makes Spark Connect dispatch worth its own ABI.</p>
+<h3 data-number="14.15.3" id="a-sketch-in-python"><span
+class="header-section-number">14.15.3</span> A Sketch In Python</h3>
+<p>A plan-time extension does not require a recompiled Sail server. From
+the PySpark side it looks like an ordinary client library that emits
+Spark Connect messages:</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql.<span class="ex">connect</span>.proto <span class="im">import</span> Relation</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> google.protobuf.any_pb2 <span class="im">import</span> Any <span class="im">as</span> AnyMessage</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pysail_geo_proto <span class="im">import</span> JsonScan  <span class="co"># extension&#39;s own proto</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> json_scan(spark, path, schema<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    request <span class="op">=</span> JsonScan(path<span class="op">=</span>path, schema<span class="op">=</span>schema <span class="kw">or</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    relation <span class="op">=</span> Relation(extension<span class="op">=</span>AnyMessage(</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>        type_url<span class="op">=</span><span class="st">&quot;example.com/pysail_geo/JsonScan&quot;</span>,</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>        value<span class="op">=</span>request.SerializeToString(),</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> spark._client._dataframe(relation)</span></code></pre></div>
+<p>The Sail server registers a corresponding handler when its extension
+loads. The two never share a Rust ABI. The protobuf is the only thing
+they agree on.</p>
+<h3 data-number="14.15.4" id="federation-through-spark-connect"><span
+class="header-section-number">14.15.4</span> Federation Through Spark
+Connect</h3>
+<p>Spark Connect is also a complete query protocol, not only an
+extension channel. That makes a second pattern available.</p>
+<p>A Sail driver can become a Spark Connect client of a separate
+extension server and delegate a subtree of a query. The extension server
+returns Arrow batches over the existing protocol. The two processes do
+not share memory, do not load each other’s code, and do not need to
+agree on DataFusion versions:</p>
+<pre class="text"><code>driver Sail
+  resolver dispatches Relation.extension
+  -&gt; spec::QueryNode::Extension { delegate_to: &quot;spark://server:port&quot; }
+  -&gt; physical plan with FederatedExec
+  FederatedExec
+    -&gt; Spark Connect client to extension server
+    -&gt; stream Arrow batches back</code></pre>
+<p>This pattern is the strongest answer for execution-time isolation. It
+is also the most expensive: an extra network hop, an extra deployment,
+and a place to lose batches if the extension server crashes. It is
+appropriate for extensions that are themselves complex services -
+catalog metastores, vector search engines, production geospatial
+systems. It is overkill for a stateless scalar UDF.</p>
+<h3 data-number="14.15.5" id="discovery-and-registration"><span
+class="header-section-number">14.15.5</span> Discovery And
+Registration</h3>
+<p>Plan-time extensions still need to register. The discovery mechanisms
+from earlier in this chapter apply directly:</p>
+<pre class="text"><code>configured or pip-discovered extensions
+  -&gt; SailExtension::spark_connect_relations()
+  -&gt; SailExtensionRegistry::spark_connect_dispatcher()
+  -&gt; resolver looks up type_url</code></pre>
+<p>A Python wheel-based extension can register a Python callback through
+PySpark and a server-side handler through <code>pysail.extensions</code>
+discovery. The Rust side of the handler can live in an extension’s own
+crate, in a sidecar service, or in a federated Spark Connect server. The
+dispatch point is the same.</p>
+<p><code>type_url</code> is the new collision namespace and should
+follow the same strict policy as function names: two extensions claiming
+the same <code>type_url</code> is an error at registration, not a silent
+override at dispatch.</p>
+<h3 data-number="14.15.6" id="what-this-buys-and-costs"><span
+class="header-section-number">14.15.6</span> What This Buys And
+Costs</h3>
+<p>Compared to a pure Rust-trait surface, Spark Connect dispatch trades
+some ergonomics for substantial decoupling.</p>
+<p>Costs:</p>
+<ul>
+<li>each extension call serializes through protobuf,</li>
+<li>handlers must hand-write decoding for their <code>Any</code>
+payloads,</li>
+<li>logical extension nodes that need to participate in optimization
+still require execution-time integration,</li>
+<li><code>type_url</code> becomes a new namespace where extensions can
+collide.</li>
+</ul>
+<p>In return:</p>
+<ul>
+<li>no Rust ABI for plan-time-only extensions,</li>
+<li>no PyO3 version coupling for Python extensions,</li>
+<li>a natural cross-language story, including non-Rust authors,</li>
+<li>an explicit federation pattern that the Rust trait cannot
+express,</li>
+<li>a wire format that already passes through every Sail query.</li>
+</ul>
+<p>The right framing is not “Spark Connect <em>or</em> the trait.” It is
+“Spark Connect for the plan-time boundary, the trait for the
+execution-time boundary, and one manifest for both.”</p>
+<h2 data-number="14.16" id="a-sedona-style-worked-design"><span
+class="header-section-number">14.16</span> A Sedona-Style Worked
+Design</h2>
+<p>Imagine a <code>sail-sedona</code> crate. It uses both boundaries:
+Spark Connect dispatch for the user-visible spatial DataFrame syntax,
+plus the full execution-time suite for the spatial join itself.</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> SedonaExtension <span class="op">{</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    options<span class="op">:</span> SedonaOptions<span class="op">,</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> SailExtension <span class="cf">for</span> SedonaExtension <span class="op">{</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span> <span class="op">{</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;sedona&quot;</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> configure_session(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> config<span class="op">:</span> SessionConfig) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SessionConfig<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Ok</span>(config<span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="kw">self</span><span class="op">.</span>options<span class="op">.</span>clone())))</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Plan-time boundary.</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> spark_connect_relations(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> SparkConnectRelationExtension<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[<span class="pp">Arc::</span>new(<span class="pp">SpatialJoinRelationHandler::</span>new())]</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> spark_connect_expressions(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> SparkConnectExpressionExtension<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[</span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>            <span class="pp">Arc::</span>new(<span class="pp">StIntersectsExpressionHandler::</span>new())<span class="op">,</span></span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>            <span class="pp">Arc::</span>new(<span class="pp">StDistanceExpressionHandler::</span>new())<span class="op">,</span></span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Execution-time boundary.</span></span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_functions(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> FunctionExtensionRegistry) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a>        registry<span class="op">.</span>register_scalar(<span class="st">&quot;st_intersects&quot;</span><span class="op">,</span> st_intersects_udf())<span class="op">?;</span></span>
+<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a>        registry<span class="op">.</span>register_scalar(<span class="st">&quot;st_distance&quot;</span><span class="op">,</span> st_distance_udf())<span class="op">?;</span></span>
+<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a>        registry<span class="op">.</span>register_aggregate(<span class="st">&quot;st_union_aggr&quot;</span><span class="op">,</span> st_union_aggr_udf())<span class="op">?;</span></span>
+<span id="cb38-31"><a href="#cb38-31" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Ok</span>(())</span>
+<span id="cb38-32"><a href="#cb38-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb38-33"><a href="#cb38-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-34"><a href="#cb38-34" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> logical_optimizer_rules(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> OptimizerRule <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb38-35"><a href="#cb38-35" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[<span class="pp">Arc::</span>new(<span class="pp">MergeSpatialPredicateIntoJoin::</span>new())]</span>
+<span id="cb38-36"><a href="#cb38-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb38-37"><a href="#cb38-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-38"><a href="#cb38-38" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> extension_planners(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb38-39"><a href="#cb38-39" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[<span class="pp">Arc::</span>new(<span class="pp">SpatialJoinExtensionPlanner::</span>new())]</span>
+<span id="cb38-40"><a href="#cb38-40" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb38-41"><a href="#cb38-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-42"><a href="#cb38-42" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> physical_codecs(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> PhysicalPlanCodecExtension<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb38-43"><a href="#cb38-43" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[<span class="pp">Arc::</span>new(<span class="pp">SedonaPhysicalCodec::</span>new())]</span>
+<span id="cb38-44"><a href="#cb38-44" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb38-45"><a href="#cb38-45" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>A query then flows like this:</p>
+<figure>
+<img src="diagrams/13-diagram-02.svg" alt="Flowchart 13.2" />
+<figcaption aria-hidden="true">Flowchart 13.2</figcaption>
+</figure>
+<p>The two halves are visible. The plan-time half lets PySpark users
+call a <code>spatial_join(...)</code> DataFrame method that emits a
+<code>Relation.extension</code> payload; that payload becomes a
+<code>SpatialJoinNode</code> in the Sail spec. The execution-time half
+plans that node into <code>SpatialJoinExec</code> and encodes it for
+workers. Notice how much of Sail still does not need to know Sedona
+exists. It needs to know how to ask the Spark Connect dispatcher,
+function registries, and planner chains for contributions.</p>
+<h2 data-number="14.17" id="table-formats-as-extensions"><span
+class="header-section-number">14.17</span> Table Formats As
+Extensions</h2>
+<p>Chapter 12 showed that table formats are already close to this model.
+A third-party format extension could do:</p>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">impl</span> SailExtension <span class="cf">for</span> MyLakeExtension <span class="op">{</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> register_table_formats(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> registry<span class="op">:</span> <span class="op">&amp;</span>TableFormatRegistry) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>        registry<span class="op">.</span>register(<span class="pp">Arc::</span>new(<span class="pp">MyLakeTableFormat::</span>new()))<span class="op">?;</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Ok</span>(())</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> extension_planners(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[<span class="pp">Arc::</span>new(<span class="pp">MyLakeRowLevelPlanner::</span>new())]</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> physical_codecs(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> PhysicalPlanCodecExtension<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>        <span class="pp">vec!</span>[<span class="pp">Arc::</span>new(<span class="pp">MyLakeCodec::</span>new())]</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That would let a user write:</p>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> t <span class="kw">USING</span> mylake LOCATION <span class="st">&#39;/warehouse/t&#39;</span> <span class="kw">AS</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="kw">source</span>;</span></code></pre></div>
+<p>The same extension might also register row-level commands, custom
+optimizer rules, or catalog provider factories.</p>
+<h2 data-number="14.18" id="catalog-providers-as-extensions"><span
+class="header-section-number">14.18</span> Catalog Providers As
+Extensions</h2>
+<p>Catalogs should also be extension candidates.</p>
+<p>The current session catalog construction selects providers from
+<code>AppConfig</code>. A future extension-aware design could let
+extensions register catalog provider factories:</p>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> CatalogProviderFactory<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> catalog_type(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> create(</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>        name<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">,</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>        properties<span class="op">:</span> HashMap<span class="op">&lt;</span><span class="dt">String</span><span class="op">,</span> <span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>        runtime<span class="op">:</span> RuntimeHandle<span class="op">,</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> CatalogProvider<span class="op">&gt;&gt;;</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Configuration could then say:</p>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[[catalog.list]]</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="dt">type</span> <span class="op">=</span> <span class="st">&quot;custom-rest&quot;</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="dt">name</span> <span class="op">=</span> <span class="st">&quot;prod&quot;</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="dt">uri</span> <span class="op">=</span> <span class="st">&quot;https://catalog.example&quot;</span></span></code></pre></div>
+<p>The catalog manager does not need to know the concrete type. It only
+needs a factory that can produce an
+<code>Arc&lt;dyn CatalogProvider&gt;</code>.</p>
+<h2 data-number="14.19" id="conflict-policy"><span
+class="header-section-number">14.19</span> Conflict Policy</h2>
+<p>The proposal lists open questions around collisions. A good default
+policy is strict:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Collision</th>
+<th>Default behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Two extensions with same name</td>
+<td>error</td>
+</tr>
+<tr>
+<td>Two extensions register same function name</td>
+<td>error</td>
+</tr>
+<tr>
+<td>Extension function shadows built-in</td>
+<td>error unless explicit override</td>
+</tr>
+<tr>
+<td>Session function shadows extension function</td>
+<td>allowed</td>
+</tr>
+<tr>
+<td>Two planners claim same logical node</td>
+<td>first successful planner wins, but log planner name</td>
+</tr>
+<tr>
+<td>Two Spark Connect handlers claim same <code>type_url</code></td>
+<td>error</td>
+</tr>
+<tr>
+<td>Two entry points share same name</td>
+<td>error</td>
+</tr>
+<tr>
+<td>Same <code>SessionConfig</code> extension type inserted twice</td>
+<td>error unless explicit replace</td>
+</tr>
+<tr>
+<td>Same table format name registered twice</td>
+<td>error unless explicit override</td>
+</tr>
+</tbody>
+</table>
+<p>Strict defaults make early development noisier and production
+behavior clearer. An administrator can always choose a permissive
+override mode later.</p>
+<h2 data-number="14.20" id="enablement-policy"><span
+class="header-section-number">14.20</span> Enablement Policy</h2>
+<p>Extensions need two levels of enablement:</p>
+<pre class="text"><code>installed
+  -&gt; available to Sail process
+
+enabled
+  -&gt; active in a session</code></pre>
+<p>For a server binary, enabled extensions may come from
+configuration:</p>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[extensions]</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="dt">enabled</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;sedona&quot;</span><span class="op">,</span> <span class="st">&quot;my-lake&quot;</span><span class="op">]</span></span></code></pre></div>
+<p>For <code>pysail</code>, entry-point discovery can make installed
+extensions available, but the session should still know which ones are
+active. A useful SQL-level control might be:</p>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> sail.extensions.enabled <span class="op">=</span> <span class="st">&#39;sedona,my-lake&#39;</span></span></code></pre></div>
+<p>Per-session enablement matters because extensions can change planning
+behavior. A spatial optimizer rule, for example, may rewrite joins.
+Users should be able to run a session with it disabled for
+debugging.</p>
+<h2 data-number="14.21" id="versioning-and-abi"><span
+class="header-section-number">14.21</span> Versioning And ABI</h2>
+<p>The two boundaries deserve two version stories.</p>
+<p>Plan-time extensions inherit protobuf’s compatibility properties. An
+extension that only registers Spark Connect handlers needs no native ABI
+coupling at all, and Sail can load it against any compatible server
+build. The relevant version data is:</p>
+<pre class="text"><code>extension name
+extension version
+declared Spark Connect type_urls
+Sail Spark Connect API version</code></pre>
+<p>Execution-time extensions must couple more tightly. A custom
+<code>ExecutionPlan</code> is linked against specific DataFusion, Arrow,
+and (for Python plugins) PyO3 versions, and Rust has no stable ABI for
+arbitrary trait objects:</p>
+<pre class="text"><code>Sail extension API version
+DataFusion version
+Arrow version
+PyO3 version, for Python-native plugins
+declared codec type names</code></pre>
+<p>The <code>ExtensionManifest</code> introduced earlier in “Driver And
+Worker Symmetry” combines both. Its <code>execution_surface</code> field
+carries the native-ABI version data:</p>
+<div class="sourceCode" id="cb48"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> ExecutionSurface <span class="op">{</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> sail_api_version<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> datafusion_version<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> arrow_version<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> pyo3_version<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> capabilities<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>ExtensionCapability<span class="op">&gt;,</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>When <code>execution_surface</code> is <code>None</code>, the
+extension is plan-time only. The strict native ABI checks do not apply,
+the extension can be installed against any compatible Sail server, and
+it cannot contribute custom physical operators. When
+<code>execution_surface</code> is set, the loader performs exact-version
+or narrow-range checks before registering anything.</p>
+<p>The loader should fail fast on incompatible versions and report which
+surface failed. A friendly error here is worth more than a mysterious
+decode failure later:</p>
+<pre class="text"><code>Cannot load extension &#39;sedona&#39; 1.2.0.
+Plan-time Spark Connect type_urls: OK.
+Execution-time DataFusion version mismatch: extension built against
+44.0.0, this Sail server uses 45.1.0. Install a sedona build matching
+the server, or use sail-sedona&#39;s federated mode.</code></pre>
+<p>For pure Python data sources, the compatibility story can be looser
+because Sail stores pickled Python classes and calls a defined data
+source interface. For native Rust DataFusion integrations, strict
+coupling is the honest answer. The two-boundary design makes that
+honesty selective rather than universal.</p>
+<h2 data-number="14.22" id="security-and-trust"><span
+class="header-section-number">14.22</span> Security And Trust</h2>
+<p>Extensions are code. They can:</p>
+<ul>
+<li>execute Rust native code,</li>
+<li>execute Python code,</li>
+<li>access object stores through the runtime,</li>
+<li>inspect query plans,</li>
+<li>influence optimizer choices,</li>
+<li>run on distributed workers.</li>
+</ul>
+<p>So extension loading should be treated like loading a database plugin
+or Spark jar, not like reading a harmless config file.</p>
+<p>Practical policies:</p>
+<ul>
+<li>load extensions only from configured sources,</li>
+<li>log every loaded extension and version,</li>
+<li>expose loaded extensions through a system table,</li>
+<li>support disabling extension discovery in production,</li>
+<li>require explicit enablement for native extensions,</li>
+<li>make worker extension mismatches visible in job errors.</li>
+</ul>
+<h2 data-number="14.23" id="system-tables-for-observability"><span
+class="header-section-number">14.23</span> System Tables For
+Observability</h2>
+<p>Sail already has a system catalog. Extensions should be visible
+there.</p>
+<p>Useful system tables:</p>
+<pre class="text"><code>system.extensions
+system.extension_functions
+system.extension_table_formats
+system.extension_planners
+system.extension_codecs</code></pre>
+<p>Example rows:</p>
+<table>
+<thead>
+<tr>
+<th>extension</th>
+<th>capability</th>
+<th>name</th>
+<th>version</th>
+<th>enabled</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sedona</td>
+<td>scalar_udf</td>
+<td>st_intersects</td>
+<td>1.0.0</td>
+<td>true</td>
+</tr>
+<tr>
+<td>sedona</td>
+<td>planner</td>
+<td>spatial_join</td>
+<td>1.0.0</td>
+<td>true</td>
+</tr>
+<tr>
+<td>my-lake</td>
+<td>table_format</td>
+<td>mylake</td>
+<td>0.3.0</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+<p>This makes extension behavior inspectable from Spark SQL.</p>
+<h2 data-number="14.24" id="implementation-roadmap"><span
+class="header-section-number">14.24</span> Implementation Roadmap</h2>
+<p>A safe implementation can land in stages.</p>
+<h3 data-number="14.24.1" id="stage-1-planner-composition-fix"><span
+class="header-section-number">14.24.1</span> Stage 1: Planner
+Composition Fix</h3>
+<p>Change the fallback extension planner so unknown nodes return
+<code>Ok(None)</code> instead of an internal error. Recognized but
+invalid Sail nodes should still error.</p>
+<p>This is small, low-risk, and unblocks third-party planners in the
+chain.</p>
+<h3 data-number="14.24.2"
+id="stage-2-native-sailextension-registry"><span
+class="header-section-number">14.24.2</span> Stage 2: Native
+<code>SailExtension</code> Registry</h3>
+<p>Introduce:</p>
+<ul>
+<li><code>SailExtension</code>,</li>
+<li><code>SailExtensionRegistry</code>,</li>
+<li><code>ServerSessionFactory::with_extension(...)</code>,</li>
+<li>session extension storage for the registry.</li>
+</ul>
+<p>Wire extension contributions into:</p>
+<ul>
+<li>session config,</li>
+<li>analyzer rules,</li>
+<li>logical optimizer rules,</li>
+<li>physical optimizer rules,</li>
+<li>extension physical planner chain,</li>
+<li>table format registry.</li>
+</ul>
+<h3 data-number="14.24.3"
+id="stage-3-spark-connect-extension-dispatch"><span
+class="header-section-number">14.24.3</span> Stage 3: Spark Connect
+Extension Dispatch</h3>
+<p>Introduce the plan-time half of the boundary:</p>
+<ul>
+<li><code>SparkConnectRelationExtension</code>,</li>
+<li><code>SparkConnectCommandExtension</code>,</li>
+<li><code>SparkConnectExpressionExtension</code>,</li>
+<li><code>SparkConnectExtensionDispatcher</code> indexed by
+<code>type_url</code>,</li>
+<li>resolver routing for <code>Relation.extension</code>,
+<code>Command.extension</code>, and <code>Expression.extension</code>
+payloads,</li>
+<li>collision policy for <code>type_url</code> claims,</li>
+<li>diagnostic errors that name missing extensions, not missing message
+types.</li>
+</ul>
+<p>This stage unblocks pattern-A extensions (plan-time decomposition)
+without requiring any of the execution-time work that follows. A toy
+“JsonScan” extension is enough to prove the dispatch path.</p>
+<h3 data-number="14.24.4" id="stage-4-function-extension-registry"><span
+class="header-section-number">14.24.4</span> Stage 4: Function Extension
+Registry</h3>
+<p>Replace static-only function lookup with layered lookup:</p>
+<pre class="text"><code>catalog/session functions
+  -&gt; extension functions
+  -&gt; built-in functions</code></pre>
+<p>Add collision policy and tests for scalar, aggregate, window,
+generator, and table function registration.</p>
+<h3 data-number="14.24.5" id="stage-5-distributed-codec-registry"><span
+class="header-section-number">14.24.5</span> Stage 5: Distributed Codec
+Registry</h3>
+<p>Add codec hooks for:</p>
+<ul>
+<li>extension physical plans,</li>
+<li>extension UDF and UDAF re-resolution,</li>
+<li>required extension manifest data in encoded plans.</li>
+</ul>
+<p>Test with local-cluster execution, not only local execution. This is
+the execution-time half of the boundary; Stage 3 is the plan-time
+half.</p>
+<h3 data-number="14.24.6"
+id="stage-6-python-entry-point-discovery"><span
+class="header-section-number">14.24.6</span> Stage 6: Python Entry-Point
+Discovery</h3>
+<p>Add <code>pysail.extensions</code> discovery:</p>
+<pre class="text"><code>discover entry point
+  -&gt; load module
+  -&gt; call register()
+  -&gt; validate manifest
+  -&gt; add SailExtension</code></pre>
+<p>Prototype the risky part early: passing a native
+<code>Arc&lt;dyn SailExtension&gt;</code> across independently built
+PyO3 modules. Plan-time-only extensions can skip this risk because they
+cross the boundary as protobuf, not as Rust trait objects.</p>
+<h3 data-number="14.24.7"
+id="stage-7-observability-and-operations"><span
+class="header-section-number">14.24.7</span> Stage 7: Observability And
+Operations</h3>
+<p>Add:</p>
+<ul>
+<li>system tables,</li>
+<li>startup logs,</li>
+<li>worker compatibility checks,</li>
+<li>per-session enable/disable,</li>
+<li>config controls for discovery.</li>
+</ul>
+<h2 data-number="14.25" id="tests-an-extension-api-needs"><span
+class="header-section-number">14.25</span> Tests An Extension API
+Needs</h2>
+<p>The test suite should include an intentionally tiny extension crate.
+It does not need to be useful. It needs to exercise every hook.</p>
+<p>Minimum test extension:</p>
+<ul>
+<li>Spark Connect <code>Relation.extension</code> handler that resolves
+to an existing DataFusion <code>MemoryExec</code> (pattern A),</li>
+<li>Spark Connect <code>Expression.extension</code> handler that
+rewrites to an existing scalar expression,</li>
+<li>Spark Connect <code>Relation.extension</code> handler that produces
+a logical extension node (pattern B),</li>
+<li>scalar UDF: <code>ext_add_one(x)</code>,</li>
+<li>aggregate UDAF: <code>ext_count_non_null(x)</code>,</li>
+<li>optimizer rule: rewrite a marker expression,</li>
+<li>logical extension node,</li>
+<li>physical planner producing a custom exec,</li>
+<li>codec for that custom exec,</li>
+<li>table format that reads a tiny in-memory or local file source,</li>
+<li>Python entry-point wrapper, if possible.</li>
+</ul>
+<p>Test matrix:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Mode</th>
+<th>What to verify</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>local, pattern A</td>
+<td>Spark Connect dispatch resolves to existing DataFusion operators, no
+execution-side extension involved</td>
+</tr>
+<tr>
+<td>local, pattern B</td>
+<td>Spark Connect dispatch produces a logical extension node, physical
+planner and codec take over</td>
+</tr>
+<tr>
+<td>local</td>
+<td>function resolution, optimizer rewrite, physical planning</td>
+</tr>
+<tr>
+<td>local cluster</td>
+<td>codec encode/decode, worker function re-resolution</td>
+</tr>
+<tr>
+<td>disabled extension</td>
+<td>functions, planners, and Spark Connect handlers unavailable</td>
+</tr>
+<tr>
+<td>collision</td>
+<td>configured collision policy is enforced for both function names and
+<code>type_url</code> claims</td>
+</tr>
+<tr>
+<td>missing worker extension</td>
+<td>clear distributed error naming the extension</td>
+</tr>
+<tr>
+<td>missing dispatcher</td>
+<td>clear plan-time error naming the missing <code>type_url</code></td>
+</tr>
+<tr>
+<td>Python discovery</td>
+<td>installed package registers extension on both boundaries</td>
+</tr>
+</tbody>
+</table>
+<p>An extension API without distributed tests will look done before it
+is done.</p>
+<h2 data-number="14.26"
+id="a-mental-model-for-future-contributors"><span
+class="header-section-number">14.26</span> A Mental Model For Future
+Contributors</h2>
+<p>When adding a new extension dimension, ask six questions:</p>
+<ol type="1">
+<li>Which boundary does it cross - plan-time, execution-time, or
+both?</li>
+<li>Where is the capability registered?</li>
+<li>Where is it used during planning?</li>
+<li>Does it affect optimizer ordering?</li>
+<li>Does it create physical objects that must cross the network?</li>
+<li>How will a worker rebuild or execute it?</li>
+</ol>
+<p>If the answer to question 1 is “plan-time only,” the extension can
+ride on Spark Connect dispatch and inherits protobuf compatibility. If
+the answer to question 5 is yes, the extension is part of the
+distributed execution contract. It needs codec support, version-matched
+workers, or a deliberate reason it can only run in local mode.</p>
+<h2 data-number="14.27"
+id="how-the-previous-chapters-fit-together"><span
+class="header-section-number">14.27</span> How The Previous Chapters Fit
+Together</h2>
+<p>Here is the whole book reduced to one extension-oriented map:</p>
+<figure>
+<img src="diagrams/13-diagram-03.svg" alt="Flowchart 13.3" />
+<figcaption aria-hidden="true">Flowchart 13.3</figcaption>
+</figure>
+<p>An extension architecture succeeds when both extension surfaces -
+plan-time through Spark Connect dispatch and execution-time through
+<code>SailExtension</code> contributions - are explicit, typed, ordered,
+versioned, and available consistently across driver and workers. The two
+surfaces share one <code>SailExtension</code> registration object, one
+manifest, and one observability story, but they cross the wire by
+different mechanisms because their stability requirements are
+different.</p>
+<h2 data-number="14.28" id="final-takeaways"><span
+class="header-section-number">14.28</span> Final Takeaways</h2>
+<p>Rust gives Sail the tools for the execution-time half of this design:
+traits, <code>Arc</code>, typed session extensions, and explicit error
+handling. Arrow gives extensions a shared memory and schema model.
+DataFusion gives them logical plans, optimizer rules, physical planners,
+execution plans, and UDF traits. Spark Connect gives them something the
+other layers cannot give: a wire-format ABI that is forward and backward
+compatible by construction, language-neutral, and already crossing every
+query.</p>
+<p>The architecture of Sail is already close to an extension-friendly
+shape. The table format registry, Python data source discovery, session
+extensions, lakehouse planner chain, and physical codec all show pieces
+of the execution-time answer. <code>Relation.extension</code>,
+<code>Command.extension</code>, and <code>Expression.extension</code>
+provide the plan-time answer once Sail adds a dispatcher. Discussion
+#2001 asks Sail to make those pieces first-class and composable.</p>
+<p>The final design principle is simple:</p>
+<blockquote>
+<p>A Sail extension should be loaded once, registered clearly through
+one object, expressed at the plan-time boundary as a stable protobuf,
+executed at the execution-time boundary as native code, serialized
+explicitly between them, available on driver and workers, and observable
+from the session.</p>
+</blockquote>
+<p>That is the difference between a convenient local hook and a real
+distributed query engine extension API.</p>
+<p>Navigation: <a href="chapter-013.html#chapter-12">Previous: Chapter
+12, Catalogs, Lakehouse Tables, And File Formats</a> | <a
+href="chapter-015.html#chapter-14">Next: Chapter 14, Arrow Flight
+SQL</a> | <a href="chapter-001.html#chapter-00">Reader Guide</a></p>
+</body>
+</html>

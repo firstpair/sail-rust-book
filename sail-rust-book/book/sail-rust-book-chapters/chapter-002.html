@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 1: Architecture Overview</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-003.html" accesskey="n" rel="next">Chapter 2: Rust Foundations in Sail</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-001.html" accesskey="p" rel="previous">Reader Guide: How This Book Builds</a>
+</span>
+</div>
+</nav>
+<h1 data-number="2" id="chapter-01"><span
+class="header-section-number">2</span> Chapter 1: Architecture
+Overview</h1>
+<p>Sail is easiest to understand as two promises held together by one
+architecture.</p>
+<p>The first promise is compatibility: existing PySpark code should be
+able to connect to Sail through Spark Connect and keep speaking the
+language of Spark SQL, DataFrames, functions, UDFs, and sessions. The
+second promise is performance and portability: the actual engine is
+Rust, Apache Arrow, and Apache DataFusion, with Sail adding Spark
+semantics, distributed planning, catalogs, Python interoperability, and
+cluster execution.</p>
+<p>That means Sail is not “Spark implemented in Rust” in the narrow
+sense. It is a Spark-compatible front door over a DataFusion-centered
+query engine.</p>
+<figure>
+<img src="diagrams/01-diagram-01.svg" alt="Flowchart 01.1" />
+<figcaption aria-hidden="true">Flowchart 01.1</figcaption>
+</figure>
+<p>The rest of this book walks that diagram from left to right, then
+returns to the extension proposal in discussion #2001 and asks: where
+should a third-party DataFusion integration plug in so it works in both
+local and distributed execution?</p>
+<h2 data-number="2.1" id="the-big-pieces"><span
+class="header-section-number">2.1</span> The Big Pieces</h2>
+<p>Sail has a few major subsystems. Each one has a clean teaching
+role.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Subsystem</th>
+<th>Main crates</th>
+<th>What to learn there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spark Connect front door</td>
+<td><code>sail-spark-connect</code>, <code>sail-python</code>,
+<code>python/pysail</code></td>
+<td>gRPC services, PySpark compatibility, Python-to-Rust server
+startup</td>
+</tr>
+<tr>
+<td>Plan resolution</td>
+<td><code>sail-plan</code>, <code>sail-sql-parser</code>,
+<code>sail-sql-analyzer</code></td>
+<td>converting SQL and Spark relations into DataFusion logical
+plans</td>
+</tr>
+<tr>
+<td>Session construction</td>
+<td><code>sail-session</code></td>
+<td>DataFusion <code>SessionConfig</code>, <code>SessionState</code>,
+custom planners, optimizer rules, and job runners</td>
+</tr>
+<tr>
+<td>Query execution</td>
+<td><code>sail-execution</code></td>
+<td>local execution, cluster execution, job graphs, stages, tasks,
+drivers, workers, shuffles</td>
+</tr>
+<tr>
+<td>Spark semantics</td>
+<td><code>sail-function</code>, <code>sail-logical-plan</code>,
+<code>sail-physical-plan</code>, <code>sail-logical-optimizer</code>,
+<code>sail-physical-optimizer</code></td>
+<td>custom functions, logical nodes, physical nodes, optimizer
+behavior</td>
+</tr>
+<tr>
+<td>Data transport</td>
+<td>Arrow, Arrow IPC, Arrow Flight</td>
+<td>columnar batches across process and network boundaries</td>
+</tr>
+<tr>
+<td>Catalogs and formats</td>
+<td><code>sail-catalog-*</code>, <code>sail-data-source</code>,
+<code>sail-plan-lakehouse</code></td>
+<td>table discovery, scans, writes, system tables, lakehouse
+integration</td>
+</tr>
+</tbody>
+</table>
+<p>The most important mental model is this:</p>
+<pre class="text"><code>PySpark API call
+  -&gt; Spark Connect protobuf relation or command
+  -&gt; Sail spec
+  -&gt; DataFusion logical plan
+  -&gt; optimized DataFusion logical plan
+  -&gt; DataFusion physical execution plan, with Sail extension nodes
+  -&gt; local stream or distributed job graph
+  -&gt; Arrow record batches
+  -&gt; Spark Connect response stream</code></pre>
+<p>This is also the extension story. If an integration only hooks one of
+these layers, it will work only until a query crosses into another
+layer. A scalar function registered at planning time still has to be
+recognized when a physical plan is decoded on a remote worker. A logical
+optimizer rule that creates a custom extension node still needs a
+physical extension planner. A session option used by that rule has to be
+present in the <code>SessionConfig</code> that the planner reads.</p>
+<p>That is exactly the problem described in discussion #2001.</p>
+<h2 data-number="2.2" id="spark-connect-is-the-front-door"><span
+class="header-section-number">2.2</span> Spark Connect Is the Front
+Door</h2>
+<p>The Spark Connect server is implemented by
+<code>SparkConnectServer</code> in
+<code>crates/sail-spark-connect/src/server.rs</code>. Its
+<code>execute_plan</code> method receives an
+<code>ExecutePlanRequest</code>, extracts the session ID and user ID,
+asks the Sail <code>SessionManager</code> for a
+<code>SessionContext</code>, and dispatches either a relation or a
+command.</p>
+<p>The distinction matters:</p>
+<ul>
+<li>A relation is a query-producing tree: select, project, filter, join,
+aggregate, read, SQL relation, and so on.</li>
+<li>A command is an action or side effect: register a function, write
+data, create a view, start a stream, run a SQL command, merge into a
+table, and so on.</li>
+</ul>
+<p>The central handoff is in
+<code>crates/sail-spark-connect/src/service/plan_executor.rs</code>.
+<code>handle_execute_relation</code> converts the Spark Connect relation
+into Sail’s internal <code>spec::Plan</code>, then calls
+<code>handle_execute_plan</code>. That function asks
+<code>sail-plan</code> to resolve and plan the work, then asks the
+session’s <code>JobService</code> to execute the resulting physical
+plan.</p>
+<p>The output is a Spark Connect response stream. Sail reads
+<code>RecordBatch</code> values from DataFusion and serializes them into
+Spark Connect <code>ArrowBatch</code> messages using Arrow IPC in
+<code>crates/sail-spark-connect/src/executor.rs</code>.</p>
+<figure>
+<img src="diagrams/01-diagram-02.svg" alt="Sequence diagram 01.2" />
+<figcaption aria-hidden="true">Sequence diagram 01.2</figcaption>
+</figure>
+<p>This is why Spark Connect deserves its own chapter. It is not just an
+API shim; it controls the session lifecycle, the response stream shape,
+the data type boundary, and the compatibility surface seen by
+PySpark.</p>
+<h2 data-number="2.3" id="pysail-starts-the-rust-server"><span
+class="header-section-number">2.3</span> pysail Starts the Rust
+Server</h2>
+<p>The Python package <code>pysail</code> is thin by design. The public
+Python class
+<code>python/pysail/spark/__init__.py::SparkConnectServer</code>
+delegates to a native PyO3 object.</p>
+<p>The Rust side lives in
+<code>crates/sail-python/src/spark/server.rs</code>. It loads
+<code>AppConfig</code>, grabs the global Tokio runtime, binds a TCP
+listener, and starts the Spark Connect server in a background thread.
+The implementation explicitly releases the Python GIL while waiting for
+the server so Python UDFs are not blocked by the server thread.</p>
+<p>This shape is important for the extension proposal. If third-party
+extensions are discovered from Python wheels, <code>pysail</code>
+startup is the natural discovery point. But the extension object has to
+cross from Python packaging into Rust planning and execution. Discussion
+#2001 proposes Python entry points such as:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[project.entry-points.&quot;</span><span class="dt">pysail.extensions&quot;</span><span class="kw">]</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">sedona</span> <span class="op">=</span> <span class="st">&quot;pysail_sedona:register&quot;</span></span></code></pre></div>
+<p>That works as user experience only if the registered extension can
+contribute to the same Rust-side machinery used by the CLI and by custom
+embedders.</p>
+<h2 data-number="2.4"
+id="sail-uses-datafusion-as-the-query-kernel"><span
+class="header-section-number">2.4</span> Sail Uses DataFusion as the
+Query Kernel</h2>
+<p>Sail’s query planning entry point is
+<code>resolve_and_execute_plan</code> in
+<code>crates/sail-plan/src/lib.rs</code>.</p>
+<p>It performs the key transitions:</p>
+<ol type="1">
+<li>Build a <code>PlanResolver</code>.</li>
+<li>Resolve a Sail spec into a named DataFusion
+<code>LogicalPlan</code>.</li>
+<li>Ask DataFusion’s <code>SessionState</code> to optimize the logical
+plan.</li>
+<li>Rewrite streaming plans when needed.</li>
+<li>Ask the session query planner to create a physical
+<code>ExecutionPlan</code>.</li>
+<li>Record initial logical, final logical, and final physical plans for
+explain output.</li>
+</ol>
+<p>The important architectural choice is that Sail does not use
+DataFusion as a black box. It uses DataFusion’s abstractions as the
+spine, then installs its own semantics around them.</p>
+<p>In <code>crates/sail-session/src/session_factory/server.rs</code>,
+Sail creates a <code>SessionConfig</code> with custom extensions:</p>
+<ul>
+<li>Table format registry.</li>
+<li>Catalog manager.</li>
+<li>Activity tracker.</li>
+<li>Job service.</li>
+<li>Repartition buffer configuration.</li>
+<li>System table service.</li>
+<li>Delta table cache.</li>
+</ul>
+<p>Then it creates a <code>SessionStateBuilder</code> with Sail’s
+analyzer rules, optimizer rules, physical optimizer rules, and custom
+query planner.</p>
+<p>That custom query planner is in
+<code>crates/sail-session/src/planner.rs</code>.
+<code>ExtensionQueryPlanner</code> builds a DataFusion
+<code>DefaultPhysicalPlanner</code> with Sail’s extension planners:</p>
+<pre class="text"><code>lakehouse extension planners
+  -&gt; system table physical planner
+  -&gt; Sail ExtensionPhysicalPlanner</code></pre>
+<p><code>ExtensionPhysicalPlanner</code> recognizes Sail logical
+extension nodes such as range, show string, map partitions, monotonic
+IDs, Spark partition IDs, file writes, file deletes, streaming nodes,
+catalog commands, explicit repartition, and barriers. It turns them into
+physical <code>ExecutionPlan</code> implementations from
+<code>sail-physical-plan</code> and related crates.</p>
+<p>This is where discussion #2001 finds one of its sharp edges. Today,
+if <code>ExtensionPhysicalPlanner</code> does not recognize a logical
+extension node, it returns an internal error. DataFusion’s extension
+planner convention is to return <code>Ok(None)</code> when a planner
+does not own a node, allowing later planners in the chain to try. For
+third-party planners, that difference controls whether composition
+works.</p>
+<h2 data-number="2.5"
+id="local-execution-is-direct-datafusion-execution"><span
+class="header-section-number">2.5</span> Local Execution Is Direct
+DataFusion Execution</h2>
+<p>When Sail is running locally, the <code>ServerSessionFactory</code>
+installs a <code>LocalJobRunner</code>. Its <code>execute</code>
+implementation in <code>crates/sail-execution/src/job_runner.rs</code>
+wraps the plan in tracing and then calls DataFusion’s
+<code>execute_stream</code>.</p>
+<p>That is the simplest possible execution path:</p>
+<pre class="text"><code>Arc&lt;dyn ExecutionPlan&gt;
+  -&gt; execute_stream(plan, task_ctx)
+  -&gt; SendableRecordBatchStream
+  -&gt; Spark Connect response stream</code></pre>
+<p>Local mode is ideal for learning DataFusion because all of
+DataFusion’s partitioned execution model is still present, but no
+distributed staging is needed. The physical plan executes in one
+process, and DataFusion’s operators recursively call their children
+through the <code>ExecutionPlan</code> trait.</p>
+<h2 data-number="2.6"
+id="cluster-execution-adds-a-driver-workers-stages-and-shuffles"><span
+class="header-section-number">2.6</span> Cluster Execution Adds a
+Driver, Workers, Stages, and Shuffles</h2>
+<p>Cluster mode swaps in <code>ClusterJobRunner</code>. Instead of
+executing the physical plan directly, it sends a
+<code>DriverEvent::ExecuteJob</code> to a driver actor. The driver
+builds a distributed job graph and schedules tasks on workers.</p>
+<p>The core data structure is <code>JobGraph</code> in
+<code>crates/sail-execution/src/job_graph/mod.rs</code>. The code
+comments are wonderfully plain: a job has stages, each stage has
+partitions, and tasks execute individual stage partitions. Each task can
+produce output split into channels.</p>
+<p>The graph is built in
+<code>crates/sail-execution/src/job_graph/planner.rs</code>.
+<code>JobGraph::try_new</code> starts from a DataFusion physical plan
+and recursively splits it at distributed boundaries:</p>
+<ul>
+<li><code>RepartitionExec</code> becomes a shuffle boundary.</li>
+<li><code>ExplicitRepartitionExec</code> becomes a shuffle
+boundary.</li>
+<li><code>CoalescePartitionsExec</code> becomes a shuffle boundary.</li>
+<li><code>SortPreservingMergeExec</code> creates a merge input.</li>
+<li>Sail’s <code>CoalesceExec</code> creates a rescale input.</li>
+<li>System tables and catalog commands become driver stages.</li>
+</ul>
+<p>The planner also contains two distributed-correctness rewrites:</p>
+<ul>
+<li>Global limits are forced to have a single input partition when a
+limit or offset is present.</li>
+<li>Certain collected hash joins are rewritten into partitioned hash
+joins when unmatched build-side rows would otherwise require shared
+row-match state across distributed partitions.</li>
+</ul>
+<p>This is one of Sail’s best teaching examples. DataFusion physical
+plans already know about partitioning, but a distributed engine must
+interpret that partitioning as data movement, task placement,
+materialization, and reuse.</p>
+<figure>
+<img src="diagrams/01-diagram-03.svg" alt="Flowchart 01.3" />
+<figcaption aria-hidden="true">Flowchart 01.3</figcaption>
+</figure>
+<h2 data-number="2.7" id="shuffle-is-arrow-data-movement"><span
+class="header-section-number">2.7</span> Shuffle Is Arrow Data
+Movement</h2>
+<p>Sail represents shuffle write and shuffle read as physical execution
+plan nodes.</p>
+<p><code>ShuffleWriteExec</code> in
+<code>crates/sail-execution/src/plan/shuffle_write.rs</code> executes
+its child for one input partition, partitions each
+<code>RecordBatch</code> into output channels using hash or round-robin
+partitioning, and writes those partitioned batches to task stream
+locations.</p>
+<p><code>ShuffleReadExec</code> in
+<code>crates/sail-execution/src/plan/shuffle_read.rs</code> has no
+children. For a given output partition, it opens the task stream
+locations it needs and merges the resulting record batch streams.</p>
+<p>That design keeps the distributed runtime columnar all the way
+through:</p>
+<pre class="text"><code>RecordBatch stream
+  -&gt; partition RecordBatch into channel batches
+  -&gt; write channel batches
+  -&gt; read channel batches from remote/local stream locations
+  -&gt; merge streams
+  -&gt; continue as RecordBatch stream</code></pre>
+<p>The public architecture docs describe Arrow Flight as Sail’s data
+plane for shuffle exchange and result return. The code-level point is
+that the logical idea of “shuffle” becomes ordinary DataFusion
+<code>ExecutionPlan</code> nodes that read and write Arrow batch
+streams.</p>
+<h2 data-number="2.8"
+id="functions-are-both-planning-time-and-execution-time-concerns"><span
+class="header-section-number">2.8</span> Functions Are Both
+Planning-Time and Execution-Time Concerns</h2>
+<p>Sail has a Spark-compatible function layer in
+<code>crates/sail-plan/src/function</code>. Built-in scalar, generator,
+table, aggregate, and window functions are stored in static registries.
+The resolver uses those registries to turn unresolved Spark functions
+into DataFusion expressions and UDF objects.</p>
+<p>But distributed execution adds another requirement: workers must be
+able to decode the physical plan they receive. That is why
+<code>crates/sail-execution/src/codec.rs</code> has explicit UDF and
+UDAF encode/decode logic. It can rebuild PySpark UDFs from serialized
+payloads, and it can re-resolve many built-in UDF names when decoding
+standard functions.</p>
+<p>This is the most important extension lesson in the chapter:</p>
+<pre class="text"><code>Planning-time registry is necessary.
+Distributed execution-time registry is also necessary.</code></pre>
+<p>If an extension contributes <code>ST_Intersects</code>, it is not
+enough for the planner to know the function. A remote worker decoding a
+physical plan also has to know how to reconstruct the same
+<code>ScalarUDF</code> or <code>AggregateUDF</code>. Discussion #2001
+calls this out directly for Sedona-style extensions.</p>
+<h2 data-number="2.9" id="where-extensions-want-to-plug-in"><span
+class="header-section-number">2.9</span> Where Extensions Want to Plug
+In</h2>
+<p>Discussion #2001 proposes a unified <code>SailExtension</code> trait.
+Its motivation is that real DataFusion integrations usually need several
+hooks at once:</p>
+<ul>
+<li>Scalar UDFs.</li>
+<li>Aggregate UDAFs.</li>
+<li>Window UDFs.</li>
+<li>Generator and table functions.</li>
+<li>Session config extensions.</li>
+<li>Logical optimizer rules.</li>
+<li>Physical optimizer rules.</li>
+<li>Physical extension planners.</li>
+<li>UDF/UDAF re-resolution during distributed physical-plan
+decoding.</li>
+</ul>
+<p>The proposal’s motivating example is Apache SedonaDB. A spatial query
+might need <code>ST_*</code> scalar UDFs during plan resolution, session
+options during optimization, a logical optimizer rule to replace a cross
+join plus spatial predicate with a spatial join logical extension node,
+a physical planner to create <code>SpatialJoinExec</code>, and
+worker-side UDF re-resolution in a cluster.</p>
+<p>This means the final chapter of the book should not treat extensions
+as a plugin convenience feature. Extensions are a stress test of the
+architecture. They ask whether Sail’s layers are composable in the same
+direction data actually flows.</p>
+<p>Chapter 13 develops the proposal in two parts. Extensions cross
+<strong>two boundaries</strong> with different stability
+requirements:</p>
+<ul>
+<li>A <strong>plan-time boundary</strong> where a client expresses
+intent. It runs once per query and wants forward and backward wire
+compatibility, language neutrality, and a format that survives
+DataFusion and Arrow upgrades. Spark Connect’s
+<code>Relation.extension</code>, <code>Command.extension</code>, and
+<code>Expression.extension</code> messages are the natural channel.</li>
+<li>An <strong>execution-time boundary</strong> where workers run
+operators on Arrow batches. It runs once per batch, wants native
+dispatch and zero-copy access, and accepts version coupling in return.
+DataFusion FFI is the natural channel.</li>
+</ul>
+<p>The same <code>SailExtension</code> object registers contributions to
+both. Some extensions only need one.</p>
+<figure>
+<img src="diagrams/01-diagram-04.svg" alt="Flowchart 01.4" />
+<figcaption aria-hidden="true">Flowchart 01.4</figcaption>
+</figure>
+<h2 data-number="2.10" id="a-first-reading-path-through-the-code"><span
+class="header-section-number">2.10</span> A First Reading Path Through
+the Code</h2>
+<p>For this chapter, read these files in order:</p>
+<ol type="1">
+<li><code>docs/concepts/architecture/index.md</code></li>
+<li><code>docs/concepts/query-planning/index.md</code></li>
+<li><code>crates/sail-spark-connect/src/server.rs</code></li>
+<li><code>crates/sail-spark-connect/src/service/plan_executor.rs</code></li>
+<li><code>crates/sail-plan/src/lib.rs</code></li>
+<li><code>crates/sail-session/src/session_factory/server.rs</code></li>
+<li><code>crates/sail-session/src/planner.rs</code></li>
+<li><code>crates/sail-execution/src/job_runner.rs</code></li>
+<li><code>crates/sail-execution/src/job_graph/mod.rs</code></li>
+<li><code>crates/sail-execution/src/job_graph/planner.rs</code></li>
+<li><code>crates/sail-execution/src/plan/shuffle_write.rs</code></li>
+<li><code>crates/sail-execution/src/plan/shuffle_read.rs</code></li>
+<li><code>crates/sail-execution/src/codec.rs</code></li>
+</ol>
+<p>Do not try to understand every operator yet. Follow the type
+transitions:</p>
+<pre class="text"><code>ExecutePlanRequest
+  -&gt; SessionContext
+  -&gt; spec::Plan
+  -&gt; LogicalPlan
+  -&gt; ExecutionPlan
+  -&gt; SendableRecordBatchStream</code></pre>
+<p>Then follow the cluster-only transition:</p>
+<pre class="text"><code>ExecutionPlan
+  -&gt; JobGraph
+  -&gt; Stage
+  -&gt; StageInput
+  -&gt; Task
+  -&gt; ShuffleWriteExec / ShuffleReadExec</code></pre>
+<p>Once those two paths feel familiar, the rest of the book can zoom
+into each layer without losing the whole shape.</p>
+<h2 data-number="2.11" id="chapter-takeaways"><span
+class="header-section-number">2.11</span> Chapter Takeaways</h2>
+<p>Sail’s architecture is a layered translation pipeline. PySpark speaks
+Spark Connect. Spark Connect becomes Sail’s internal spec. The spec
+resolves into DataFusion logical plans. DataFusion optimizes and
+physical-plans the query, with Sail adding Spark semantics through
+custom functions, logical nodes, physical nodes, optimizer rules, and
+session extensions. Local mode executes the physical plan directly.
+Cluster mode decomposes it into stages and tasks, moving Arrow record
+batches through shuffle streams.</p>
+<p>The extension proposal in discussion #2001 matters because it turns
+this architecture inside out. A third-party integration must be able to
+contribute to every layer where its semantics appear. If Sail exposes
+only one hook, extensions will work in toy examples and fail when
+optimization, physical planning, or distributed execution enters the
+picture.</p>
+<p>The next chapter should slow down and teach the Rust patterns that
+make this architecture possible: trait objects, <code>Arc</code>, async
+services, actor handles, DataFusion extension traits, and typed session
+extensions.</p>
+</body>
+</html>

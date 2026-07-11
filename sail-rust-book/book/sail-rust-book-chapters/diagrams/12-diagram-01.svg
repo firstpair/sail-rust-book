@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="707" height="1422" viewBox="0 0 707 1422">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="707" height="1422" fill="white"/>
+
+<line x1="197" y1="130" x2="197" y2="207" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="197" y1="269" x2="197" y2="362" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="197" y1="424" x2="197" y2="517" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="197" y1="579" x2="197" y2="672" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="197" y1="579" x2="517" y2="656" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="197" y1="734" x2="197" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="517" y1="750" x2="517" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="197" y1="905" x2="517" y2="811" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="517" y1="905" x2="197" y2="982" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="197" y1="1044" x2="197" y2="1137" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="197" y1="1199" x2="197" y2="1276" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="197" y1="1199" x2="517" y2="1260" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="50" y="36" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="197" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="197" dy="0">Spark SQL / Spark</tspan><tspan x="197" dy="32">Connect</tspan></text>
+<rect x="102" y="207" width="190" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="197" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="197" dy="0">Sail spec</tspan></text>
+<rect x="85" y="362" width="224" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="197" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="197" dy="0">PlanResolver</tspan></text>
+<rect x="71" y="517" width="252" height="62" rx="10" fill="#fff6d9" stroke="#c58c00" stroke-width="1.5"/>
+<text x="197" y="548" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="197" dy="0">read or write?</tspan></text>
+<rect x="71" y="672" width="252" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="197" y="703" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="197" dy="0">CatalogManager</tspan></text>
+<rect x="363" y="656" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="517" y="687" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="517" dy="0">direct data source</tspan><tspan x="517" dy="32">format</tspan></text>
+<rect x="78" y="811" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="197" y="842" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="197" dy="0">TableStatus /</tspan><tspan x="197" dy="32">TableKind</tspan></text>
+<rect x="398" y="811" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="517" y="842" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="517" dy="0">SourceInfo or</tspan><tspan x="517" dy="32">SinkInfo</tspan></text>
+<rect x="36" y="982" width="322" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="197" y="1013" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="197" dy="0">TableFormatRegistry</tspan></text>
+<rect x="92" y="1137" width="210" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="197" y="1168" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="197" dy="0">TableFormat</tspan></text>
+<rect x="92" y="1276" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="197" y="1307" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="197" dy="0">DataFusion</tspan><tspan x="197" dy="32">TableSource</tspan></text>
+<rect x="398" y="1260" width="238" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="517" y="1291" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="517" dy="0">DataFusion</tspan><tspan x="517" dy="32">ExecutionPlan</tspan><tspan x="517" dy="32">writer</tspan></text>
+</svg>

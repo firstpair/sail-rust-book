@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
+  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
+  <meta name="dcterms.date" content="2026-07-11" />
+  <title>Chapter 8: Drivers, Workers, Tasks, And Streams</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="chapter-010.html" accesskey="n" rel="next">Chapter 9: Shuffle And Data Movement</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-008.html" accesskey="p" rel="previous">Chapter 7: From Physical Plan To Job Graph</a>
+</span>
+</div>
+</nav>
+<h1 data-number="9" id="chapter-08"><span
+class="header-section-number">9</span> Chapter 8: Drivers, Workers,
+Tasks, And Streams</h1>
+<p>Chapter 7 explained how Sail turns a DataFusion physical plan into a
+distributed job graph. This chapter follows that graph into motion.</p>
+<p>The job graph says what should run:</p>
+<ul>
+<li>stages,</li>
+<li>partitions,</li>
+<li>input modes,</li>
+<li>output distributions,</li>
+<li>driver or worker placement,</li>
+<li>and task stream dependencies.</li>
+</ul>
+<p>The driver, workers, task assigner, task runner, and stream managers
+decide how that work actually happens.</p>
+<p>If Chapter 7 was the map, Chapter 8 is the traffic system.</p>
+<h2 data-number="9.1" id="the-core-files-1"><span
+class="header-section-number">9.1</span> The Core Files</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Area</th>
+<th>Files</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor runtime</td>
+<td><code>crates/sail-server/src/actor.rs</code></td>
+<td>Small async actor system used by the driver and workers</td>
+</tr>
+<tr>
+<td>Driver actor</td>
+<td><code>crates/sail-execution/src/driver/actor/*.rs</code></td>
+<td>Accepts jobs, workers, task updates, stream requests, and
+shutdown</td>
+</tr>
+<tr>
+<td>Driver events</td>
+<td><code>crates/sail-execution/src/driver/event.rs</code></td>
+<td>Message protocol for the driver actor</td>
+</tr>
+<tr>
+<td>Worker actor</td>
+<td><code>crates/sail-execution/src/worker/actor/*.rs</code></td>
+<td>Registers with driver, receives tasks, reports status,
+serves/fetches streams</td>
+</tr>
+<tr>
+<td>Worker events</td>
+<td><code>crates/sail-execution/src/worker/event.rs</code></td>
+<td>Message protocol for worker actor</td>
+</tr>
+<tr>
+<td>Worker pool</td>
+<td><code>crates/sail-execution/src/driver/worker_pool/*.rs</code></td>
+<td>Launches, registers, monitors, and talks to workers</td>
+</tr>
+<tr>
+<td>Task assigner</td>
+<td><code>crates/sail-execution/src/driver/task_assigner/*.rs</code></td>
+<td>Maps task regions to driver or worker task slots</td>
+</tr>
+<tr>
+<td>Job scheduler</td>
+<td><code>crates/sail-execution/src/driver/job_scheduler/*.rs</code></td>
+<td>Tracks job state, creates attempts, schedules regions, builds task
+definitions</td>
+</tr>
+<tr>
+<td>Task runner</td>
+<td><code>crates/sail-execution/src/task_runner/*.rs</code></td>
+<td>Executes serialized DataFusion physical plans on driver or
+worker</td>
+</tr>
+<tr>
+<td>Stream manager</td>
+<td><code>crates/sail-execution/src/stream_manager/*.rs</code></td>
+<td>Owns local task streams and pending stream fetches</td>
+</tr>
+<tr>
+<td>Stream accessor</td>
+<td><code>crates/sail-execution/src/stream_accessor/core.rs</code></td>
+<td>Implements task stream reader/writer by sending actor messages</td>
+</tr>
+<tr>
+<td>Stream service</td>
+<td><code>crates/sail-execution/src/stream_service/*.rs</code></td>
+<td>Uses Arrow Flight to fetch task streams across processes</td>
+</tr>
+<tr>
+<td>Worker managers</td>
+<td><code>crates/sail-execution/src/worker_manager/*.rs</code></td>
+<td>Launches local or Kubernetes workers</td>
+</tr>
+</tbody>
+</table>
+<p>The chapter will follow a single distributed query from the moment
+the cluster runner sends it to the driver until final Arrow batches are
+returned.</p>
+<h2 data-number="9.2" id="the-actor-runtime"><span
+class="header-section-number">9.2</span> The Actor Runtime</h2>
+<p>Sail’s driver and workers are actors. The actor runtime lives in
+<code>crates/sail-server/src/actor.rs</code>.</p>
+<p>The trait is small:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> Actor<span class="op">:</span> <span class="bu">Sized</span> <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="ot">&#39;static</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> Message: Send + SpanAssociation + &#39;static<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> Options<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name() <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> new(options<span class="op">:</span> <span class="dt">Self</span><span class="pp">::</span>Options) <span class="op">-&gt;</span> <span class="dt">Self</span><span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> start(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ActorContext<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;</span>) <span class="op">{}</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> receive(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ActorContext<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;,</span> message<span class="op">:</span> <span class="dt">Self</span><span class="pp">::</span>Message) <span class="op">-&gt;</span> ActorAction<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> stop(<span class="kw">self</span><span class="op">,</span> ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ActorContext<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;</span>) <span class="op">{}</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Messages are processed sequentially:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="kw">let</span> <span class="cn">Some</span>(MessageEnvelop <span class="op">{</span> message<span class="op">,</span> context <span class="op">}</span>) <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>receiver<span class="op">.</span>recv()<span class="op">.</span><span class="kw">await</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> action <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>actor<span class="op">.</span>receive(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">.</span>ctx<span class="op">,</span> message)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>ctx<span class="op">.</span>reap()<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That gives actor state a simple programming model: the actor mutates
+its own fields without locks because only one message is handled at a
+time.</p>
+<p>But the actor must not block. The trait comment says blocking work
+should be spawned through <code>ActorContext::spawn</code>. That pattern
+appears everywhere in driver and worker code:</p>
+<ul>
+<li>launch a worker asynchronously,</li>
+<li>send an RPC to a worker,</li>
+<li>fetch a remote stream,</li>
+<li>report task status,</li>
+<li>run a task monitor,</li>
+<li>merge job output streams.</li>
+</ul>
+<p>The actor system gives Sail a clean split:</p>
+<ul>
+<li>state transitions happen synchronously in <code>receive</code>,</li>
+<li>slow IO happens in spawned futures,</li>
+<li>spawned futures report back by sending another actor message.</li>
+</ul>
+<figure>
+<img src="diagrams/08-diagram-01.svg" alt="Flowchart 08.1" />
+<figcaption aria-hidden="true">Flowchart 08.1</figcaption>
+</figure>
+<p>This is the control-plane style behind Sail’s distributed
+runtime.</p>
+<h2 data-number="9.3" id="driver-actor-the-coordinator"><span
+class="header-section-number">9.3</span> Driver Actor: The
+Coordinator</h2>
+<p><code>DriverActor</code> is defined across
+<code>crates/sail-execution/src/driver/actor</code>.</p>
+<p>Its <code>new</code> method constructs the major driver
+subsystems:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> worker_pool <span class="op">=</span> <span class="pp">WorkerPool::</span>new(<span class="op">...</span>)<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> job_scheduler <span class="op">=</span> <span class="pp">JobScheduler::</span>new(<span class="op">...</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> task_assigner <span class="op">=</span> <span class="pp">TaskAssigner::</span>new(<span class="op">...</span>)<span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream_manager <span class="op">=</span> <span class="pp">StreamManager::</span>new(<span class="op">...</span>)<span class="op">;</span></span></code></pre></div>
+<p>The driver owns:</p>
+<ul>
+<li><code>WorkerPool</code>: worker lifecycle and worker RPC
+clients,</li>
+<li><code>JobScheduler</code>: jobs, stages, regions, tasks,
+attempts,</li>
+<li><code>TaskAssigner</code>: task slots and stream ownership,</li>
+<li><code>TaskRunner</code>: local driver task execution,</li>
+<li><code>StreamManager</code>: local streams owned by the driver,</li>
+<li><code>task_sequences</code>: latest worker task status sequence
+numbers,</li>
+<li>and the driver server monitor.</li>
+</ul>
+<p>The driver starts a gRPC server in <code>start</code>:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>server <span class="op">=</span> server</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>start(<span class="dt">Self</span><span class="pp">::</span>serve(ctx<span class="op">.</span>handle()<span class="op">.</span>clone()<span class="op">,</span> addr)<span class="op">.</span>in_span(span))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="kw">await</span><span class="op">;</span></span></code></pre></div>
+<p>Once the server is ready, it starts the initial workers:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="dv">0</span><span class="op">..</span><span class="kw">self</span><span class="op">.</span>options<span class="op">.</span>worker_initial_count <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>worker_pool<span class="op">.</span>start_worker(ctx)<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The driver receives events such as:</p>
+<ul>
+<li><code>RegisterWorker</code></li>
+<li><code>WorkerHeartbeat</code></li>
+<li><code>ExecuteJob</code></li>
+<li><code>UpdateTask</code></li>
+<li><code>CreateLocalStream</code></li>
+<li><code>FetchWorkerStream</code></li>
+<li><code>CleanUpJob</code></li>
+<li><code>Shutdown</code></li>
+</ul>
+<p>That event list is effectively the driver’s public control-plane
+API.</p>
+<h2 data-number="9.4" id="worker-actor-the-executor"><span
+class="header-section-number">9.4</span> Worker Actor: The Executor</h2>
+<p><code>WorkerActor</code> has a similar shape in
+<code>crates/sail-execution/src/worker/actor</code>.</p>
+<p>Its <code>new</code> method constructs:</p>
+<ul>
+<li>a driver client set,</li>
+<li>a peer tracker,</li>
+<li>a task runner,</li>
+<li>a stream manager,</li>
+<li>and a sequence counter for status updates.</li>
+</ul>
+<p>When the worker server becomes ready, the worker registers with the
+driver:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>client<span class="op">.</span>register_worker(worker_id<span class="op">,</span> host<span class="op">,</span> port)<span class="op">.</span><span class="kw">await</span></span></code></pre></div>
+<p>Then it starts heartbeats:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">loop</span> <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">tokio::time::</span>sleep(interval)<span class="op">.</span><span class="kw">await</span><span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    client<span class="op">.</span>report_worker_heartbeat(worker_id)<span class="op">.</span><span class="kw">await</span><span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The worker receives events such as:</p>
+<ul>
+<li><code>RunTask</code></li>
+<li><code>StopTask</code></li>
+<li><code>ReportTaskStatus</code></li>
+<li><code>CreateLocalStream</code></li>
+<li><code>FetchWorkerStream</code></li>
+<li><code>CleanUpJob</code></li>
+<li><code>Shutdown</code></li>
+</ul>
+<p>The most important handler is <code>handle_run_task</code>:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>peer_tracker<span class="op">.</span>track(ctx<span class="op">,</span> peers)<span class="op">;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>task_runner</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>run_task(ctx<span class="op">,</span> key<span class="op">,</span> definition<span class="op">,</span> <span class="kw">self</span><span class="op">.</span>options<span class="op">.</span>session<span class="op">.</span>task_ctx())<span class="op">;</span></span></code></pre></div>
+<p>The worker learns about peer workers from the driver, remembers their
+locations, and runs the task with its own <code>TaskContext</code>.</p>
+<h2 data-number="9.5" id="worker-launch-and-registration"><span
+class="header-section-number">9.5</span> Worker Launch And
+Registration</h2>
+<p>The worker lifecycle starts in the driver
+<code>WorkerPool</code>.</p>
+<p><code>start_worker</code>:</p>
+<ol type="1">
+<li>Allocates a new <code>WorkerId</code>.</li>
+<li>Inserts a <code>WorkerDescriptor</code> in <code>Pending</code>
+state.</li>
+<li>Schedules a pending-worker probe for timeout handling.</li>
+<li>Calls the configured <code>WorkerManager</code> to launch the
+worker.</li>
+</ol>
+<p>The launch options include:</p>
+<ul>
+<li>TLS setting,</li>
+<li>driver external host and port,</li>
+<li>heartbeat interval,</li>
+<li>task stream buffer,</li>
+<li>stream creation timeout,</li>
+<li>RPC retry strategy.</li>
+</ul>
+<p>For local cluster mode, <code>LocalWorkerManager</code> spawns a
+<code>WorkerActor</code> in a local actor system:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> options <span class="op">=</span> <span class="pp">WorkerOptions::</span>local(id<span class="op">,</span> options<span class="op">,</span> <span class="kw">self</span><span class="op">.</span>runtime<span class="op">.</span>clone()<span class="op">,</span> <span class="kw">self</span><span class="op">.</span>session<span class="op">.</span>clone())<span class="op">;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> handle <span class="op">=</span> state<span class="op">.</span>system<span class="op">.</span>spawn(options)<span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>state<span class="op">.</span>workers<span class="op">.</span>insert(id<span class="op">,</span> handle)<span class="op">;</span></span></code></pre></div>
+<p>For Kubernetes mode, the worker manager uses the Kubernetes worker
+manager implementation. The driver side does not care which launch
+strategy is used; it just waits for a <code>RegisterWorker</code>
+event.</p>
+<p>When registration arrives:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>worker<span class="op">.</span>state <span class="op">=</span> <span class="pp">WorkerState::</span>Running <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    host<span class="op">,</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    port<span class="op">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    updated_at<span class="op">:</span> <span class="pp">Instant::</span>now()<span class="op">,</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    heartbeat_at<span class="op">:</span> <span class="pp">Instant::</span>now()<span class="op">,</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    client<span class="op">:</span> <span class="cn">None</span><span class="op">,</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p>Then the driver schedules:</p>
+<ul>
+<li>a lost-worker probe,</li>
+<li>an idle-worker probe,</li>
+<li>and activates the worker in the task assigner.</li>
+</ul>
+<figure>
+<img src="diagrams/08-diagram-02.svg" alt="Sequence diagram 08.2" />
+<figcaption aria-hidden="true">Sequence diagram 08.2</figcaption>
+</figure>
+<h2 data-number="9.6" id="worker-health"><span
+class="header-section-number">9.6</span> Worker Health</h2>
+<p>Workers send heartbeats to the driver. The driver records the latest
+heartbeat:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">let</span> <span class="pp">WorkerState::</span>Running <span class="op">{</span> heartbeat_at<span class="op">,</span> <span class="op">..</span> <span class="op">}</span> <span class="op">=</span> <span class="op">&amp;</span><span class="kw">mut</span> worker<span class="op">.</span>state <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>heartbeat_at <span class="op">=</span> <span class="pp">Instant::</span>now()<span class="op">;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Self</span><span class="pp">::</span>schedule_lost_worker_probe(ctx<span class="op">,</span> worker_id<span class="op">,</span> worker<span class="op">,</span> <span class="op">&amp;</span><span class="kw">self</span><span class="op">.</span>options)<span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>If the lost-worker probe fires and the heartbeat is stale, the
+driver:</p>
+<ol type="1">
+<li>Stops the worker.</li>
+<li>Finds tasks assigned to that worker.</li>
+<li>Marks those task attempts failed.</li>
+<li>Refreshes affected jobs.</li>
+<li>Tries to run tasks again.</li>
+<li>Scales up workers if needed.</li>
+</ol>
+<p>The handler in <code>driver/actor/handler.rs</code> makes that
+explicit:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> keys <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>task_assigner<span class="op">.</span>find_worker_tasks(worker_id)<span class="op">;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>task_assigner<span class="op">.</span>deactivate_worker(worker_id)<span class="op">;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> key <span class="kw">in</span> keys<span class="op">.</span>iter() <span class="op">{</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>job_scheduler<span class="op">.</span>update_task(</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        key<span class="op">,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="pp">TaskState::</span>Failed<span class="op">,</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Some</span>(message<span class="op">.</span>clone())<span class="op">,</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Some</span>(<span class="pp">CommonErrorCause::</span>Execution(message<span class="op">.</span>clone()))<span class="op">,</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    )<span class="op">;</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is the retry story at the worker level. Worker loss becomes task
+attempt failure. Task attempt failure becomes region rescheduling unless
+the maximum attempt count is exceeded.</p>
+<h2 data-number="9.7" id="from-job-to-task-regions"><span
+class="header-section-number">9.7</span> From Job To Task Regions</h2>
+<p>The job scheduler accepts a job in
+<code>crates/sail-execution/src/driver/job_scheduler/core.rs</code>:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> graph <span class="op">=</span> <span class="pp">JobGraph::</span>try_new(plan)<span class="op">?;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> (output<span class="op">,</span> stream) <span class="op">=</span> build_job_output(ctx<span class="op">,</span> job_id<span class="op">,</span> graph<span class="op">.</span>schema()<span class="op">.</span>clone())<span class="op">;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> descriptor <span class="op">=</span> <span class="pp">JobDescriptor::</span>try_new(graph<span class="op">,</span> <span class="pp">JobState::</span>Running <span class="op">{</span> output<span class="op">,</span> context <span class="op">}</span>)<span class="op">?;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>jobs<span class="op">.</span>insert(job_id<span class="op">,</span> descriptor)<span class="op">;</span></span></code></pre></div>
+<p>After acceptance, the driver calls <code>refresh_job</code>.</p>
+<p><code>refresh_job</code> is the scheduler’s main decision function.
+Its comment lists the steps:</p>
+<ol type="1">
+<li>Cancel task attempts in a region if any task attempt fails.</li>
+<li>Add final-stage running/succeeded task streams to job output.</li>
+<li>Clean up stage output streams when all consumers have
+succeeded.</li>
+<li>Fail a job if any task exceeds max attempts.</li>
+<li>Mark the job succeeded when final regions succeed.</li>
+<li>Schedule regions whose dependencies have succeeded.</li>
+</ol>
+<p>The important point is that the scheduler does not immediately
+schedule every task. It schedules task regions when dependencies allow
+them.</p>
+<figure>
+<img src="diagrams/08-diagram-03.svg" alt="Flowchart 08.3" />
+<figcaption aria-hidden="true">Flowchart 08.3</figcaption>
+</figure>
+<p>The driver then executes the returned <code>JobAction</code>
+values.</p>
+<h2 data-number="9.8" id="task-attempts"><span
+class="header-section-number">9.8</span> Task Attempts</h2>
+<p>Each stage has tasks. Each task can have multiple attempts:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> TaskDescriptor <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> attempts<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>TaskAttemptDescriptor<span class="op">&gt;,</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>An attempt has:</p>
+<ul>
+<li>state,</li>
+<li>messages,</li>
+<li>error cause,</li>
+<li><code>job_output_fetched</code>,</li>
+<li>creation time,</li>
+<li>stop time.</li>
+</ul>
+<p>When a task region becomes schedulable, the scheduler pushes a new
+attempt for each task:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>attempts<span class="op">.</span>push(TaskAttemptDescriptor <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    state<span class="op">:</span> <span class="pp">TaskState::</span>Created<span class="op">,</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    messages<span class="op">:</span> <span class="pp">vec!</span>[]<span class="op">,</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    cause<span class="op">:</span> <span class="cn">None</span><span class="op">,</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    job_output_fetched<span class="op">:</span> <span class="cn">false</span><span class="op">,</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    created_at<span class="op">:</span> <span class="pp">Utc::</span>now()<span class="op">,</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    stopped_at<span class="op">:</span> <span class="cn">None</span><span class="op">,</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>)<span class="op">;</span></span></code></pre></div>
+<p>Task states are:</p>
+<ul>
+<li><code>Created</code></li>
+<li><code>Scheduled</code></li>
+<li><code>Running</code></li>
+<li><code>Succeeded</code></li>
+<li><code>Failed</code></li>
+<li><code>Canceled</code></li>
+</ul>
+<p>The driver receives status updates from workers as
+<code>DriverEvent::UpdateTask</code>. Those updates include an optional
+sequence number. The driver ignores stale updates:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> sequence <span class="op">&lt;=</span> <span class="op">*</span>s <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">warn!</span>(<span class="st">&quot;{} sequence {sequence} is stale&quot;</span><span class="op">,</span> TaskKeyDisplay(<span class="op">&amp;</span>key))<span class="op">;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="pp">ActorAction::</span>Continue<span class="op">;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This protects the control plane from delayed or duplicate worker
+status messages.</p>
+<h2 data-number="9.9" id="task-regions-and-cascading-cancellation"><span
+class="header-section-number">9.9</span> Task Regions And Cascading
+Cancellation</h2>
+<p>Task regions are important because Sail schedules and retries them as
+units. If any task in a region fails, the scheduler cancels other active
+attempts in that region:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> failed <span class="op">{</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="op">&amp;</span>region<span class="op">.</span>tasks <span class="op">{</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (a<span class="op">,</span> attempt) <span class="kw">in</span> task<span class="op">.</span>attempts<span class="op">.</span>iter_mut()<span class="op">.</span>enumerate() <span class="op">{</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">!</span>attempt<span class="op">.</span>state<span class="op">.</span>is_terminal() <span class="op">{</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                attempt<span class="op">.</span>state <span class="op">=</span> <span class="pp">TaskState::</span>Canceled<span class="op">;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                actions<span class="op">.</span>push(<span class="pp">JobAction::</span>CancelTask <span class="op">{</span> key <span class="op">}</span>)<span class="op">;</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Why cancel the whole region?</p>
+<p>Because a region represents a group of tasks that are pipelined or
+otherwise scheduled together. If one attempt fails, its peers may be
+producing or consuming streams that are no longer valid for that attempt
+set. Canceling the region keeps attempt boundaries consistent.</p>
+<p>This is the distributed version of “do not mix outputs from different
+attempts unless the system has explicitly decided to do so.”</p>
+<h2 data-number="9.10" id="task-assignment"><span
+class="header-section-number">9.10</span> Task Assignment</h2>
+<p>The scheduler emits <code>JobAction::ScheduleTaskRegion</code>. The
+driver gives the region to <code>TaskAssigner</code>:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>task_assigner<span class="op">.</span>enqueue_tasks(region)<span class="op">;</span></span></code></pre></div>
+<p>Then <code>run_tasks</code> asks for assignments:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> assignments <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>task_assigner<span class="op">.</span>assign_tasks()<span class="op">;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>task_assigner<span class="op">.</span>track_streams(<span class="op">&amp;</span>assignments)<span class="op">;</span></span></code></pre></div>
+<p><code>TaskAssigner</code> tracks:</p>
+<ul>
+<li>active workers,</li>
+<li>worker task slots,</li>
+<li>driver task slots,</li>
+<li>queued task regions,</li>
+<li>task assignments,</li>
+<li>local stream ownership,</li>
+<li>remote stream ownership.</li>
+</ul>
+<p>Worker task slots are limited:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>task_slots<span class="op">:</span> <span class="pp">vec!</span>[<span class="pp">TaskSlot::</span><span class="kw">default</span>()<span class="op">;</span> <span class="kw">self</span><span class="op">.</span>options<span class="op">.</span>worker_task_slots]</span></code></pre></div>
+<p>Driver task slots can grow:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// The number of task slot can grow indefinitely.</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>task_slots<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>TaskSlot<span class="op">&gt;</span></span></code></pre></div>
+<p>Assignment is region-aware.
+<code>TaskSlotAssigner::try_assign_task_region</code> only succeeds if
+the entire region can be assigned:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (placement<span class="op">,</span> set) <span class="kw">in</span> <span class="op">&amp;</span>region<span class="op">.</span>tasks <span class="op">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">match</span> placement <span class="op">{</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">TaskPlacement::</span>Driver <span class="op">=&gt;</span> <span class="op">...</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">TaskPlacement::</span>Worker <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>((worker_id<span class="op">,</span> slot)) <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>next() <span class="op">{</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                <span class="op">...</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="cn">Err</span>(region)<span class="op">;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>If a region cannot fit, it goes back to the front of the queue. This
+can cause head-of-line blocking, but it preserves scheduling order.</p>
+<h2 data-number="9.11" id="scaling-workers"><span
+class="header-section-number">9.11</span> Scaling Workers</h2>
+<p>The task assigner also tells the driver how many workers to
+request:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> required_slots <span class="op">=</span> enqueued_slots<span class="op">.</span>saturating_sub(vacant_slots)<span class="op">;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> required_workers <span class="op">=</span> required_slots</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>div_ceil(<span class="kw">self</span><span class="op">.</span>options<span class="op">.</span>worker_task_slots)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>min(allowed_workers)<span class="op">;</span></span></code></pre></div>
+<p>The driver then starts that many workers:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="dv">0</span><span class="op">..</span><span class="kw">self</span><span class="op">.</span>task_assigner<span class="op">.</span>request_workers() <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>worker_pool<span class="op">.</span>start_worker(ctx)<span class="op">;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is simple elastic scheduling:</p>
+<ul>
+<li>pending worker tasks imply required slots,</li>
+<li>active idle worker slots satisfy some of that demand,</li>
+<li>remaining demand becomes new workers,</li>
+<li><code>worker_max_count</code> caps the result if configured.</li>
+</ul>
+<h2 data-number="9.12" id="building-a-task-definition"><span
+class="header-section-number">9.12</span> Building A Task
+Definition</h2>
+<p>After assignment, the driver asks the scheduler for each task
+definition:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> (definition<span class="op">,</span> context) <span class="op">=</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>job_scheduler<span class="op">.</span>get_task_definition(<span class="op">&amp;</span>entry<span class="op">.</span>key<span class="op">,</span> <span class="op">&amp;</span><span class="kw">self</span><span class="op">.</span>task_assigner)<span class="op">?;</span></span></code></pre></div>
+<p>A <code>TaskDefinition</code> contains:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> TaskDefinition <span class="op">{</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> plan<span class="op">:</span> Arc<span class="op">&lt;</span>[<span class="dt">u8</span>]<span class="op">&gt;,</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> inputs<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>TaskInput<span class="op">&gt;,</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> output<span class="op">:</span> TaskOutput<span class="op">,</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The plan is serialized with DataFusion’s physical plan protobuf
+support and Sail’s extension codec:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">PhysicalPlanNode::</span>try_from_physical_plan(stage<span class="op">.</span>plan<span class="op">.</span>clone()<span class="op">,</span> <span class="kw">self</span><span class="op">.</span>codec<span class="op">.</span>as_ref())<span class="op">?</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>encode_to_vec()<span class="op">;</span></span></code></pre></div>
+<p>Inputs come from <code>stage.inputs</code>, using
+<code>InputMode</code> and current task assignments to decide
+locations.</p>
+<p>For pipelined worker outputs, input keys become:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="pp">TaskInputLocator::</span>Worker <span class="op">{</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    stage<span class="op">:</span> input<span class="op">.</span>stage<span class="op">,</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    keys<span class="op">,</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Each key includes:</p>
+<ul>
+<li>upstream partition,</li>
+<li>upstream attempt,</li>
+<li>channel.</li>
+</ul>
+<p>The task output includes:</p>
+<ul>
+<li>distribution,</li>
+<li>local or remote locator,</li>
+<li>replica count for local pipelined output.</li>
+</ul>
+<p>This object is the portable description of one task attempt.</p>
+<h2 data-number="9.13" id="dispatching-tasks"><span
+class="header-section-number">9.13</span> Dispatching Tasks</h2>
+<p>Once the driver has a <code>TaskDefinition</code>, it dispatches by
+placement:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="cf">match</span> assignment<span class="op">.</span>assignment <span class="op">{</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">TaskAssignment::</span>Driver <span class="op">=&gt;</span> <span class="kw">self</span><span class="op">.</span>task_runner<span class="op">.</span>run_task(ctx<span class="op">,</span> entry<span class="op">.</span>key<span class="op">,</span> definition<span class="op">,</span> context)<span class="op">,</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">TaskAssignment::</span>Worker <span class="op">{</span> worker_id<span class="op">,</span> slot<span class="op">:</span> _ <span class="op">}</span> <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">self</span><span class="op">.</span>worker_pool<span class="op">.</span>run_task(ctx<span class="op">,</span> worker_id<span class="op">,</span> entry<span class="op">.</span>key<span class="op">,</span> definition)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>For worker tasks, <code>WorkerPool::run_task</code>:</p>
+<ol type="1">
+<li>Finds or creates a worker client.</li>
+<li>Tracks worker activity.</li>
+<li>Sends the task definition over gRPC.</li>
+<li>Includes peer worker locations the worker may need for stream
+fetches.</li>
+<li>Reports task failure back to the driver if dispatch fails.</li>
+</ol>
+<p>The peer list is optimized by remembering known peers:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> peers <span class="op">=</span> running_workers</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>into_iter()</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>filter(<span class="op">|</span>x<span class="op">|</span> <span class="op">!</span>worker<span class="op">.</span>peers<span class="op">.</span>contains(<span class="op">&amp;</span>x<span class="op">.</span>worker_id))</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>collect()<span class="op">;</span></span></code></pre></div>
+<p>Workers report back which peers they now know, so the driver avoids
+sending the same location information repeatedly.</p>
+<h2 data-number="9.14" id="running-a-task-on-a-worker"><span
+class="header-section-number">9.14</span> Running A Task On A
+Worker</h2>
+<p>The worker receives <code>WorkerEvent::RunTask</code>, tracks peer
+locations, and calls <code>TaskRunner::run_task</code>.</p>
+<p><code>TaskRunner::execute_plan</code> performs the critical
+preparation:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> <span class="pp">PhysicalPlanNode::</span>decode(definition<span class="op">.</span>plan<span class="op">.</span>as_ref())<span class="op">?;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> plan<span class="op">.</span>try_into_physical_plan(<span class="op">&amp;</span>context<span class="op">,</span> <span class="kw">self</span><span class="op">.</span>codec<span class="op">.</span>as_ref())<span class="op">?;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>rewrite_parquet_adapters(plan)<span class="op">?;</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>rewrite_shuffle(ctx<span class="op">,</span> key<span class="op">,</span> <span class="op">&amp;</span>definition<span class="op">.</span>inputs<span class="op">,</span> <span class="op">&amp;</span>definition<span class="op">.</span>output<span class="op">,</span> plan<span class="op">,</span> <span class="op">&amp;</span>context)<span class="op">?;</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream <span class="op">=</span> plan<span class="op">.</span>execute(key<span class="op">.</span>partition<span class="op">,</span> context)<span class="op">?;</span></span></code></pre></div>
+<p>There are two important rewrites:</p>
+<ol type="1">
+<li><code>rewrite_parquet_adapters</code> adjusts Parquet scans for
+Delta expression adapters.</li>
+<li><code>rewrite_shuffle</code> turns stage input placeholders into
+reads, and wraps the task output in writes.</li>
+</ol>
+<p>Then DataFusion executes the task partition.</p>
+<figure>
+<img src="diagrams/08-diagram-04.svg" alt="Flowchart 08.4" />
+<figcaption aria-hidden="true">Flowchart 08.4</figcaption>
+</figure>
+<h2 data-number="9.15" id="why-the-task-monitor-drains-the-stream"><span
+class="header-section-number">9.15</span> Why The Task Monitor Drains
+The Stream</h2>
+<p><code>TaskRunner::run_task</code> does not simply call
+<code>execute</code> and report success. It spawns a
+<code>TaskMonitor</code>.</p>
+<p>The monitor first reports <code>Running</code>:</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="pp">T::Message::</span>report_task_status(key<span class="op">,</span> <span class="pp">TaskStatus::</span>Running<span class="op">,</span> <span class="cn">None</span><span class="op">,</span> <span class="cn">None</span>)</span></code></pre></div>
+<p>Then it races execution against cancellation:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="pp">tokio::select!</span> <span class="op">{</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="dt">Self</span><span class="pp">::</span>execute(key<span class="op">.</span>clone()<span class="op">,</span> stream) <span class="op">=&gt;</span> x<span class="op">,</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="dt">Self</span><span class="pp">::</span>cancel(key<span class="op">.</span>clone()<span class="op">,</span> signal) <span class="op">=&gt;</span> x<span class="op">,</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><code>execute</code> drains the stream:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="kw">let</span> <span class="cn">Some</span>(batch) <span class="op">=</span> stream<span class="op">.</span>next()<span class="op">.</span><span class="kw">await</span> <span class="op">{</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Err</span>(e) <span class="op">=</span> batch <span class="op">{</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Failed<span class="op">;</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> Succeeded<span class="op">;</span></span></code></pre></div>
+<p>This matters because in DataFusion, executing a plan returns a
+stream. Work may not happen until the stream is polled. If Sail reported
+success immediately after obtaining the stream, it would be lying.
+Draining the stream ensures the task really ran and all shuffle writes
+were closed.</p>
+<h2 data-number="9.16"
+id="stream-accessor-actors-as-readers-and-writers"><span
+class="header-section-number">9.16</span> Stream Accessor: Actors As
+Readers And Writers</h2>
+<p><code>StreamAccessor</code> bridges physical operators and actor
+messages.</p>
+<p>It implements <code>TaskStreamReader</code>:</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">fn</span> open(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> location<span class="op">:</span> <span class="op">&amp;</span>TaskReadLocation<span class="op">,</span> schema<span class="op">:</span> SchemaRef)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>TaskStreamSource<span class="op">&gt;</span></span></code></pre></div>
+<p>For each read location, it sends an actor event:</p>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="pp">TaskReadLocation::</span>Driver <span class="op">{</span> key <span class="op">}</span> <span class="op">=&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    fetch_driver_stream(key<span class="op">,</span> schema<span class="op">,</span> tx)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="pp">TaskReadLocation::</span>Worker <span class="op">{</span> worker_id<span class="op">,</span> key <span class="op">}</span> <span class="op">=&gt;</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    fetch_worker_stream(worker_id<span class="op">,</span> key<span class="op">,</span> schema<span class="op">,</span> tx)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="pp">TaskReadLocation::</span>Remote <span class="op">{</span> uri<span class="op">,</span> key <span class="op">}</span> <span class="op">=&gt;</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    fetch_remote_stream(uri<span class="op">,</span> key<span class="op">,</span> schema<span class="op">,</span> tx)</span></code></pre></div>
+<p>It also implements <code>TaskStreamWriter</code>:</p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="pp">TaskWriteLocation::</span>Local <span class="op">{</span> key<span class="op">,</span> storage <span class="op">}</span> <span class="op">=&gt;</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    create_local_stream(key<span class="op">,</span> storage<span class="op">,</span> schema<span class="op">,</span> tx)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="pp">TaskWriteLocation::</span>Remote <span class="op">{</span> uri<span class="op">,</span> key <span class="op">}</span> <span class="op">=&gt;</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    create_remote_stream(uri<span class="op">,</span> key<span class="op">,</span> schema<span class="op">,</span> tx)</span></code></pre></div>
+<p>This is how <code>ShuffleReadExec</code> and
+<code>ShuffleWriteExec</code> remain actor-agnostic. They only know
+about <code>TaskStreamReader</code> and <code>TaskStreamWriter</code>.
+The actual driver/worker communication is hidden behind
+<code>StreamAccessor</code>.</p>
+<h2 data-number="9.17" id="stream-locations"><span
+class="header-section-number">9.17</span> Stream Locations</h2>
+<p>Read locations are:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> TaskReadLocation <span class="op">{</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    Driver <span class="op">{</span> key <span class="op">},</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    Worker <span class="op">{</span> worker_id<span class="op">,</span> key <span class="op">},</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    Remote <span class="op">{</span> uri<span class="op">,</span> key <span class="op">},</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Write locations are:</p>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">enum</span> TaskWriteLocation <span class="op">{</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    Local <span class="op">{</span> storage<span class="op">,</span> key <span class="op">},</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    Remote <span class="op">{</span> uri<span class="op">,</span> key <span class="op">},</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>A <code>TaskStreamKey</code> identifies one stream:</p>
+<pre class="text"><code>job_id, stage, partition, attempt, channel</code></pre>
+<p>That key is the identity that ties together:</p>
+<ul>
+<li>task output,</li>
+<li>stream ownership,</li>
+<li>stream fetches,</li>
+<li>job output,</li>
+<li>cleanup,</li>
+<li>retry attempts.</li>
+</ul>
+<p>The inclusion of <code>attempt</code> is especially important. If a
+task is retried, the new attempt writes a different stream key.
+Consumers can avoid accidentally mixing data from failed and replacement
+attempts.</p>
+<h2 data-number="9.18" id="stream-manager"><span
+class="header-section-number">9.18</span> Stream Manager</h2>
+<p>Both driver and worker have a <code>StreamManager</code>.</p>
+<p>The stream manager owns local streams:</p>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>local_streams<span class="op">:</span> HashMap<span class="op">&lt;</span>TaskStreamKey<span class="op">,</span> LocalStreamState<span class="op">&gt;</span></span></code></pre></div>
+<p>A local stream can be:</p>
+<ul>
+<li>pending,</li>
+<li>created,</li>
+<li>failed.</li>
+</ul>
+<p>The pending state matters because a consumer may ask for a stream
+before the producer has created it. In that case,
+<code>fetch_local_stream</code> creates a receiver and stores its
+sender:</p>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>entry<span class="op">.</span>insert(<span class="pp">LocalStreamState::</span>Pending <span class="op">{</span> senders<span class="op">:</span> <span class="pp">vec!</span>[tx] <span class="op">}</span>)<span class="op">;</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>ctx<span class="op">.</span>send_with_delay(</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">T::Message::</span>probe_pending_local_stream(key<span class="op">.</span>clone())<span class="op">,</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>options<span class="op">.</span>task_stream_creation_timeout<span class="op">,</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span></code></pre></div>
+<p>When the producer later creates the stream, the pending senders are
+connected to the new stream.</p>
+<p>If stream creation never happens, the delayed probe fails the pending
+stream:</p>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> message <span class="op">=</span> <span class="st">&quot;local stream is not created within the expected time&quot;</span><span class="op">.</span>to_string()<span class="op">;</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> cause <span class="op">=</span> <span class="pp">CommonErrorCause::</span>Execution(message)<span class="op">;</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Self</span><span class="pp">::</span>fail_senders(senders<span class="op">,</span> <span class="op">&amp;</span>cause)<span class="op">;</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="op">*</span>value <span class="op">=</span> <span class="pp">LocalStreamState::</span>Failed <span class="op">{</span> cause <span class="op">};</span></span></code></pre></div>
+<p>This is how Sail prevents downstream tasks from waiting forever for a
+missing upstream stream.</p>
+<h2 data-number="9.19" id="memory-streams-and-replicas"><span
+class="header-section-number">9.19</span> Memory Streams And
+Replicas</h2>
+<p>The current local stream implementation is
+<code>MemoryStream</code>.</p>
+<p>Its comment explains the design:</p>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// A memory stream that can be read multiple times.</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="co">/// It maintains multiple replicas of the stream internally.</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="co">/// Since [`Arc`] is used inside the record batch, it is relatively cheap</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co">/// to clone the data in multiple replicas.</span></span></code></pre></div>
+<p>A memory stream has one publisher and multiple receivers:</p>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>sender<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>MemoryStreamReplicaSender<span class="op">&gt;,</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>receivers<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="pp">mpsc::</span>Receiver<span class="op">&lt;</span>TaskStreamResult<span class="op">&lt;</span>RecordBatch<span class="op">&gt;&gt;&gt;,</span></span></code></pre></div>
+<p>When a batch is written, <code>MemoryStreamReplicaSender</code> tries
+to send it to every active replica. If a receiver is full, it uses an
+overflow buffer. If a receiver is closed, it drops that replica:</p>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="cn">Err</span>(<span class="pp">mpsc::error::TrySendError::</span>Closed(_)) <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>    dropped <span class="op">=</span> <span class="cn">true</span><span class="op">;</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>A closed receiver is not necessarily an error. A downstream
+<code>LIMIT</code> may stop reading early. The sink returns
+<code>Closed</code> only when all replicas are gone.</p>
+<p>This replica design supports <code>JobGraph::replicas(stage)</code>:
+stages consumed by merge or broadcast may need multiple readers for the
+same output stream.</p>
+<h2 data-number="9.20" id="arrow-flight-for-task-streams"><span
+class="header-section-number">9.20</span> Arrow Flight For Task
+Streams</h2>
+<p>When a task needs a stream from another process, Sail uses Arrow
+Flight.</p>
+<p>The server is <code>TaskStreamFlightServer</code> in
+<code>crates/sail-execution/src/stream_service/server.rs</code>. Its
+important method is <code>do_get</code>:</p>
+<ol type="1">
+<li>Decode a <code>TaskStreamTicket</code>.</li>
+<li>Convert it to <code>TaskStreamKey</code>.</li>
+<li>Ask a <code>TaskStreamFetcher</code> for the stream.</li>
+<li>Encode the stream with <code>FlightDataEncoderBuilder</code>.</li>
+<li>Return Flight data.</li>
+</ol>
+<div class="sourceCode" id="cb47"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream <span class="op">=</span> rx<span class="op">.</span><span class="kw">await</span><span class="op">??;</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream <span class="op">=</span> stream<span class="op">.</span>map_err(<span class="op">|</span>e<span class="op">|</span> <span class="pp">FlightError::</span>Tonic(<span class="dt">Box</span><span class="pp">::</span>new(e<span class="op">.</span>into())))<span class="op">;</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream <span class="op">=</span> <span class="pp">FlightDataEncoderBuilder::</span>new()</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>build(stream)</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>map_err(<span class="pp">Status::</span>from)<span class="op">;</span></span></code></pre></div>
+<p>The client is <code>TaskStreamFlightClient</code>:</p>
+<div class="sourceCode" id="cb48"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> response <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>inner<span class="op">.</span>get()<span class="op">.</span><span class="kw">await</span><span class="op">?.</span>do_get(request)<span class="op">.</span><span class="kw">await</span><span class="op">?;</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream <span class="op">=</span> response<span class="op">.</span>into_inner()<span class="op">.</span>map_err(<span class="op">|</span>e<span class="op">|</span> e<span class="op">.</span>into())<span class="op">;</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stream <span class="op">=</span> <span class="pp">FlightRecordBatchStream::</span>new_from_flight_data(stream)<span class="op">?;</span></span></code></pre></div>
+<p>Again, the data plane is Arrow batches. The control plane moves task
+keys and locations; Flight moves the batch stream.</p>
+<figure>
+<img src="diagrams/08-diagram-05.svg" alt="Sequence diagram 08.5" />
+<figcaption aria-hidden="true">Sequence diagram 08.5</figcaption>
+</figure>
+<h2 data-number="9.21" id="peer-tracking"><span
+class="header-section-number">9.21</span> Peer Tracking</h2>
+<p>Workers may need to fetch streams from other workers. The driver
+sends peer locations along with task dispatch. The worker tracks them in
+<code>PeerTracker</code>:</p>
+<div class="sourceCode" id="cb49"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> peer <span class="kw">in</span> peers <span class="op">{</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>peers</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>entry(peer<span class="op">.</span>worker_id)</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>or_insert_with(<span class="op">||</span> <span class="pp">Peer::</span>new(peer<span class="op">.</span>host<span class="op">,</span> peer<span class="op">.</span>port))<span class="op">;</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>ctx<span class="op">.</span>send(<span class="pp">WorkerEvent::</span>ReportKnownPeers <span class="op">{</span> peer_worker_ids <span class="op">}</span>)<span class="op">;</span></span></code></pre></div>
+<p>The worker reports known peers back to the driver. The driver stores
+that set in the worker descriptor:</p>
+<div class="sourceCode" id="cb50"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>worker<span class="op">.</span>peers<span class="op">.</span>extend(peer_worker_ids)<span class="op">;</span></span></code></pre></div>
+<p>The next time the driver dispatches a task to that worker, it omits
+peers the worker already knows.</p>
+<p>This is an optimization, not a correctness requirement. The worker
+descriptor comment says the peer list may not cover all running workers,
+but correctness does not depend on completeness.</p>
+<h2 data-number="9.22" id="cleanup-and-stream-tracking"><span
+class="header-section-number">9.22</span> Cleanup And Stream
+Tracking</h2>
+<p>The task assigner tracks local streams because local stream ownership
+affects worker lifetime.</p>
+<p>Worker resources include:</p>
+<div class="sourceCode" id="cb51"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>local_streams<span class="op">:</span> IndexSet<span class="op">&lt;</span>TaskKey<span class="op">&gt;</span></span></code></pre></div>
+<p>The comment calls this “shuffle tracking” similar to Spark. A worker
+may be idle from a task-slot perspective but still own active local
+streams needed by downstream tasks. Sail should not stop that worker
+until its local streams are no longer needed.</p>
+<p>When consumers finish, the scheduler emits cleanup actions:</p>
+<div class="sourceCode" id="cb52"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="pp">JobAction::</span>CleanUpJob <span class="op">{</span> job_id<span class="op">,</span> stage<span class="op">:</span> <span class="cn">Some</span>(s) <span class="op">}</span></span></code></pre></div>
+<p>The driver handles cleanup by untracking stream ownership and asking
+the relevant driver/worker stream managers to remove streams:</p>
+<div class="sourceCode" id="cb53"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> <span class="kw">self</span><span class="op">.</span>task_assigner<span class="op">.</span>untrack_local_streams(job_id<span class="op">,</span> stage) <span class="op">{</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">match</span> x <span class="op">{</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">TaskStreamAssignment::</span>Driver <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>            <span class="kw">self</span><span class="op">.</span>stream_manager<span class="op">.</span>remove_local_streams(job_id<span class="op">,</span> stage)<span class="op">;</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>        <span class="pp">TaskStreamAssignment::</span>Worker <span class="op">{</span> worker_id <span class="op">}</span> <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>            <span class="kw">self</span><span class="op">.</span>worker_pool<span class="op">.</span>clean_up_job(ctx<span class="op">,</span> worker_id<span class="op">,</span> job_id<span class="op">,</span> stage)</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This is the other half of shuffle tracking:</p>
+<ul>
+<li>keep workers alive while streams are needed,</li>
+<li>clean streams up when consumers have succeeded,</li>
+<li>then workers can become idle and eligible for stopping.</li>
+</ul>
+<h2 data-number="9.23" id="job-output-1"><span
+class="header-section-number">9.23</span> Job Output</h2>
+<p>The job output path begins when final-stage tasks are running or
+succeeded.</p>
+<p><code>extend_job_output</code> finds final stages and adds their task
+streams:</p>
+<div class="sourceCode" id="cb54"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>actions<span class="op">.</span>push(<span class="pp">JobAction::</span>ExtendJobOutput <span class="op">{</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>    handle<span class="op">:</span> output<span class="op">.</span>handle()<span class="op">,</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    key<span class="op">,</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>    schema<span class="op">:</span> schema<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>)<span class="op">;</span></span></code></pre></div>
+<p>The driver resolves the stream location from task assignment:</p>
+<div class="sourceCode" id="cb55"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="cn">Some</span>(<span class="pp">TaskAssignment::</span>Driver) <span class="op">=&gt;</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>stream_manager<span class="op">.</span>fetch_local_stream(ctx<span class="op">,</span> <span class="op">&amp;</span>key)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="cn">Some</span>(<span class="pp">TaskAssignment::</span>Worker <span class="op">{</span> worker_id<span class="op">,</span> <span class="op">..</span> <span class="op">}</span>) <span class="op">=&gt;</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>worker_pool<span class="op">.</span>fetch_task_stream(ctx<span class="op">,</span> <span class="op">*</span>worker_id<span class="op">,</span> <span class="op">&amp;</span>key<span class="op">,</span> schema<span class="op">.</span>clone())</span></code></pre></div>
+<p>Then it sends the stream to the <code>JobOutputHandle</code>.</p>
+<p><code>JobOutputStream</code> merges all added streams using
+<code>SelectAll</code>. It stays active while new streams may arrive,
+then drains remaining streams once the output manager is dropped.</p>
+<p>This is how a distributed job becomes one
+<code>SendableRecordBatchStream</code> for the caller.</p>
+<h2 data-number="9.24" id="one-query-lifecycle"><span
+class="header-section-number">9.24</span> One Query Lifecycle</h2>
+<p>Here is the complete lifecycle in one diagram:</p>
+<figure>
+<img src="diagrams/08-diagram-06.svg" alt="Sequence diagram 08.6" />
+<figcaption aria-hidden="true">Sequence diagram 08.6</figcaption>
+</figure>
+<p>It is a lot of machinery, but each piece has a bounded job.</p>
+<h2 data-number="9.25" id="failure-and-retry-story"><span
+class="header-section-number">9.25</span> Failure And Retry Story</h2>
+<p>Sail’s retry model is attempt-based:</p>
+<ul>
+<li>A task attempt fails if its monitor sees a stream error.</li>
+<li>A task attempt can be canceled explicitly.</li>
+<li>A lost worker causes all assigned task attempts to fail.</li>
+<li>A failed attempt causes the whole task region to cancel active
+peers.</li>
+<li>A region can be rescheduled by creating new attempts.</li>
+<li>If attempts exceed the configured max, the region and job fail.</li>
+</ul>
+<p>The job output stream standardizes data-plane and control-plane
+errors through <code>CommonErrorCause</code>, so the client sees
+coherent failures whether the error comes from:</p>
+<ul>
+<li>a task stream,</li>
+<li>a task status update,</li>
+<li>job output failure,</li>
+<li>or cleanup/shutdown.</li>
+</ul>
+<p>The architecture is intentionally conservative. It avoids mixing task
+attempts and treats region failure as a reason to restart the
+region.</p>
+<h2 data-number="9.26" id="why-this-design-fits-rust"><span
+class="header-section-number">9.26</span> Why This Design Fits Rust</h2>
+<p>This part of Sail shows several Rust strengths:</p>
+<ul>
+<li>actor-owned mutable state avoids large shared locks,</li>
+<li><code>Arc</code> shares immutable plans, schemas, and clients,</li>
+<li>trait objects abstract workers, streams, actors, and job
+runners,</li>
+<li>async tasks isolate slow IO from actor message handling,</li>
+<li>enums make control-plane states explicit,</li>
+<li>typed IDs prevent accidental confusion between jobs, tasks, streams,
+and workers,</li>
+<li><code>oneshot</code> channels turn actor messages into
+request/response APIs.</li>
+</ul>
+<p>The design is not “just async Rust.” It is a careful layering:</p>
+<pre class="text"><code>Actor messages -&gt; scheduler state -&gt; task definitions -&gt; physical plan execution -&gt; stream IO</code></pre>
+<p>Each layer is explicit enough to inspect and test.</p>
+<h2 data-number="9.27" id="extension-implications-2"><span
+class="header-section-number">9.27</span> Extension Implications</h2>
+<p>For the final extension chapter, this control plane raises several
+requirements.</p>
+<p>A distributed-safe extension must consider:</p>
+<ul>
+<li>Can its physical plan be serialized into a
+<code>TaskDefinition</code>?</li>
+<li>Does <code>RemoteExecutionCodec</code> know how to decode it on
+workers?</li>
+<li>Does it require worker-local state?</li>
+<li>Does it require driver-only coordination?</li>
+<li>Does it produce task streams that can be retried safely?</li>
+<li>Does it rely on external resources that must be available in worker
+pods?</li>
+<li>Does it need peer-to-peer stream access?</li>
+<li>Does it need cleanup hooks when a job or stage finishes?</li>
+<li>Does it need custom task placement?</li>
+</ul>
+<p>This is where a simple plugin API becomes a distributed systems API.
+A scalar UDF that uses Arrow arrays is easy. A custom physical operator
+with new stream semantics is much more serious.</p>
+<p>Sail’s existing control plane gives us the vocabulary to design those
+capabilities precisely.</p>
+<h2 data-number="9.28"
+id="reading-exercise-follow-a-task-to-a-worker"><span
+class="header-section-number">9.28</span> Reading Exercise: Follow A
+Task To A Worker</h2>
+<p>Trace a task from scheduling to worker execution:</p>
+<ol type="1">
+<li>Open
+<code>crates/sail-execution/src/driver/actor/handler.rs</code>.</li>
+<li>Find <code>run_tasks</code>.</li>
+<li>Follow <code>task_assigner.assign_tasks</code>.</li>
+<li>Follow <code>job_scheduler.get_task_definition</code>.</li>
+<li>Follow <code>worker_pool.run_task</code>.</li>
+<li>Open
+<code>crates/sail-execution/src/worker/actor/handler.rs</code>.</li>
+<li>Find <code>handle_run_task</code>.</li>
+<li>Follow <code>task_runner.run_task</code>.</li>
+<li>Open
+<code>crates/sail-execution/src/task_runner/core.rs</code>.</li>
+<li>Read <code>execute_plan</code>.</li>
+</ol>
+<p>At the end, you should be able to say how a stage partition becomes
+<code>plan.execute(key.partition, context)</code>.</p>
+<h2 data-number="9.29" id="reading-exercise-follow-a-stream-fetch"><span
+class="header-section-number">9.29</span> Reading Exercise: Follow A
+Stream Fetch</h2>
+<p>Trace a downstream task reading an upstream worker stream:</p>
+<ol type="1">
+<li>Start in <code>TaskRunner::rewrite_shuffle</code>.</li>
+<li>Find where <code>StageInputExec&lt;usize&gt;</code> becomes
+<code>ShuffleReadExec</code>.</li>
+<li>Follow <code>StreamAccessor::new(handle.clone())</code>.</li>
+<li>Open
+<code>crates/sail-execution/src/stream_accessor/core.rs</code>.</li>
+<li>Read <code>TaskStreamReader::open</code>.</li>
+<li>Follow <code>fetch_worker_stream</code>.</li>
+<li>On the worker, open <code>worker/actor/handler.rs</code>.</li>
+<li>Find <code>handle_fetch_worker_stream</code>.</li>
+<li>If the stream is remote, follow
+<code>TaskStreamFlightClient</code>.</li>
+<li>If the stream is local, follow
+<code>StreamManager::fetch_local_stream</code>.</li>
+</ol>
+<p>This trace connects the control-plane location lookup to the Arrow
+Flight data plane.</p>
+<h2 data-number="9.30" id="reading-exercise-follow-worker-loss"><span
+class="header-section-number">9.30</span> Reading Exercise: Follow
+Worker Loss</h2>
+<p>Trace worker failure handling:</p>
+<ol type="1">
+<li>Open
+<code>crates/sail-execution/src/driver/actor/handler.rs</code>.</li>
+<li>Find <code>handle_probe_lost_worker</code>.</li>
+<li>Follow <code>worker_pool.stop_worker</code>.</li>
+<li>Follow <code>task_assigner.find_worker_tasks</code>.</li>
+<li>Follow <code>job_scheduler.update_task(... Failed ...)</code>.</li>
+<li>Follow <code>refresh_job</code>.</li>
+<li>Find <code>cascade_cancel_task_attempts</code>.</li>
+<li>Find <code>schedule_task_regions</code>.</li>
+</ol>
+<p>This shows how infrastructure failure becomes task attempt retry.</p>
+<h2 data-number="9.31" id="takeaways-3"><span
+class="header-section-number">9.31</span> Takeaways</h2>
+<p>Sail’s distributed runtime is actor-driven. The driver actor
+coordinates jobs, workers, task assignment, stream ownership, and
+cleanup. Worker actors register with the driver, heartbeat, run
+serialized task definitions, serve local streams, and report task
+status.</p>
+<p>The task runner turns a serialized DataFusion physical plan back into
+an executable plan, rewrites stage inputs into
+<code>ShuffleReadExec</code>, wraps outputs in
+<code>ShuffleWriteExec</code>, and drains the resulting stream through a
+task monitor.</p>
+<p>Streams are identified by
+<code>(job, stage, partition, attempt, channel)</code>. Stream managers
+handle pending, created, failed, replicated, and cleaned-up local
+streams. Arrow Flight carries streams between processes.</p>
+<p>The next chapter zooms in on shuffle and data movement, using the
+stream and task machinery from this chapter as the foundation.</p>
+</body>
+</html>
