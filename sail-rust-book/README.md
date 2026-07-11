@@ -72,12 +72,9 @@ Mermaid diagrams to PDF, EPUB, and MOBI artifacts in `book/`.
 
 ## Build
 
-Requirements:
-
-- `pandoc`
-- `typst`
-- `node`
-- Calibre's `ebook-convert` for MOBI output, optional
+The shared FirstPair toolchain supplies the pinned Pandoc, Typst, Node, and
+Calibre versions. The source-owned preparation hook stages the chapters and
+renders their diagrams before the shared builder creates every format.
 
 Build everything:
 
@@ -92,5 +89,5 @@ Build only the PDF:
 ./build.sh pdf
 ```
 
-Build artifacts are published to `sail-rust-book/book/`.
-
+Build artifacts are written to `sail-rust-book/book/` and verified against the
+shared FirstPair book contract.
