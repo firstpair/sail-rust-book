@@ -15,7 +15,7 @@ as part of DataFusion and plan resolution; here we treat it as a contributor's m
 | Logical nodes | `crates/sail-logical-plan/src/` |
 | Physical nodes | `crates/sail-physical-plan/src/` |
 | Logical optimizer rules | `crates/sail-logical-optimizer/src/lib.rs` |
-| Lakehouse optimizer rule | `crates/sail-plan-lakehouse/src/optimizer.rs` |
+| Lakehouse physical planners | `crates/sail-session/src/planner.rs`, `crates/sail-delta-lake/`, `crates/sail-iceberg/` |
 | Physical optimizer rules | `crates/sail-physical-optimizer/src/` |
 | Physical optimizer pipeline | `crates/sail-physical-optimizer/src/lib.rs` |
 | Extension physical planner | `crates/sail-session/src/planner.rs` |

@@ -4,10 +4,9 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
-  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
-  <meta name="dcterms.date" content="2026-07-11" />
-  <title>Sail: The Rust, Arrow, and DataFusion Guide</title>
+  <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
+  <meta name="dcterms.date" content="2026-07-14" />
+  <title>Sail Rust Book</title>
   <style>
 
 span.smallcaps{font-variant: small-caps;}
@@ -133,12 +132,10 @@ object-fit: contain;
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">Sail: The Rust, Arrow, and DataFusion Guide</h1>
-<p class="subtitle">A Definitive Architecture Book for Spark-Compatible
-Distributed Query Processing</p>
-<p class="author">Alexy Khrabrov (chiefscientist.org)</p>
-<p class="author">Codex ChatGPT 5.5 and Claude Opus 4.7</p>
-<p class="date">2026-07-11</p>
+<h1 class="title">Sail Rust Book</h1>
+<p class="subtitle">The Rust, Arrow, and DataFusion Guide</p>
+<p class="author">Alexy Khrabrov ∈ LakeSail Team</p>
+<p class="date">2026-07-14</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <h2 id="toc-title">Contents</h2>
@@ -750,13 +747,26 @@ Bookmarking</a></li>
 Model</a></li>
 <li><a href="#closing" id="toc-closing"><span class="toc-section-number">20.9</span> Closing</a></li>
 </ul></li>
+<li><a href="#chapter-20" id="toc-chapter-20"><span class="toc-section-number">21</span> Chapter 20: Current Codebase
+Edition</a>
+<ul>
+<li><a href="#the-july-2026-surface" id="toc-the-july-2026-surface"><span class="toc-section-number">21.1</span> The July 2026 Surface</a></li>
+<li><a href="#the-current-crate-map" id="toc-the-current-crate-map"><span class="toc-section-number">21.2</span> The Current Crate Map</a></li>
+<li><a href="#what-the-book-should-teach-more-strongly" id="toc-what-the-book-should-teach-more-strongly"><span class="toc-section-number">21.3</span> What The Book Should Teach More
+Strongly</a></li>
+<li><a href="#the-obsidian-vault-edition" id="toc-the-obsidian-vault-edition"><span class="toc-section-number">21.4</span> The Obsidian Vault
+Edition</a></li>
+<li><a href="#how-to-build-this-edition" id="toc-how-to-build-this-edition"><span class="toc-section-number">21.5</span> How To Build This
+Edition</a></li>
+<li><a href="#the-new-mental-model" id="toc-the-new-mental-model"><span class="toc-section-number">21.6</span> The New Mental Model</a></li>
+</ul></li>
 </ul>
 </nav>
 <h1 data-number="1" id="chapter-00"><span class="header-section-number">1</span> Reader Guide: How This Book
 Builds</h1>
 <p>This book is mostly meant to be read in order, but it is also a code
 companion. Chapters 1-13 walk the core system from architecture through
-extension design. Chapters 14-19 are definitive-guide companion
+extension design. Chapters 14-20 are definitive-guide companion
 chapters: they fill protocol, optimizer, streaming, testing,
 contribution, and navigation coverage that readers will want after the
 main pass.</p>
@@ -818,9 +828,11 @@ for discussion #2001.</td>
 <tr>
 <td>Practice and navigation</td>
 <td><a href="#chapter-17">17. Testing Spark Compatibility</a>, <a href="#chapter-18">18. Feature Playbooks</a>, <a href="#chapter-19">19.
-Roadmap and Codebase Navigation</a></td>
-<td>How to verify behavior, add features without missing layers, and
-navigate the codebase as it evolves.</td>
+Roadmap and Codebase Navigation</a>, <a href="#chapter-20">20. Current
+Codebase Edition</a></td>
+<td>How to verify behavior, add features without missing layers,
+navigate the codebase as it evolves, and understand the July 2026 Sail
+surface.</td>
 </tr>
 </tbody>
 </table>
@@ -927,6 +939,13 @@ worker-side registration and serialization.</td>
 <td>Chapter 13, where plan-time and execution-time contributions are
 designed separately.</td>
 </tr>
+<tr>
+<td>Obsidian code vault</td>
+<td>Chapter 20</td>
+<td>Vault edition</td>
+<td>A navigable companion where book chapters, code files, fragments,
+crates, and subsystems are linked directly.</td>
+</tr>
 </tbody>
 </table>
 <h2 data-number="1.3" id="code-reading-strategy"><span class="header-section-number">1.3</span> Code Reading Strategy</h2>
@@ -994,9 +1013,10 @@ and <code>crates/sail-plan/src/function/</code></td>
 </tr>
 <tr>
 <td>How do lakehouse row-level operations work?</td>
-<td><code>crates/sail-plan-lakehouse/src/lib.rs</code>,
-<code>crates/sail-delta-lake/src/table_format.rs</code>, and
-<code>crates/sail-logical-plan/src/merge.rs</code></td>
+<td><code>crates/sail-delta-lake/</code>,
+<code>crates/sail-iceberg/</code>,
+<code>crates/sail-logical-plan/</code>, and
+<code>crates/sail-session/src/formats.rs</code></td>
 </tr>
 <tr>
 <td>How does Flight SQL enter the same engine?</td>
@@ -1019,6 +1039,11 @@ and <code>crates/sail-plan/src/function/</code></td>
 <tr>
 <td>How should I add a feature safely?</td>
 <td><a href="#chapter-18">18. Feature Playbooks</a></td>
+</tr>
+<tr>
+<td>How do I jump from prose to exact code fragments?</td>
+<td><a href="#chapter-20">20. Current Codebase Edition</a> and the
+generated Obsidian vault.</td>
 </tr>
 </tbody>
 </table>
@@ -1121,7 +1146,7 @@ behavior</td>
 <tr>
 <td>Catalogs and formats</td>
 <td><code>sail-catalog-*</code>, <code>sail-data-source</code>,
-<code>sail-plan-lakehouse</code></td>
+<code>sail-delta-lake</code>, <code>sail-iceberg</code></td>
 <td>table discovery, scans, writes, system tables, lakehouse
 integration</td>
 </tr>
@@ -9802,7 +9827,9 @@ those concepts into one giant table abstraction.</p>
 </tr>
 <tr>
 <td>Lakehouse extension planners</td>
-<td><code>crates/sail-plan-lakehouse/src/lib.rs</code></td>
+<td><code>crates/sail-session/src/planner.rs</code>,
+<code>crates/sail-delta-lake/</code>,
+<code>crates/sail-iceberg/</code></td>
 </tr>
 <tr>
 <td>Python data source table format</td>
@@ -10382,30 +10409,31 @@ That makes Iceberg a useful contrast with Delta: both are table formats,
 but their current row-level capabilities differ.</p>
 <h2 data-number="13.18" id="lakehouse-extension-planners"><span class="header-section-number">13.18</span> Lakehouse Extension
 Planners</h2>
-<p>Lakehouse tables need special physical planning.
-<code>crates/sail-plan-lakehouse/src/lib.rs</code> adds extension
-planners:</p>
-<div class="sourceCode" id="cb416"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb416-1"><a href="#cb416-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> new_lakehouse_extension_planners() <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
-<span id="cb416-2"><a href="#cb416-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">vec!</span>[</span>
-<span id="cb416-3"><a href="#cb416-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">Arc::</span>new(<span class="pp">sail_delta_lake::planner::</span>DeltaTablePhysicalPlanner)<span class="op">,</span></span>
-<span id="cb416-4"><a href="#cb416-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">Arc::</span>new(<span class="pp">sail_iceberg::</span>IcebergTablePhysicalPlanner)<span class="op">,</span></span>
-<span id="cb416-5"><a href="#cb416-5" aria-hidden="true" tabindex="-1"></a>        <span class="pp">Arc::</span>new(DeltaExtensionPlanner)<span class="op">,</span></span>
-<span id="cb416-6"><a href="#cb416-6" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb416-7"><a href="#cb416-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Lakehouse tables need special physical planning. In the current
+codebase, <code>crates/sail-session/src/planner.rs</code> installs the
+Delta and Iceberg physical planners before the general Sail extension
+planner:</p>
+<div class="sourceCode" id="cb416"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb416-1"><a href="#cb416-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> extension_planners<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="pp">vec!</span>[</span>
+<span id="cb416-2"><a href="#cb416-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(DeltaPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb416-3"><a href="#cb416-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(IcebergPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb416-4"><a href="#cb416-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(SystemTablePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb416-5"><a href="#cb416-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ListingPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb416-6"><a href="#cb416-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ConsolePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb416-7"><a href="#cb416-7" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(NoopPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb416-8"><a href="#cb416-8" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(PythonPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb416-9"><a href="#cb416-9" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ExtensionPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb416-10"><a href="#cb416-10" aria-hidden="true" tabindex="-1"></a>]<span class="op">;</span></span></code></pre></div>
 <p>The session query planner installs these before the general Sail
 extension planner. That gives lakehouse planners first chance to handle
 lakehouse-specific nodes.</p>
-<p><code>DeltaExtensionPlanner</code> handles:</p>
+<p><code>DeltaPhysicalPlanner</code> handles:</p>
 <ul>
-<li><code>FileWriteNode</code> for lakehouse formats,</li>
-<li><code>FileDeleteNode</code> for lakehouse deletes that were not
-expanded,</li>
 <li><code>RowLevelWriteNode</code>,</li>
 <li><code>MergeCardinalityCheckNode</code>.</li>
 </ul>
 <p>The row-level path looks like this:</p>
 <figure>
-<img role="img" aria-label="Flowchart 12.5" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OTIiIGhlaWdodD0iMTM5MCIgdmlld0JveD0iMCAwIDQ5MiAxMzkwIj4KPGRlZnM+CiAgPG1hcmtlciBpZD0iYXJyb3ciIG1hcmtlcldpZHRoPSIxMCIgbWFya2VySGVpZ2h0PSIxMCIgcmVmWD0iOCIgcmVmWT0iMyIgb3JpZW50PSJhdXRvIiBtYXJrZXJVbml0cz0ic3Ryb2tlV2lkdGgiPgogICAgPHBhdGggZD0iTTAsMCBMMCw2IEw4LDMgeiIgZmlsbD0iIzVmNmY4NSIvPgogIDwvbWFya2VyPgo8L2RlZnM+CjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI0OTIiIGhlaWdodD0iMTM5MCIgZmlsbD0id2hpdGUiLz4KCjxsaW5lIHgxPSIyNDYiIHkxPSI5OCIgeDI9IjI0NiIgeTI9IjE5MSIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjI1MyIgeDI9IjI0NiIgeTI9IjMzMCIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjQyNCIgeDI9IjI0NiIgeTI9IjQ2OSIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjU5NSIgeDI9IjI0NiIgeTI9IjY1NiIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjcxOCIgeDI9IjI0NiIgeTI9IjgxMSIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9Ijg3MyIgeDI9IjI0NiIgeTI9Ijk2NiIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjEwMjgiIHgyPSIyNDYiIHkyPSIxMTIxIiBzdHJva2U9IiM1ZjZmODUiIHN0cm9rZS13aWR0aD0iMS41IiBtYXJrZXItZW5kPSJ1cmwoI2Fycm93KSIvPgo8bGluZSB4MT0iMjQ2IiB5MT0iMTE4MyIgeDI9IjI0NiIgeTI9IjEyNjAiIHN0cm9rZT0iIzVmNmY4NSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG1hcmtlci1lbmQ9InVybCgjYXJyb3cpIi8+CjxyZWN0IHg9IjEyMCIgeT0iMzYiIHdpZHRoPSIyNTIiIGhlaWdodD0iNjIiIHJ4PSI4IiBmaWxsPSIjZjZmOGZiIiBzdHJva2U9IiM0OTZhOWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjx0ZXh0IHg9IjI0NiIgeT0iNjciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJJbnRlciwgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZmlsbD0iIzFmMjkzNyI+PHRzcGFuIHg9IjI0NiIgZHk9IjAiPkRFTEVURSAvIE1FUkdFPC90c3Bhbj48L3RleHQ+CjxyZWN0IHg9IjEzNCIgeT0iMTkxIiB3aWR0aD0iMjI0IiBoZWlnaHQ9IjYyIiByeD0iOCIgZmlsbD0iI2Y2ZjhmYiIgc3Ryb2tlPSIjNDk2YTlhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8dGV4dCB4PSIyNDYiIHk9IjIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI2IiBmaWxsPSIjMWYyOTM3Ij48dHNwYW4geD0iMjQ2IiBkeT0iMCI+UGxhblJlc29sdmVyPC90c3Bhbj48L3RleHQ+CjxyZWN0IHg9Ijk5IiB5PSIzMzAiIHdpZHRoPSIyOTQiIGhlaWdodD0iOTQiIHJ4PSI4IiBmaWxsPSIjZjZmOGZiIiBzdHJva2U9IiM0OTZhOWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjx0ZXh0IHg9IjI0NiIgeT0iMzYxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LWZhbWlseT0iSW50ZXIsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjYiIGZpbGw9IiMxZjI5MzciPjx0c3BhbiB4PSIyNDYiIGR5PSIwIj5yb3ctbGV2ZWwgbG9naWNhbDwvdHNwYW4+PHRzcGFuIHg9IjI0NiIgZHk9IjMyIj5ub2RlPC90c3Bhbj48L3RleHQ+CjxyZWN0IHg9IjE1MSIgeT0iNDY5IiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjEyNiIgcng9IjgiIGZpbGw9IiNmNmY4ZmIiIHN0cm9rZT0iIzQ5NmE5YSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHRleHQgeD0iMjQ2IiB5PSI1MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJJbnRlciwgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZmlsbD0iIzFmMjkzNyI+PHRzcGFuIHg9IjI0NiIgZHk9IjAiPmxha2Vob3VzZTwvdHNwYW4+PHRzcGFuIHg9IjI0NiIgZHk9IjMyIj5vcHRpbWl6ZXI8L3RzcGFuPjx0c3BhbiB4PSIyNDYiIGR5PSIzMiI+ZXhwYW5zaW9uPC90c3Bhbj48L3RleHQ+CjxyZWN0IHg9Ijk5IiB5PSI2NTYiIHdpZHRoPSIyOTQiIGhlaWdodD0iNjIiIHJ4PSI4IiBmaWxsPSIjZjZmOGZiIiBzdHJva2U9IiM0OTZhOWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjx0ZXh0IHg9IjI0NiIgeT0iNjg3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LWZhbWlseT0iSW50ZXIsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjYiIGZpbGw9IiMxZjI5MzciPjx0c3BhbiB4PSIyNDYiIGR5PSIwIj5Sb3dMZXZlbFdyaXRlTm9kZTwvdHNwYW4+PC90ZXh0Pgo8cmVjdCB4PSI3MSIgeT0iODExIiB3aWR0aD0iMzUwIiBoZWlnaHQ9IjYyIiByeD0iOCIgZmlsbD0iI2Y2ZjhmYiIgc3Ryb2tlPSIjNDk2YTlhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8dGV4dCB4PSIyNDYiIHk9Ijg0MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI2IiBmaWxsPSIjMWYyOTM3Ij48dHNwYW4geD0iMjQ2IiBkeT0iMCI+RGVsdGFFeHRlbnNpb25QbGFubmVyPC90c3Bhbj48L3RleHQ+CjxyZWN0IHg9IjM2IiB5PSI5NjYiIHdpZHRoPSI0MjAiIGhlaWdodD0iNjIiIHJ4PSI4IiBmaWxsPSIjZjZmOGZiIiBzdHJva2U9IiM0OTZhOWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjx0ZXh0IHg9IjI0NiIgeT0iOTk3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LWZhbWlseT0iSW50ZXIsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjYiIGZpbGw9IiMxZjI5MzciPjx0c3BhbiB4PSIyNDYiIGR5PSIwIj5jcmVhdGVfcm93X2xldmVsX3dyaXRlX3BoeXNpY2FsX3BsYW48L3RzcGFuPjwvdGV4dD4KPHJlY3QgeD0iMzYiIHk9IjExMjEiIHdpZHRoPSI0MjAiIGhlaWdodD0iNjIiIHJ4PSI4IiBmaWxsPSIjZjZmOGZiIiBzdHJva2U9IiM0OTZhOWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjx0ZXh0IHg9IjI0NiIgeT0iMTE1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI2IiBmaWxsPSIjMWYyOTM3Ij48dHNwYW4geD0iMjQ2IiBkeT0iMCI+VGFibGVGb3JtYXQuY3JlYXRlX3Jvd19sZXZlbF93cml0ZXI8L3RzcGFuPjwvdGV4dD4KPHJlY3QgeD0iMTEzIiB5PSIxMjYwIiB3aWR0aD0iMjY2IiBoZWlnaHQ9Ijk0IiByeD0iOCIgZmlsbD0iI2Y2ZjhmYiIgc3Ryb2tlPSIjNDk2YTlhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8dGV4dCB4PSIyNDYiIHk9IjEyOTEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJJbnRlciwgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZmlsbD0iIzFmMjkzNyI+PHRzcGFuIHg9IjI0NiIgZHk9IjAiPkRlbHRhIHJvdy1sZXZlbDwvdHNwYW4+PHRzcGFuIHg9IjI0NiIgZHk9IjMyIj5FeGVjdXRpb25QbGFuPC90c3Bhbj48L3RleHQ+Cjwvc3ZnPg==" alt="Flowchart 12.5" />
+<img role="img" aria-label="Flowchart 12.5" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OTIiIGhlaWdodD0iMTM5MCIgdmlld0JveD0iMCAwIDQ5MiAxMzkwIj4KPGRlZnM+CiAgPG1hcmtlciBpZD0iYXJyb3ciIG1hcmtlcldpZHRoPSIxMCIgbWFya2VySGVpZ2h0PSIxMCIgcmVmWD0iOCIgcmVmWT0iMyIgb3JpZW50PSJhdXRvIiBtYXJrZXJVbml0cz0ic3Ryb2tlV2lkdGgiPgogICAgPHBhdGggZD0iTTAsMCBMMCw2IEw4LDMgeiIgZmlsbD0iIzVmNmY4NSIvPgogIDwvbWFya2VyPgo8L2RlZnM+CjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI0OTIiIGhlaWdodD0iMTM5MCIgZmlsbD0id2hpdGUiLz4KCjxsaW5lIHgxPSIyNDYiIHkxPSI5OCIgeDI9IjI0NiIgeTI9IjE5MSIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjI1MyIgeDI9IjI0NiIgeTI9IjMzMCIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjQyNCIgeDI9IjI0NiIgeTI9IjQ2OSIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjU5NSIgeDI9IjI0NiIgeTI9IjY1NiIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjcxOCIgeDI9IjI0NiIgeTI9IjgxMSIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9Ijg3MyIgeDI9IjI0NiIgeTI9Ijk2NiIgc3Ryb2tlPSIjNWY2Zjg1IiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhcnJvdykiLz4KPGxpbmUgeDE9IjI0NiIgeTE9IjEwMjgiIHgyPSIyNDYiIHkyPSIxMTIxIiBzdHJva2U9IiM1ZjZmODUiIHN0cm9rZS13aWR0aD0iMS41IiBtYXJrZXItZW5kPSJ1cmwoI2Fycm93KSIvPgo8bGluZSB4MT0iMjQ2IiB5MT0iMTE4MyIgeDI9IjI0NiIgeTI9IjEyNjAiIHN0cm9rZT0iIzVmNmY4NSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG1hcmtlci1lbmQ9InVybCgjYXJyb3cpIi8+CjxyZWN0IHg9IjEyMCIgeT0iMzYiIHdpZHRoPSIyNTIiIGhlaWdodD0iNjIiIHJ4PSI4IiBmaWxsPSIjZjZmOGZiIiBzdHJva2U9IiM0OTZhOWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjx0ZXh0IHg9IjI0NiIgeT0iNjciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJJbnRlciwgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZmlsbD0iIzFmMjkzNyI+PHRzcGFuIHg9IjI0NiIgZHk9IjAiPkRFTEVURSAvIE1FUkdFPC90c3Bhbj48L3RleHQ+CjxyZWN0IHg9IjEzNCIgeT0iMTkxIiB3aWR0aD0iMjI0IiBoZWlnaHQ9IjYyIiByeD0iOCIgZmlsbD0iI2Y2ZjhmYiIgc3Ryb2tlPSIjNDk2YTlhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8dGV4dCB4PSIyNDYiIHk9IjIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI2IiBmaWxsPSIjMWYyOTM3Ij48dHNwYW4geD0iMjQ2IiBkeT0iMCI+UGxhblJlc29sdmVyPC90c3Bhbj48L3RleHQ+CjxyZWN0IHg9Ijk5IiB5PSIzMzAiIHdpZHRoPSIyOTQiIGhlaWdodD0iOTQiIHJ4PSI4IiBmaWxsPSIjZjZmOGZiIiBzdHJva2U9IiM0OTZhOWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjx0ZXh0IHg9IjI0NiIgeT0iMzYxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LWZhbWlseT0iSW50ZXIsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjYiIGZpbGw9IiMxZjI5MzciPjx0c3BhbiB4PSIyNDYiIGR5PSIwIj5yb3ctbGV2ZWwgbG9naWNhbDwvdHNwYW4+PHRzcGFuIHg9IjI0NiIgZHk9IjMyIj5ub2RlPC90c3Bhbj48L3RleHQ+CjxyZWN0IHg9IjE1MSIgeT0iNDY5IiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjEyNiIgcng9IjgiIGZpbGw9IiNmNmY4ZmIiIHN0cm9rZT0iIzQ5NmE5YSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHRleHQgeD0iMjQ2IiB5PSI1MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJJbnRlciwgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZmlsbD0iIzFmMjkzNyI+PHRzcGFuIHg9IjI0NiIgZHk9IjAiPmxha2Vob3VzZTwvdHNwYW4+PHRzcGFuIHg9IjI0NiIgZHk9IjMyIj5vcHRpbWl6ZXI8L3RzcGFuPjx0c3BhbiB4PSIyNDYiIGR5PSIzMiI+ZXhwYW5zaW9uPC90c3Bhbj48L3RleHQ+CjxyZWN0IHg9Ijk5IiB5PSI2NTYiIHdpZHRoPSIyOTQiIGhlaWdodD0iNjIiIHJ4PSI4IiBmaWxsPSIjZjZmOGZiIiBzdHJva2U9IiM0OTZhOWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjx0ZXh0IHg9IjI0NiIgeT0iNjg3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LWZhbWlseT0iSW50ZXIsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjYiIGZpbGw9IiMxZjI5MzciPjx0c3BhbiB4PSIyNDYiIGR5PSIwIj5Sb3dMZXZlbFdyaXRlTm9kZTwvdHNwYW4+PC90ZXh0Pgo8cmVjdCB4PSI3OCIgeT0iODExIiB3aWR0aD0iMzM2IiBoZWlnaHQ9IjYyIiByeD0iOCIgZmlsbD0iI2Y2ZjhmYiIgc3Ryb2tlPSIjNDk2YTlhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8dGV4dCB4PSIyNDYiIHk9Ijg0MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI2IiBmaWxsPSIjMWYyOTM3Ij48dHNwYW4geD0iMjQ2IiBkeT0iMCI+RGVsdGFQaHlzaWNhbFBsYW5uZXI8L3RzcGFuPjwvdGV4dD4KPHJlY3QgeD0iMzYiIHk9Ijk2NiIgd2lkdGg9IjQyMCIgaGVpZ2h0PSI2MiIgcng9IjgiIGZpbGw9IiNmNmY4ZmIiIHN0cm9rZT0iIzQ5NmE5YSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHRleHQgeD0iMjQ2IiB5PSI5OTciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJJbnRlciwgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZmlsbD0iIzFmMjkzNyI+PHRzcGFuIHg9IjI0NiIgZHk9IjAiPmNyZWF0ZV9yb3dfbGV2ZWxfd3JpdGVfcGh5c2ljYWxfcGxhbjwvdHNwYW4+PC90ZXh0Pgo8cmVjdCB4PSIzNiIgeT0iMTEyMSIgd2lkdGg9IjQyMCIgaGVpZ2h0PSI2MiIgcng9IjgiIGZpbGw9IiNmNmY4ZmIiIHN0cm9rZT0iIzQ5NmE5YSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHRleHQgeD0iMjQ2IiB5PSIxMTUyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LWZhbWlseT0iSW50ZXIsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjYiIGZpbGw9IiMxZjI5MzciPjx0c3BhbiB4PSIyNDYiIGR5PSIwIj5UYWJsZUZvcm1hdC5jcmVhdGVfcm93X2xldmVsX3dyaXRlcjwvdHNwYW4+PC90ZXh0Pgo8cmVjdCB4PSIxMTMiIHk9IjEyNjAiIHdpZHRoPSIyNjYiIGhlaWdodD0iOTQiIHJ4PSI4IiBmaWxsPSIjZjZmOGZiIiBzdHJva2U9IiM0OTZhOWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjx0ZXh0IHg9IjI0NiIgeT0iMTI5MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI2IiBmaWxsPSIjMWYyOTM3Ij48dHNwYW4geD0iMjQ2IiBkeT0iMCI+RGVsdGEgcm93LWxldmVsPC90c3Bhbj48dHNwYW4geD0iMjQ2IiBkeT0iMzIiPkV4ZWN1dGlvblBsYW48L3RzcGFuPjwvdGV4dD4KPC9zdmc+" alt="Flowchart 12.5" />
 <figcaption aria-hidden="true">Flowchart 12.5</figcaption>
 </figure>
 <p>This is one of the places where distributed query processing and
@@ -10732,7 +10760,9 @@ assembling the patterns we have already seen.</p>
 </tr>
 <tr>
 <td>Existing extension pattern: lakehouse planners</td>
-<td><code>crates/sail-plan-lakehouse/src/lib.rs</code></td>
+<td><code>crates/sail-session/src/planner.rs</code>,
+<code>crates/sail-delta-lake/</code>,
+<code>crates/sail-iceberg/</code></td>
 </tr>
 <tr>
 <td>Existing extension pattern: physical plan nodes</td>
@@ -10875,12 +10905,18 @@ version of the same idea.</p>
 <h3 data-number="14.4.4" id="lakehouse-planner-chain"><span class="header-section-number">14.4.4</span> Lakehouse Planner Chain</h3>
 <p>Lakehouse planning already contributes physical planners:</p>
 <div class="sourceCode" id="cb436"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb436-1"><a href="#cb436-1" aria-hidden="true" tabindex="-1"></a><span class="pp">vec!</span>[</span>
-<span id="cb436-2"><a href="#cb436-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(<span class="pp">sail_delta_lake::planner::</span>DeltaTablePhysicalPlanner)<span class="op">,</span></span>
-<span id="cb436-3"><a href="#cb436-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(<span class="pp">sail_iceberg::</span>IcebergTablePhysicalPlanner)<span class="op">,</span></span>
-<span id="cb436-4"><a href="#cb436-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(DeltaExtensionPlanner)<span class="op">,</span></span>
-<span id="cb436-5"><a href="#cb436-5" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div>
-<p>The session query planner combines these with the system table
-planner and the general Sail extension planner.</p>
+<span id="cb436-2"><a href="#cb436-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(DeltaPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb436-3"><a href="#cb436-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(IcebergPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb436-4"><a href="#cb436-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(SystemTablePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb436-5"><a href="#cb436-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ListingPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb436-6"><a href="#cb436-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ConsolePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb436-7"><a href="#cb436-7" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(NoopPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb436-8"><a href="#cb436-8" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(PythonPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb436-9"><a href="#cb436-9" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ExtensionPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb436-10"><a href="#cb436-10" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div>
+<p>The session query planner builds this ordered list from concrete
+lakehouse, system, file, console, Python, and generic extension
+planners.</p>
 <p>This tells us that extension planner ordering is not theoretical. It
 already matters. Lakehouse planners need a chance to handle lakehouse
 nodes before the fallback Sail planner handles ordinary extension
@@ -12255,8 +12291,10 @@ it as a contributor’s map.</p>
 <td><code>crates/sail-logical-optimizer/src/lib.rs</code></td>
 </tr>
 <tr>
-<td>Lakehouse optimizer rule</td>
-<td><code>crates/sail-plan-lakehouse/src/optimizer.rs</code></td>
+<td>Lakehouse physical planners</td>
+<td><code>crates/sail-session/src/planner.rs</code>,
+<code>crates/sail-delta-lake/</code>,
+<code>crates/sail-iceberg/</code></td>
 </tr>
 <tr>
 <td>Physical optimizer rules</td>
@@ -13347,9 +13385,10 @@ distributed job runner, and Arrow batches move through every layer.</p>
 <code>crates/sail-session/src/formats.rs</code></td>
 </tr>
 <tr>
-<td>Understand Delta</td>
-<td><code>crates/sail-delta-lake/</code> and
-<code>crates/sail-plan-lakehouse/</code></td>
+<td>Understand Delta and Iceberg</td>
+<td><code>crates/sail-delta-lake/</code>,
+<code>crates/sail-iceberg/</code>, and
+<code>crates/sail-session/src/planner.rs</code></td>
 </tr>
 <tr>
 <td>Understand extensions</td>
@@ -13580,5 +13619,250 @@ back to the client.</p>
 <p>That is the shape to preserve as Sail grows.</p>
 <p>Navigation: <a href="#chapter-18">Previous: Chapter 18, Feature
 Playbooks</a> | <a href="#chapter-00">Reader Guide</a></p>
+<h1 data-number="21" id="chapter-20"><span class="header-section-number">21</span> Chapter 20: Current Codebase
+Edition</h1>
+<p>This edition updates the book against the local Sail checkout used
+for this build, verified on July 14, 2026. The checkout is
+<code>main</code> at commit <code>1500ebdf</code>, whose subject is
+<code>fix: count_min_sketch param types + optimize sketch aggregates (#2190)</code>.
+The newest tagged release described in the local Sail changelog is
+<code>0.6.6</code>, dated July 7, 2026. The important point for a reader
+is that Sail has moved from an already coherent Spark-compatible Rust
+engine into a broader compatibility and lakehouse implementation
+surface.</p>
+<p>The earlier chapters still describe the core architecture
+correctly:</p>
+<pre class="text"><code>client intent
+  -&gt; Spark Connect, SQL, or Flight SQL
+  -&gt; Sail spec and analyzer state
+  -&gt; DataFusion logical plan with Sail extensions
+  -&gt; physical plan
+  -&gt; local stream or distributed job graph
+  -&gt; Arrow RecordBatch stream
+  -&gt; protocol-specific response</code></pre>
+<p>What has changed is the density of the edges. More Spark SQL
+functions are real. More lakehouse paths are real. More catalog backends
+are real. More distributed execution corner cases have been worked
+through. The book now needs to be read less as a sketch of a promising
+architecture and more as a map of a fast-moving production codebase.</p>
+<h2 data-number="21.1" id="the-july-2026-surface"><span class="header-section-number">21.1</span> The July 2026 Surface</h2>
+<p>The 0.6.6 changelog emphasizes nine clusters of work:</p>
+<ul>
+<li>distributed query execution and cluster-plan correctness;</li>
+<li>Delta Lake integration;</li>
+<li><code>SHOW FUNCTIONS</code> and <code>DESCRIBE FUNCTION</code>;</li>
+<li>Python data-source option recovery from table properties;</li>
+<li><code>PIVOT</code> improvements;</li>
+<li>JSON, CSV, time, struct, binary, and sketch-function parity;</li>
+<li>Spark-compatible overflow and null semantics;</li>
+<li>error preservation across cluster mode;</li>
+<li>typed, vectorized function implementation improvements.</li>
+</ul>
+<p>The commits after the 0.6.6 tag continue the same pattern. They add
+Hive Metastore support for Spark data-source tables, migrate catalog
+OpenAPI clients, add an OpenAPI client generator, support
+<code>MERGE INTO</code> with path-based targets and DataFrame source
+references, reject ambiguous UDTF table arguments unless explicitly
+enabled, align aggregate and window ordering semantics, align
+<code>to_xml</code> serialization with Spark, move the codebase to Rust
+2024, and raise the Rust minimum supported compiler.</p>
+<p>This is not cosmetic churn. It says where the system is maturing:</p>
+<ul>
+<li>compatibility work has moved from headline protocol support into
+exact Spark behavior;</li>
+<li>lakehouse support has moved from simple reads toward commit, merge,
+and write semantics;</li>
+<li>catalogs are becoming a family of generated and hand-written
+providers rather than a single manager path;</li>
+<li>distributed execution is being hardened at the points where local
+assumptions leak across driver and worker boundaries;</li>
+<li>the function layer is increasingly data-driven, tested, and
+optimized.</li>
+</ul>
+<h2 data-number="21.2" id="the-current-crate-map"><span class="header-section-number">21.2</span> The Current Crate Map</h2>
+<p>The current Sail repository has a larger set of crates than a first
+read of the architecture suggests. A practical contributor map is:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Area</th>
+<th>Crates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protocol front doors</td>
+<td><code>sail-spark-connect</code>, <code>sail-flight</code>,
+<code>sail-server</code>, <code>sail-cli</code></td>
+</tr>
+<tr>
+<td>SQL and functions</td>
+<td><code>sail-sql-parser</code>, <code>sail-sql-analyzer</code>,
+<code>sail-sql-macro</code>, <code>sail-function</code></td>
+</tr>
+<tr>
+<td>Spec and planning</td>
+<td><code>sail-common</code>, <code>sail-plan</code>,
+<code>sail-logical-plan</code>, <code>sail-logical-optimizer</code></td>
+</tr>
+<tr>
+<td>Session and DataFusion integration</td>
+<td><code>sail-session</code>, <code>sail-common-datafusion</code></td>
+</tr>
+<tr>
+<td>Physical execution</td>
+<td><code>sail-physical-plan</code>,
+<code>sail-physical-optimizer</code>, <code>sail-execution</code></td>
+</tr>
+<tr>
+<td>Python and Arrow interop</td>
+<td><code>sail-python</code>, <code>sail-python-udf</code>,
+<code>sail-pyarrow</code></td>
+</tr>
+<tr>
+<td>Catalogs</td>
+<td><code>sail-catalog</code>, <code>sail-catalog-memory</code>,
+<code>sail-catalog-system</code>, <code>sail-catalog-hms</code>,
+<code>sail-catalog-glue</code>, <code>sail-catalog-iceberg</code>,
+<code>sail-catalog-unity</code>, <code>sail-catalog-onelake</code></td>
+</tr>
+<tr>
+<td>Lakehouse formats</td>
+<td><code>sail-delta-lake</code>, <code>sail-iceberg</code></td>
+</tr>
+<tr>
+<td>Storage and cache</td>
+<td><code>sail-data-source</code>, <code>sail-object-store</code>,
+<code>sail-cache</code></td>
+</tr>
+<tr>
+<td>Support</td>
+<td><code>sail-build-scripts</code>, <code>sail-gold-test</code>,
+<code>sail-telemetry</code></td>
+</tr>
+</tbody>
+</table>
+<p>This map is more useful than a dependency graph when you are trying
+to make a change. Start with the area that owns the user’s observable
+behavior, then walk inward until you find the semantic boundary:</p>
+<ul>
+<li>protocol conversion lives near Spark Connect, Flight SQL, or SQL
+parser code;</li>
+<li>Spark semantic decisions usually land in analyzer, spec, resolver,
+function, or catalog layers;</li>
+<li>DataFusion integration lands in session, logical/physical extension
+nodes, or physical planners;</li>
+<li>distributed behavior lands in job graphs, codecs, workers, task
+streams, and shuffle paths;</li>
+<li>lakehouse writes land in table-format code and driver-side commit
+rules.</li>
+</ul>
+<h2 data-number="21.3" id="what-the-book-should-teach-more-strongly"><span class="header-section-number">21.3</span> What The Book Should Teach
+More Strongly</h2>
+<p>The review for this edition found ten improvements that matter more
+than surface polish.</p>
+<p>First, the book needs release-aware text. A reader should know which
+claims are timeless architecture and which are July 2026 capability
+snapshots.</p>
+<p>Second, the short late chapters should be expanded. Flight SQL,
+custom nodes, local and streaming execution, testing, feature playbooks,
+and navigation should be full working chapters because they are exactly
+where contributors go after they understand the core path.</p>
+<p>Third, SQL function coverage should be less abstract. The
+implementation now has enough function metadata, generated code,
+vectorization work, ANSI behavior, and Spark parity fixes to deserve a
+deeper explanation of how one function becomes parser support, analyzer
+support, resolver behavior, DataFusion execution, tests, and remote
+execution codecs.</p>
+<p>Fourth, lakehouse coverage should move past “Delta and Iceberg
+exist.” The book should explain Delta and Iceberg as table-format
+contracts that interact with catalogs, data sources, row-level
+operations, path-based targets, DataFrame source references, and
+driver-side commits.</p>
+<p>Fifth, catalog coverage should make the provider family visible. HMS,
+Glue, Unity, OneLake, Iceberg REST, system, and memory catalogs are not
+only names in a list. They are examples of how Sail isolates namespace,
+table status, authentication, generated OpenAPI clients, and
+Spark-compatible metadata.</p>
+<p>Sixth, distributed execution coverage should name the failure modes:
+scalar subqueries in distributed plans, remote function semantics,
+data-source work stealing, noop sinks, Flight schema mismatches, worker
+error preservation, and lakehouse commits running on the driver.</p>
+<p>Seventh, cache and object-store architecture should be first-class.
+The <code>sail-cache</code> and <code>sail-object-store</code> crates
+show how Sail is growing the storage substrate beneath DataFusion
+instead of treating object access as a detail.</p>
+<p>Eighth, the Rust foundations chapter should be updated for Rust 2024
+and the new MSRV. Contributors need to know when modern language
+features are available and when Sail’s style still favors explicit
+boundary types.</p>
+<p>Ninth, examples should become traceable. A code excerpt should not be
+a dead quotation copied into prose. It should carry a fragment identity,
+source path, line range, and subsystem summary.</p>
+<p>Tenth, the book now needs a vault edition.</p>
+<h2 data-number="21.4" id="the-obsidian-vault-edition"><span class="header-section-number">21.4</span> The Obsidian Vault
+Edition</h2>
+<p>The generated Obsidian vault is an additional format, not a
+replacement for the PDF or EPUB. Its job is to make the book and
+codebase navigable together.</p>
+<p>The vault is generated at:</p>
+<pre class="text"><code>sail-rust-book/book/dist-obsidian/Sail Rust Book Vault/</code></pre>
+<p>It contains:</p>
+<ul>
+<li>all book chapters as Obsidian notes;</li>
+<li>every included Sail source file as a code-file note;</li>
+<li>crate notes;</li>
+<li>subsystem notes;</li>
+<li>code-fragment notes for extracted Rust, Python, and Markdown
+definitions;</li>
+<li>machine-readable ledgers under <code>_data/</code>;</li>
+<li>a local <code>sail-code-fragments</code> plugin.</li>
+</ul>
+<p>The plugin is intentionally small. A generated chapter note contains
+<code>sail-fragment</code> cards. Clicking one opens the collocated
+code-file note and asks Obsidian to highlight the selected fragment
+region. This changes the reading model. The PDF and EPUB teach the
+system linearly. The vault lets a reader follow a paragraph into the
+codebase, then follow the codebase back into crates, subsystems, and
+adjacent fragments.</p>
+<p>The vault currently excludes generated local environments and
+data-output folders such as <code>.venvs/</code>, <code>target/</code>,
+<code>node_modules/</code>, and <code>spark-warehouse/</code>. That
+keeps the vault focused on the authored codebase instead of generated
+dependency or test-output material.</p>
+<h2 data-number="21.5" id="how-to-build-this-edition"><span class="header-section-number">21.5</span> How To Build This Edition</h2>
+<p>From the source book repository:</p>
+<div class="sourceCode" id="cb508"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb508-1"><a href="#cb508-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/src/book-sources/sail-rust-book&quot;</span></span>
+<span id="cb508-2"><a href="#cb508-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./sail-rust-book/build.sh</span></span>
+<span id="cb508-3"><a href="#cb508-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> sail-rust-book/scripts/build-obsidian-vault.py <span class="dt">\</span></span>
+<span id="cb508-4"><a href="#cb508-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--sail-root</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/src/sail&quot;</span></span>
+<span id="cb508-5"><a href="#cb508-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> sail-rust-book/scripts/check-obsidian-vault.py <span class="dt">\</span></span>
+<span id="cb508-6"><a href="#cb508-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;sail-rust-book/book/dist-obsidian/Sail Rust Book Vault&quot;</span></span></code></pre></div>
+<p>The first command builds the FirstPair PDF, EPUB, HTML, chapter HTML,
+and MOBI artifacts. The second command builds the Obsidian vault. The
+third validates required notes, data ledgers, fragment targets, plugin
+files, and internal wikilinks.</p>
+<p>Do not confuse this with public publication. Building refreshes local
+artifacts. FirstPair publication is a separate outward-facing action
+governed by <code>FIRSTPAIR.md</code> and the central FirstPair
+repository.</p>
+<h2 data-number="21.6" id="the-new-mental-model"><span class="header-section-number">21.6</span> The New Mental Model</h2>
+<p>The previous mental model was a pipeline. Keep it. It is still
+correct.</p>
+<p>The new mental model adds an index:</p>
+<pre class="text"><code>book paragraph
+  -&gt; code fragment
+  -&gt; source file note
+  -&gt; crate note
+  -&gt; subsystem note
+  -&gt; neighboring fragments
+  -&gt; back to the book</code></pre>
+<p>For a codebase book, that loop is the point. The book should not only
+describe Sail. It should give a reader a durable way to move through
+Sail while the project keeps changing.</p>
 </body>
 </html>

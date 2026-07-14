@@ -1,4 +1,4 @@
-# Sail: The Rust, Arrow, and DataFusion Guide
+# Sail Rust Book
 
 This book is a definitive guided reading of Sail as a Spark-compatible distributed
 query engine. It teaches Rust, Apache Arrow, Apache DataFusion, Spark Connect,
@@ -6,7 +6,9 @@ Flight SQL, PySpark interoperability, distributed execution, storage integration
 testing, and extension design by following the code paths that make Sail work.
 
 The source chapters live in `sources/`. The build script renders Markdown and
-Mermaid diagrams to PDF, EPUB, and MOBI artifacts in `book/`.
+Mermaid diagrams to PDF, EPUB, HTML, chapter HTML, and MOBI artifacts in
+`book/`. The Obsidian vault generator renders a separate code-navigation vault
+under `book/dist-obsidian/`.
 
 ## Structure
 
@@ -69,6 +71,8 @@ Mermaid diagrams to PDF, EPUB, and MOBI artifacts in `book/`.
    distributed codecs.
 19. **Roadmap and Codebase Navigation** - task-oriented file map, symptom map,
    maturity/evolution areas, capability snapshot, and closing mental model.
+20. **Current Codebase Edition** - July 2026 codebase update, Sail 0.6.6 and
+   post-release changes, crate map, and Obsidian vault navigation model.
 
 ## Build
 
@@ -91,3 +95,11 @@ Build only the PDF:
 
 Build artifacts are written to `sail-rust-book/book/` and verified against the
 shared FirstPair book contract.
+
+Build the Obsidian vault:
+
+```bash
+python3 sail-rust-book/scripts/build-obsidian-vault.py
+python3 sail-rust-book/scripts/check-obsidian-vault.py \
+  "sail-rust-book/book/dist-obsidian/Sail Rust Book Vault"
+```

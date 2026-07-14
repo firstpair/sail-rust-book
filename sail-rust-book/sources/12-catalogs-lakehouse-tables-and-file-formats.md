@@ -50,7 +50,7 @@ The main files for this chapter are:
 | Parquet format example | `crates/sail-data-source/src/formats/parquet/mod.rs` |
 | Delta table format | `crates/sail-delta-lake/src/table_format.rs` |
 | Iceberg table format | `crates/sail-iceberg/src/table_format.rs` |
-| Lakehouse extension planners | `crates/sail-plan-lakehouse/src/lib.rs` |
+| Lakehouse extension planners | `crates/sail-session/src/planner.rs`, `crates/sail-delta-lake/`, `crates/sail-iceberg/` |
 | Python data source table format | `crates/sail-data-source/src/formats/python/table_format.rs` |
 
 ## The Storage Boundary
@@ -716,26 +716,28 @@ row-level capabilities differ.
 
 ## Lakehouse Extension Planners
 
-Lakehouse tables need special physical planning. `crates/sail-plan-lakehouse/src/lib.rs`
-adds extension planners:
+Lakehouse tables need special physical planning. In the current codebase,
+`crates/sail-session/src/planner.rs` installs the Delta and Iceberg physical
+planners before the general Sail extension planner:
 
 ```rust
-pub fn new_lakehouse_extension_planners() -> Vec<Arc<dyn ExtensionPlanner + Send + Sync>> {
-    vec![
-        Arc::new(sail_delta_lake::planner::DeltaTablePhysicalPlanner),
-        Arc::new(sail_iceberg::IcebergTablePhysicalPlanner),
-        Arc::new(DeltaExtensionPlanner),
-    ]
-}
+let extension_planners: Vec<Arc<dyn ExtensionPlanner + Send + Sync>> = vec![
+    Arc::new(DeltaPhysicalPlanner),
+    Arc::new(IcebergPhysicalPlanner),
+    Arc::new(SystemTablePhysicalPlanner),
+    Arc::new(ListingPhysicalPlanner),
+    Arc::new(ConsolePhysicalPlanner),
+    Arc::new(NoopPhysicalPlanner),
+    Arc::new(PythonPhysicalPlanner),
+    Arc::new(ExtensionPhysicalPlanner),
+];
 ```
 
 The session query planner installs these before the general Sail extension planner.
 That gives lakehouse planners first chance to handle lakehouse-specific nodes.
 
-`DeltaExtensionPlanner` handles:
+`DeltaPhysicalPlanner` handles:
 
-- `FileWriteNode` for lakehouse formats,
-- `FileDeleteNode` for lakehouse deletes that were not expanded,
 - `RowLevelWriteNode`,
 - `MergeCardinalityCheckNode`.
 
@@ -747,7 +749,7 @@ flowchart TB
     B --> C["row-level logical node"]
     C --> D["lakehouse optimizer expansion"]
     D --> E["RowLevelWriteNode"]
-    E --> F["DeltaExtensionPlanner"]
+    E --> F["DeltaPhysicalPlanner"]
     F --> G["create_row_level_write_physical_plan"]
     G --> H["TableFormat.create_row_level_writer"]
     H --> I["Delta row-level ExecutionPlan"]

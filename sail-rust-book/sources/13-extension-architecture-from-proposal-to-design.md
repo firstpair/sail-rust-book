@@ -54,7 +54,7 @@ The main files for this chapter are:
 | Existing extension pattern: format registration | `crates/sail-session/src/formats.rs` |
 | Existing extension pattern: Python data source discovery | `crates/sail-data-source/src/formats/python/discovery.rs` |
 | Existing extension pattern: Python table format | `crates/sail-data-source/src/formats/python/table_format.rs` |
-| Existing extension pattern: lakehouse planners | `crates/sail-plan-lakehouse/src/lib.rs` |
+| Existing extension pattern: lakehouse planners | `crates/sail-session/src/planner.rs`, `crates/sail-delta-lake/`, `crates/sail-iceberg/` |
 | Existing extension pattern: physical plan nodes | `crates/sail-physical-plan/src/` |
 
 ## What The Proposal Is Really Asking For
@@ -220,14 +220,19 @@ Lakehouse planning already contributes physical planners:
 
 ```rust
 vec![
-    Arc::new(sail_delta_lake::planner::DeltaTablePhysicalPlanner),
-    Arc::new(sail_iceberg::IcebergTablePhysicalPlanner),
-    Arc::new(DeltaExtensionPlanner),
+    Arc::new(DeltaPhysicalPlanner),
+    Arc::new(IcebergPhysicalPlanner),
+    Arc::new(SystemTablePhysicalPlanner),
+    Arc::new(ListingPhysicalPlanner),
+    Arc::new(ConsolePhysicalPlanner),
+    Arc::new(NoopPhysicalPlanner),
+    Arc::new(PythonPhysicalPlanner),
+    Arc::new(ExtensionPhysicalPlanner),
 ]
 ```
 
-The session query planner combines these with the system table planner and the
-general Sail extension planner.
+The session query planner builds this ordered list from concrete lakehouse,
+system, file, console, Python, and generic extension planners.
 
 This tells us that extension planner ordering is not theoretical. It already matters.
 Lakehouse planners need a chance to handle lakehouse nodes before the fallback Sail

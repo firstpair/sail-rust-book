@@ -184,7 +184,9 @@ $endif$
 $if(keywords)$
   keywords: ($for(keywords)$$keywords$$sep$,$endfor$),
 $endif$
-$if(date)$
+$if(displaydate)$
+  date: [$displaydate$],
+$elseif(date)$
   date: [$date$],
 $endif$
 $if(lang)$

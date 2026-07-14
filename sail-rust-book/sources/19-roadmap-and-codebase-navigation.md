@@ -25,7 +25,7 @@ batches move through every layer.
 | Understand Python UDFs | `crates/sail-python-udf/src/` |
 | Understand catalogs | `crates/sail-catalog/` and `crates/sail-session/src/catalog.rs` |
 | Understand table formats | `crates/sail-common-datafusion/src/datasource.rs` and `crates/sail-session/src/formats.rs` |
-| Understand Delta | `crates/sail-delta-lake/` and `crates/sail-plan-lakehouse/` |
+| Understand Delta and Iceberg | `crates/sail-delta-lake/`, `crates/sail-iceberg/`, and `crates/sail-session/src/planner.rs` |
 | Understand extensions | `crates/sail-session`, `crates/sail-plan`, `crates/sail-execution/src/codec.rs` |
 
 ## Start By Symptom

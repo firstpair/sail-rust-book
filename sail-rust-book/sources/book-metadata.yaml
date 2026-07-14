@@ -1,11 +1,11 @@
 ---
-title: |
-  Sail: The Rust, Arrow, and DataFusion Guide
-subtitle: "A Definitive Architecture Book for Spark-Compatible Distributed Query Processing"
+title: "Sail Rust Book"
+subtitle: "The Rust, Arrow, and DataFusion Guide"
 author:
-  - "Alexy Khrabrov (chiefscientist.org)"
-  - "Codex ChatGPT 5.5 and Claude Opus 4.7"
-date: "June 2026"
+  - "Alexy Khrabrov ∈ LakeSail Team"
+date: "July 2026"
+displaydate: "July 2026"
+cover_image: "sail-rust-book/assets/cover/sail-rust-book-cover.png"
 lang: "en-US"
 toc-title: "Contents"
 ---

@@ -4,9 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
-  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
-  <meta name="dcterms.date" content="2026-07-11" />
+  <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
+  <meta name="dcterms.date" content="2026-07-14" />
   <title>Chapter 12: Catalogs, Lakehouse Tables, And File
 Formats</title>
   <style>
@@ -102,10 +101,10 @@ Formats</title>
 <nav id="sitenav">
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail Rust Book</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail Rust Book</a>
 </span>
 </div>
 <div class="sitenav">
@@ -228,7 +227,9 @@ class="header-section-number">13.1</span> Code Map</h2>
 </tr>
 <tr>
 <td>Lakehouse extension planners</td>
-<td><code>crates/sail-plan-lakehouse/src/lib.rs</code></td>
+<td><code>crates/sail-session/src/planner.rs</code>,
+<code>crates/sail-delta-lake/</code>,
+<code>crates/sail-iceberg/</code></td>
 </tr>
 <tr>
 <td>Python data source table format</td>
@@ -847,25 +848,26 @@ but their current row-level capabilities differ.</p>
 <h2 data-number="13.18" id="lakehouse-extension-planners"><span
 class="header-section-number">13.18</span> Lakehouse Extension
 Planners</h2>
-<p>Lakehouse tables need special physical planning.
-<code>crates/sail-plan-lakehouse/src/lib.rs</code> adds extension
-planners:</p>
+<p>Lakehouse tables need special physical planning. In the current
+codebase, <code>crates/sail-session/src/planner.rs</code> installs the
+Delta and Iceberg physical planners before the general Sail extension
+planner:</p>
 <div class="sourceCode" id="cb25"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> new_lakehouse_extension_planners() <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">{</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">vec!</span>[</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">Arc::</span>new(<span class="pp">sail_delta_lake::planner::</span>DeltaTablePhysicalPlanner)<span class="op">,</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">Arc::</span>new(<span class="pp">sail_iceberg::</span>IcebergTablePhysicalPlanner)<span class="op">,</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        <span class="pp">Arc::</span>new(DeltaExtensionPlanner)<span class="op">,</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> extension_planners<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExtensionPlanner <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="pp">vec!</span>[</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(DeltaPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(IcebergPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(SystemTablePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ListingPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ConsolePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(NoopPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(PythonPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ExtensionPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>]<span class="op">;</span></span></code></pre></div>
 <p>The session query planner installs these before the general Sail
 extension planner. That gives lakehouse planners first chance to handle
 lakehouse-specific nodes.</p>
-<p><code>DeltaExtensionPlanner</code> handles:</p>
+<p><code>DeltaPhysicalPlanner</code> handles:</p>
 <ul>
-<li><code>FileWriteNode</code> for lakehouse formats,</li>
-<li><code>FileDeleteNode</code> for lakehouse deletes that were not
-expanded,</li>
 <li><code>RowLevelWriteNode</code>,</li>
 <li><code>MergeCardinalityCheckNode</code>.</li>
 </ul>

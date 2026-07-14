@@ -9,6 +9,7 @@ build/
 # Intermediate generated files
 **/out/*.typ
 */processed/
+sail-rust-book/book/dist-obsidian/
 
 # Versioned delivery aliases (stable book artifacts remain tracked)
 sail-rust-book/book/sail-rust-book (*

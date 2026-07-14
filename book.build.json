@@ -6,9 +6,9 @@
   "metadata": "${buildDir}/book-metadata.yaml",
   "css": "${buildDir}/epub.css",
   "stem": "sail-rust-book",
-  "title": "Sail: The Rust, Arrow, and DataFusion Guide",
-  "subtitle": "A Definitive Architecture Book for Spark-Compatible Distributed Query Processing",
-  "author": "Alexy Khrabrov (chiefscientist.org) & Codex ChatGPT 5.5 and Claude Opus 4.7",
+  "title": "Sail Rust Book",
+  "subtitle": "The Rust, Arrow, and DataFusion Guide",
+  "author": "Alexy Khrabrov ∈ LakeSail Team",
   "version": {
     "source": "file",
     "file": "sail-rust-book/VERSION"
@@ -21,12 +21,18 @@
   "pandoc": {
     "reader": "markdown+smart",
     "tocDepth": 2,
-    "resourcePaths": ["${buildDir}", "${buildDir}/diagrams", "sail-rust-book", "${repoRoot}"],
-    "commonArgs": ["--metadata", "date=June 2026"]
+    "resourcePaths": ["${buildDir}", "${buildDir}/diagrams", "sail-rust-book", "${repoRoot}"]
   },
   "pdf": {
     "separateCover": false,
+    "coverImage": "sail-rust-book/assets/cover/sail-rust-book-cover.png",
+    "coverWidth": "8.5in",
+    "coverHeight": "11in",
+    "coverFit": "cover",
     "args": ["--template", "${buildDir}/template.typ"]
+  },
+  "epub": {
+    "coverImage": "sail-rust-book/assets/cover/sail-rust-book-cover.png"
   },
   "html": {
     "splitLevel": 1

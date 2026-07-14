@@ -4,9 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="author" content="Alexy Khrabrov (chiefscientist.org)" />
-  <meta name="author" content="Codex ChatGPT 5.5 and Claude Opus 4.7" />
-  <meta name="dcterms.date" content="2026-07-11" />
+  <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
+  <meta name="dcterms.date" content="2026-07-14" />
   <title>Chapter 13: Extension Architecture: From Proposal To
 Design</title>
   <style>
@@ -102,10 +101,10 @@ Design</title>
 <nav id="sitenav">
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail: The Rust, Arrow, and DataFusion Guide</a>
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail Rust Book</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail: The Rust, Arrow, and DataFusion Guide</a>
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail Rust Book</a>
 </span>
 </div>
 <div class="sitenav">
@@ -216,7 +215,9 @@ class="header-section-number">14.1</span> Code Map</h2>
 </tr>
 <tr>
 <td>Existing extension pattern: lakehouse planners</td>
-<td><code>crates/sail-plan-lakehouse/src/lib.rs</code></td>
+<td><code>crates/sail-session/src/planner.rs</code>,
+<code>crates/sail-delta-lake/</code>,
+<code>crates/sail-iceberg/</code></td>
 </tr>
 <tr>
 <td>Existing extension pattern: physical plan nodes</td>
@@ -371,12 +372,18 @@ class="header-section-number">14.4.4</span> Lakehouse Planner Chain</h3>
 <p>Lakehouse planning already contributes physical planners:</p>
 <div class="sourceCode" id="cb9"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">vec!</span>[</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(<span class="pp">sail_delta_lake::planner::</span>DeltaTablePhysicalPlanner)<span class="op">,</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(<span class="pp">sail_iceberg::</span>IcebergTablePhysicalPlanner)<span class="op">,</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(DeltaExtensionPlanner)<span class="op">,</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div>
-<p>The session query planner combines these with the system table
-planner and the general Sail extension planner.</p>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(DeltaPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(IcebergPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(SystemTablePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ListingPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ConsolePhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(NoopPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(PythonPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="pp">Arc::</span>new(ExtensionPhysicalPlanner)<span class="op">,</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div>
+<p>The session query planner builds this ordered list from concrete
+lakehouse, system, file, console, Python, and generic extension
+planners.</p>
 <p>This tells us that extension planner ordering is not theoretical. It
 already matters. Lakehouse planners need a chance to handle lakehouse
 nodes before the fallback Sail planner handles ordinary extension

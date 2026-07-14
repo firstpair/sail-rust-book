@@ -1,0 +1,9 @@
+{
+  "id": "sail-code-fragments",
+  "name": "Sail Code Fragments",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Jump from Sail book fragment cards to collocated code-file notes and highlight the selected fragment.",
+  "author": "FirstPair",
+  "isDesktopOnly": false
+}

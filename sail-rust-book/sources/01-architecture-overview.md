@@ -39,7 +39,7 @@ Sail has a few major subsystems. Each one has a clean teaching role.
 | Query execution | `sail-execution` | local execution, cluster execution, job graphs, stages, tasks, drivers, workers, shuffles |
 | Spark semantics | `sail-function`, `sail-logical-plan`, `sail-physical-plan`, `sail-logical-optimizer`, `sail-physical-optimizer` | custom functions, logical nodes, physical nodes, optimizer behavior |
 | Data transport | Arrow, Arrow IPC, Arrow Flight | columnar batches across process and network boundaries |
-| Catalogs and formats | `sail-catalog-*`, `sail-data-source`, `sail-plan-lakehouse` | table discovery, scans, writes, system tables, lakehouse integration |
+| Catalogs and formats | `sail-catalog-*`, `sail-data-source`, `sail-delta-lake`, `sail-iceberg` | table discovery, scans, writes, system tables, lakehouse integration |
 
 The most important mental model is this:
 

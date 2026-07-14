@@ -1,0 +1,31 @@
+.sail-fragment-card {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  padding: 0.6rem;
+  margin: 0.65rem 0;
+  background: var(--background-secondary);
+}
+
+.sail-fragment-title {
+  font-family: var(--font-monospace);
+  font-size: 0.86rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.sail-fragment-meta {
+  color: var(--text-muted);
+  font-family: var(--font-monospace);
+  font-size: 0.78rem;
+  margin-bottom: 0.45rem;
+}
+
+.sail-fragment-card button {
+  cursor: pointer;
+}
+
+.sail-fragment-highlight {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 4px;
+  background: color-mix(in srgb, var(--interactive-accent) 12%, transparent);
+}

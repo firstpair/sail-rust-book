@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
+  <meta name="dcterms.date" content="2026-07-14" />
+  <title>Chapter 20: Current Codebase Edition</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="book.css" />
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up">Sail Rust Book</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top">Sail Rust Book</a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="chapter-020.html" accesskey="p" rel="previous">Chapter 19: Roadmap And Codebase Navigation</a>
+</span>
+</div>
+</nav>
+<h1 data-number="21" id="chapter-20"><span
+class="header-section-number">21</span> Chapter 20: Current Codebase
+Edition</h1>
+<p>This edition updates the book against the local Sail checkout used
+for this build, verified on July 14, 2026. The checkout is
+<code>main</code> at commit <code>1500ebdf</code>, whose subject is
+<code>fix: count_min_sketch param types + optimize sketch aggregates (#2190)</code>.
+The newest tagged release described in the local Sail changelog is
+<code>0.6.6</code>, dated July 7, 2026. The important point for a reader
+is that Sail has moved from an already coherent Spark-compatible Rust
+engine into a broader compatibility and lakehouse implementation
+surface.</p>
+<p>The earlier chapters still describe the core architecture
+correctly:</p>
+<pre class="text"><code>client intent
+  -&gt; Spark Connect, SQL, or Flight SQL
+  -&gt; Sail spec and analyzer state
+  -&gt; DataFusion logical plan with Sail extensions
+  -&gt; physical plan
+  -&gt; local stream or distributed job graph
+  -&gt; Arrow RecordBatch stream
+  -&gt; protocol-specific response</code></pre>
+<p>What has changed is the density of the edges. More Spark SQL
+functions are real. More lakehouse paths are real. More catalog backends
+are real. More distributed execution corner cases have been worked
+through. The book now needs to be read less as a sketch of a promising
+architecture and more as a map of a fast-moving production codebase.</p>
+<h2 data-number="21.1" id="the-july-2026-surface"><span
+class="header-section-number">21.1</span> The July 2026 Surface</h2>
+<p>The 0.6.6 changelog emphasizes nine clusters of work:</p>
+<ul>
+<li>distributed query execution and cluster-plan correctness;</li>
+<li>Delta Lake integration;</li>
+<li><code>SHOW FUNCTIONS</code> and <code>DESCRIBE FUNCTION</code>;</li>
+<li>Python data-source option recovery from table properties;</li>
+<li><code>PIVOT</code> improvements;</li>
+<li>JSON, CSV, time, struct, binary, and sketch-function parity;</li>
+<li>Spark-compatible overflow and null semantics;</li>
+<li>error preservation across cluster mode;</li>
+<li>typed, vectorized function implementation improvements.</li>
+</ul>
+<p>The commits after the 0.6.6 tag continue the same pattern. They add
+Hive Metastore support for Spark data-source tables, migrate catalog
+OpenAPI clients, add an OpenAPI client generator, support
+<code>MERGE INTO</code> with path-based targets and DataFrame source
+references, reject ambiguous UDTF table arguments unless explicitly
+enabled, align aggregate and window ordering semantics, align
+<code>to_xml</code> serialization with Spark, move the codebase to Rust
+2024, and raise the Rust minimum supported compiler.</p>
+<p>This is not cosmetic churn. It says where the system is maturing:</p>
+<ul>
+<li>compatibility work has moved from headline protocol support into
+exact Spark behavior;</li>
+<li>lakehouse support has moved from simple reads toward commit, merge,
+and write semantics;</li>
+<li>catalogs are becoming a family of generated and hand-written
+providers rather than a single manager path;</li>
+<li>distributed execution is being hardened at the points where local
+assumptions leak across driver and worker boundaries;</li>
+<li>the function layer is increasingly data-driven, tested, and
+optimized.</li>
+</ul>
+<h2 data-number="21.2" id="the-current-crate-map"><span
+class="header-section-number">21.2</span> The Current Crate Map</h2>
+<p>The current Sail repository has a larger set of crates than a first
+read of the architecture suggests. A practical contributor map is:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Area</th>
+<th>Crates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protocol front doors</td>
+<td><code>sail-spark-connect</code>, <code>sail-flight</code>,
+<code>sail-server</code>, <code>sail-cli</code></td>
+</tr>
+<tr>
+<td>SQL and functions</td>
+<td><code>sail-sql-parser</code>, <code>sail-sql-analyzer</code>,
+<code>sail-sql-macro</code>, <code>sail-function</code></td>
+</tr>
+<tr>
+<td>Spec and planning</td>
+<td><code>sail-common</code>, <code>sail-plan</code>,
+<code>sail-logical-plan</code>, <code>sail-logical-optimizer</code></td>
+</tr>
+<tr>
+<td>Session and DataFusion integration</td>
+<td><code>sail-session</code>, <code>sail-common-datafusion</code></td>
+</tr>
+<tr>
+<td>Physical execution</td>
+<td><code>sail-physical-plan</code>,
+<code>sail-physical-optimizer</code>, <code>sail-execution</code></td>
+</tr>
+<tr>
+<td>Python and Arrow interop</td>
+<td><code>sail-python</code>, <code>sail-python-udf</code>,
+<code>sail-pyarrow</code></td>
+</tr>
+<tr>
+<td>Catalogs</td>
+<td><code>sail-catalog</code>, <code>sail-catalog-memory</code>,
+<code>sail-catalog-system</code>, <code>sail-catalog-hms</code>,
+<code>sail-catalog-glue</code>, <code>sail-catalog-iceberg</code>,
+<code>sail-catalog-unity</code>, <code>sail-catalog-onelake</code></td>
+</tr>
+<tr>
+<td>Lakehouse formats</td>
+<td><code>sail-delta-lake</code>, <code>sail-iceberg</code></td>
+</tr>
+<tr>
+<td>Storage and cache</td>
+<td><code>sail-data-source</code>, <code>sail-object-store</code>,
+<code>sail-cache</code></td>
+</tr>
+<tr>
+<td>Support</td>
+<td><code>sail-build-scripts</code>, <code>sail-gold-test</code>,
+<code>sail-telemetry</code></td>
+</tr>
+</tbody>
+</table>
+<p>This map is more useful than a dependency graph when you are trying
+to make a change. Start with the area that owns the user’s observable
+behavior, then walk inward until you find the semantic boundary:</p>
+<ul>
+<li>protocol conversion lives near Spark Connect, Flight SQL, or SQL
+parser code;</li>
+<li>Spark semantic decisions usually land in analyzer, spec, resolver,
+function, or catalog layers;</li>
+<li>DataFusion integration lands in session, logical/physical extension
+nodes, or physical planners;</li>
+<li>distributed behavior lands in job graphs, codecs, workers, task
+streams, and shuffle paths;</li>
+<li>lakehouse writes land in table-format code and driver-side commit
+rules.</li>
+</ul>
+<h2 data-number="21.3"
+id="what-the-book-should-teach-more-strongly"><span
+class="header-section-number">21.3</span> What The Book Should Teach
+More Strongly</h2>
+<p>The review for this edition found ten improvements that matter more
+than surface polish.</p>
+<p>First, the book needs release-aware text. A reader should know which
+claims are timeless architecture and which are July 2026 capability
+snapshots.</p>
+<p>Second, the short late chapters should be expanded. Flight SQL,
+custom nodes, local and streaming execution, testing, feature playbooks,
+and navigation should be full working chapters because they are exactly
+where contributors go after they understand the core path.</p>
+<p>Third, SQL function coverage should be less abstract. The
+implementation now has enough function metadata, generated code,
+vectorization work, ANSI behavior, and Spark parity fixes to deserve a
+deeper explanation of how one function becomes parser support, analyzer
+support, resolver behavior, DataFusion execution, tests, and remote
+execution codecs.</p>
+<p>Fourth, lakehouse coverage should move past “Delta and Iceberg
+exist.” The book should explain Delta and Iceberg as table-format
+contracts that interact with catalogs, data sources, row-level
+operations, path-based targets, DataFrame source references, and
+driver-side commits.</p>
+<p>Fifth, catalog coverage should make the provider family visible. HMS,
+Glue, Unity, OneLake, Iceberg REST, system, and memory catalogs are not
+only names in a list. They are examples of how Sail isolates namespace,
+table status, authentication, generated OpenAPI clients, and
+Spark-compatible metadata.</p>
+<p>Sixth, distributed execution coverage should name the failure modes:
+scalar subqueries in distributed plans, remote function semantics,
+data-source work stealing, noop sinks, Flight schema mismatches, worker
+error preservation, and lakehouse commits running on the driver.</p>
+<p>Seventh, cache and object-store architecture should be first-class.
+The <code>sail-cache</code> and <code>sail-object-store</code> crates
+show how Sail is growing the storage substrate beneath DataFusion
+instead of treating object access as a detail.</p>
+<p>Eighth, the Rust foundations chapter should be updated for Rust 2024
+and the new MSRV. Contributors need to know when modern language
+features are available and when Sail’s style still favors explicit
+boundary types.</p>
+<p>Ninth, examples should become traceable. A code excerpt should not be
+a dead quotation copied into prose. It should carry a fragment identity,
+source path, line range, and subsystem summary.</p>
+<p>Tenth, the book now needs a vault edition.</p>
+<h2 data-number="21.4" id="the-obsidian-vault-edition"><span
+class="header-section-number">21.4</span> The Obsidian Vault
+Edition</h2>
+<p>The generated Obsidian vault is an additional format, not a
+replacement for the PDF or EPUB. Its job is to make the book and
+codebase navigable together.</p>
+<p>The vault is generated at:</p>
+<pre class="text"><code>sail-rust-book/book/dist-obsidian/Sail Rust Book Vault/</code></pre>
+<p>It contains:</p>
+<ul>
+<li>all book chapters as Obsidian notes;</li>
+<li>every included Sail source file as a code-file note;</li>
+<li>crate notes;</li>
+<li>subsystem notes;</li>
+<li>code-fragment notes for extracted Rust, Python, and Markdown
+definitions;</li>
+<li>machine-readable ledgers under <code>_data/</code>;</li>
+<li>a local <code>sail-code-fragments</code> plugin.</li>
+</ul>
+<p>The plugin is intentionally small. A generated chapter note contains
+<code>sail-fragment</code> cards. Clicking one opens the collocated
+code-file note and asks Obsidian to highlight the selected fragment
+region. This changes the reading model. The PDF and EPUB teach the
+system linearly. The vault lets a reader follow a paragraph into the
+codebase, then follow the codebase back into crates, subsystems, and
+adjacent fragments.</p>
+<p>The vault currently excludes generated local environments and
+data-output folders such as <code>.venvs/</code>, <code>target/</code>,
+<code>node_modules/</code>, and <code>spark-warehouse/</code>. That
+keeps the vault focused on the authored codebase instead of generated
+dependency or test-output material.</p>
+<h2 data-number="21.5" id="how-to-build-this-edition"><span
+class="header-section-number">21.5</span> How To Build This Edition</h2>
+<p>From the source book repository:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/src/book-sources/sail-rust-book&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./sail-rust-book/build.sh</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> sail-rust-book/scripts/build-obsidian-vault.py <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--sail-root</span> <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/src/sail&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> sail-rust-book/scripts/check-obsidian-vault.py <span class="dt">\</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;sail-rust-book/book/dist-obsidian/Sail Rust Book Vault&quot;</span></span></code></pre></div>
+<p>The first command builds the FirstPair PDF, EPUB, HTML, chapter HTML,
+and MOBI artifacts. The second command builds the Obsidian vault. The
+third validates required notes, data ledgers, fragment targets, plugin
+files, and internal wikilinks.</p>
+<p>Do not confuse this with public publication. Building refreshes local
+artifacts. FirstPair publication is a separate outward-facing action
+governed by <code>FIRSTPAIR.md</code> and the central FirstPair
+repository.</p>
+<h2 data-number="21.6" id="the-new-mental-model"><span
+class="header-section-number">21.6</span> The New Mental Model</h2>
+<p>The previous mental model was a pipeline. Keep it. It is still
+correct.</p>
+<p>The new mental model adds an index:</p>
+<pre class="text"><code>book paragraph
+  -&gt; code fragment
+  -&gt; source file note
+  -&gt; crate note
+  -&gt; subsystem note
+  -&gt; neighboring fragments
+  -&gt; back to the book</code></pre>
+<p>For a codebase book, that loop is the point. The book should not only
+describe Sail. It should give a reader a durable way to move through
+Sail while the project keeps changing.</p>
+</body>
+</html>
