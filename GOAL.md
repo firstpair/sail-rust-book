@@ -268,6 +268,14 @@ python3 sail-rust-book/scripts/check-obsidian-vault.py \
   and links the original Sail repository plus the book source repository.
 - iCloud copies were verified byte-for-byte for the PDF, EPUB, Vault ZIP, and
   Vault guide.
-- Announcement package created at
+- Announcement package initially created at
   `/Users/alexy/src/firstpair/blog/announcing-sail-rust-book/` and delivered as
   `~/icloud/blogs/announcing-sail-rust-book (2026.07.14.1-ad4488e3).textpack`.
+
+## Ownership Correction: 2026-07-14
+
+- The announcement source package was moved out of `/Users/alexy/src/firstpair`
+  and into this source repository at
+  `sail-rust-book/blog/announcing-sail-rust-book/`.
+- FirstPair remains the publisher/library/deployment system, but Sail Rust Book
+  owns its project-specific announcement Markdown, textpack, and image assets.

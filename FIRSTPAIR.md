@@ -10,9 +10,10 @@ read by the centralized publisher; keep those lines simple and unbulleted.
 ## Ownership
 
 This source repository owns the manuscript, `book.build.json`, version metadata,
-source-specific hooks, and canonical build artifacts. The FirstPair repository
-at `~/src/firstpair` owns the unified builder, publishing implementation,
-public catalog, hosted readers, Blob uploads, iCloud delivery, and production
+source-specific hooks, canonical build artifacts, and project-owned blog or
+announcement packages under `sail-rust-book/blog/`. The FirstPair repository at
+`~/src/firstpair` owns the unified builder, publishing implementation, public
+catalog, hosted readers, Blob uploads, iCloud delivery, and production
 deployment.
 
 The `slug` is the stable catalog identity and the directory name under
@@ -73,3 +74,5 @@ central deployment machinery in this repository.
 When build behavior changes, update `book.build.json` and source-owned hooks,
 then run the unified build and its validators. When library identity or policy
 changes, update this file and the central catalog in the same logical change.
+Keep announcements and textpack source packages in this repository unless the
+user names a specific exception.
