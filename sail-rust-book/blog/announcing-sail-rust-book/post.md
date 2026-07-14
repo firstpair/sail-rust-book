@@ -50,6 +50,24 @@ publishing package: text sources, generated diagrams, version manifests, PDF,
 EPUB, HTML readers, and an Obsidian Vault that carries the book and the code
 next to each other.
 
+You can find the edition from
+[First Pair Press](https://firstpair.press/), through the
+[First Pair library](https://firstpair.org/#books), and on the
+[Sail Rust Book library README](https://firstpair.org/sail-rust-book/README.md).
+The book is available as a
+[hosted HTML reader](https://firstpair.org/read/sail-rust-book/),
+[chapter reader](https://firstpair.org/read/sail-rust-book/chapters/),
+[PDF](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/pdf/4b0e3c74798d945d-sail-rust-book.pdf),
+and
+[EPUB](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/epub/e7e97c4f79c8c8ff-sail-rust-book.epub).
+The source-linked study edition is the
+[Obsidian Vault](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/vault/808baed2385167d0-sail-rust-book-full-vault%20%282026.07.14.1-ad4488e3%29.zip),
+with a separate
+[Vault guide](https://firstpair.org/read/sail-rust-book/guide/).
+[First Pair Press](https://firstpair.press/) is the publisher; the library is
+the public shelf where the edition, formats, vault, and provenance stay
+together.
+
 The cover is the editorial metaphor: an atomic icebreaker moves through an ice
 field toward open water, with a lighthouse waiting on rock. That is the job of a
 good systems book. It should cut a navigable channel through a large codebase
@@ -208,14 +226,22 @@ library?"
 
 ## The Library
 
-The First Pair library is the public shelf for finished editions and previews.
-For *Sail Rust Book*, the library exposes several formats:
+The [First Pair library](https://firstpair.org/#books) is the public shelf for
+finished editions and previews. For *Sail Rust Book*, the
+[library entry](https://firstpair.org/sail-rust-book/README.md) exposes several
+formats:
 
-- PDF for a stable page layout, cover-first reading, printing, and citation.
-- EPUB for e-readers and responsive reading systems.
-- Hosted HTML for quick browser reading without downloading a file.
-- Hosted chapter HTML for jumping into one chapter at a time.
-- Obsidian Vault for source-linked study, note navigation, and code exploration.
+- [PDF](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/pdf/4b0e3c74798d945d-sail-rust-book.pdf)
+  for a stable page layout, cover-first reading, printing, and citation.
+- [EPUB](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/epub/e7e97c4f79c8c8ff-sail-rust-book.epub)
+  for e-readers and responsive reading systems.
+- [Hosted HTML](https://firstpair.org/read/sail-rust-book/) for quick browser
+  reading without downloading a file.
+- [Hosted chapter HTML](https://firstpair.org/read/sail-rust-book/chapters/)
+  for jumping into one chapter at a time.
+- [Obsidian Vault](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/vault/808baed2385167d0-sail-rust-book-full-vault%20%282026.07.14.1-ad4488e3%29.zip)
+  for source-linked study, note navigation, and code exploration, with a
+  [Vault guide](https://firstpair.org/read/sail-rust-book/guide/).
 
 The library card is the front door. It links the download formats and reader
 routes from one catalog entry, then keeps the underlying storage URLs out of the
@@ -250,8 +276,13 @@ code without asking the reader to search a repository by hand.
 
 ## Installing The Obsidian Vault
 
-Download the Vault archive from the *Sail Rust Book* library card, then unzip it
-somewhere you keep active notes.
+Download the
+[Vault archive](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/vault/808baed2385167d0-sail-rust-book-full-vault%20%282026.07.14.1-ad4488e3%29.zip)
+from the *Sail Rust Book*
+[library card](https://firstpair.org/sail-rust-book/README.md), then unzip it
+somewhere you keep active notes. The
+[Vault guide](https://firstpair.org/read/sail-rust-book/guide/) stays visible
+beside the download in the library.
 
 Open Obsidian and choose **Open folder as vault**. Select the unzipped `Sail
 Rust Book Vault` folder.
