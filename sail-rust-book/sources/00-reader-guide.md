@@ -8,60 +8,116 @@ will want after the main pass.
 
 ## Chapter Links
 
-| Part | Chapters | What They Establish |
-|---|---|---|
-| System shape | [1. Architecture Overview](01-architecture-overview.md), [2. Rust Foundations](02-rust-foundations-in-sail.md) | The full query pipeline and the Rust patterns that make it possible. |
-| Front doors | [3. Spark Connect](03-spark-connect.md), [4. PySpark and pysail](04-pyspark-and-pysail.md), [14. Arrow Flight SQL](14-arrow-flight-sql.md) | How user intent enters Sail through PySpark, Spark Connect, SQL, Flight SQL, gRPC, protobufs, and Python packaging. |
-| Columnar runtime | [5. Apache Arrow](05-apache-arrow.md), [6. Apache DataFusion](06-apache-datafusion.md) | The data model and query engine Sail builds on. |
-| Distribution | [7. Physical Plan to Job Graph](07-physical-plan-to-job-graph.md), [8. Drivers, Workers, Tasks, and Streams](08-drivers-workers-tasks-and-streams.md), [9. Shuffle and Data Movement](09-shuffle-and-data-movement.md), [16. Local and Streaming Execution](16-local-and-streaming-execution.md) | How one DataFusion plan becomes local execution, streaming execution, distributed tasks, and Arrow stream movement. |
-| Spark semantics | [10. Sail Spec and Plan Resolver](10-sail-spec-and-plan-resolver.md), [11. Functions, UDFs, and Codecs](11-functions-udfs-and-codecs.md), [12. Catalogs, Lakehouse Tables, and File Formats](12-catalogs-lakehouse-tables-and-file-formats.md), [15. Custom Nodes and Optimizers](15-custom-nodes-and-optimizers.md) | How Spark-compatible names, expressions, functions, commands, tables, writes, custom logical nodes, and optimizer rules become executable DataFusion objects. |
-| Extension design | [13. Extension Architecture](13-extension-architecture-from-proposal-to-design.md) | How the previous patterns become a proposed extension architecture for discussion #2001. |
-| Practice and navigation | [17. Testing Spark Compatibility](17-testing-spark-compatibility.md), [18. Feature Playbooks](18-feature-playbooks.md), [19. Roadmap and Codebase Navigation](19-roadmap-and-codebase-navigation.md), [20. Current Codebase Edition](20-current-codebase-edition.md) | How to verify behavior, add features without missing layers, navigate the codebase as it evolves, and understand the July 2026 Sail surface. |
+The book is organized into seven reading paths:
+
+- System shape: Chapters 1 and 2 establish the full query pipeline and the Rust
+  patterns that make it possible.
+- Front doors: Chapters 3, 4, and 14 show how user intent enters Sail through
+  PySpark, Spark Connect, SQL, Flight SQL, gRPC, protobufs, and Python
+  packaging.
+- Columnar runtime: Chapters 5 and 6 introduce the Arrow data model and the
+  DataFusion query engine Sail builds on.
+- Distribution: Chapters 7, 8, 9, and 16 show how one DataFusion plan becomes
+  local execution, streaming execution, distributed tasks, and Arrow stream
+  movement.
+- Spark semantics: Chapters 10, 11, 12, and 15 explain how Spark-compatible
+  names, expressions, functions, commands, tables, writes, custom logical nodes,
+  and optimizer rules become executable DataFusion objects.
+- Extension design: Chapter 13 turns the previous patterns into a proposed
+  extension architecture for discussion #2001.
+- Practice and navigation: Chapters 17, 18, 19, and 20 cover verification,
+  feature work, codebase navigation, and the July 2026 Sail surface.
 
 ## Concept Progression
 
-The chapters deliberately introduce concepts before relying on them:
+The chapters deliberately introduce concepts before relying on them. This section
+uses a list instead of a table so the PDF can break cleanly across pages.
 
-| Concept | Introduced | Elaborated | Used For Extensions |
-|---|---|---|---|
-| Spark Connect unresolved plans | Chapter 3 | Chapters 4 and 10 | Chapter 13, where extensions must preserve Spark-facing behavior. |
-| Spark Connect extension messages | Chapter 3 | Chapter 10 | Chapter 13, where `Relation.extension`, `Command.extension`, and `Expression.extension` become the plan-time extension ABI. |
-| Flight SQL as a second front door | Chapter 14 | Chapters 6 and 10 | Chapter 13, where protocol-independent registration becomes necessary. |
-| Rust trait objects and `Arc` | Chapter 2 | Chapters 6, 8, 11, 12, and 16 | Chapter 13, where execution-time extension capabilities are trait-object contributions. |
-| Arrow `RecordBatch` streams | Chapter 5 | Chapters 8, 9, 14, and 16 | Chapters 11 and 13, where UDFs and custom operators must execute on Arrow batches. |
-| DataFusion logical and physical plans | Chapter 6 | Chapters 7, 10, and 15 | Chapter 13, where extensions add optimizer rules and physical planners. |
-| Job graphs and stages | Chapter 7 | Chapters 8 and 9 | Chapters 13 and 18, where extension plans must survive distributed execution. |
-| Streaming flow events | Chapter 16 | Chapters 5 and 15 | Chapter 18, where streaming sources must emit the right event schema. |
-| Typed session extensions | Chapter 2 | Chapters 6, 11, 12, 14, and 16 | Chapter 13, where the extension registry is proposed as a session service. |
-| Function resolution and codecs | Chapter 11 | Chapters 17 and 18 | The core reason the execution-time extension boundary needs worker-side registration and serialization. |
-| Table format registry | Chapter 12 | Chapter 18 | The strongest existing model for extension registration. |
-| Two extension boundaries | Chapter 1 | Chapters 3, 10, 11, 13, and 18 | Chapter 13, where plan-time and execution-time contributions are designed separately. |
-| Obsidian code vault | Chapter 20 | Vault edition | A navigable companion where book chapters, code files, fragments, crates, and subsystems are linked directly. |
+- Spark Connect unresolved plans appear first in Chapter 3, then return in
+  Chapters 4 and 10. Chapter 13 uses them to explain why extensions must
+  preserve Spark-facing behavior.
+- Spark Connect extension messages appear first in Chapter 3 and are elaborated
+  in Chapter 10. Chapter 13 treats `Relation.extension`, `Command.extension`,
+  and `Expression.extension` as the plan-time extension ABI.
+- Flight SQL as a second front door appears first in Chapter 14 and connects
+  back to Chapters 6 and 10. Chapter 13 uses it to motivate protocol-independent
+  registration.
+- Rust trait objects and `Arc` appear first in Chapter 2 and return in Chapters
+  6, 8, 11, 12, and 16. Chapter 13 uses them for execution-time extension
+  capabilities.
+- Arrow `RecordBatch` streams appear first in Chapter 5 and return in Chapters
+  8, 9, 14, and 16. Chapters 11 and 13 use them for UDFs and custom operators
+  that execute on Arrow batches.
+- DataFusion logical and physical plans appear first in Chapter 6 and return in
+  Chapters 7, 10, and 15. Chapter 13 uses them for optimizer rules and physical
+  planners.
+- Job graphs and stages appear first in Chapter 7 and return in Chapters 8 and
+  9. Chapters 13 and 18 use them to show how extension plans survive distributed
+  execution.
+- Streaming flow events appear first in Chapter 16 and connect back to Chapters
+  5 and 15. Chapter 18 uses them for streaming sources that must emit the right
+  event schema.
+- Typed session extensions appear first in Chapter 2 and return in Chapters 6,
+  11, 12, 14, and 16. Chapter 13 proposes the extension registry as a session
+  service.
+- Function resolution and codecs appear in Chapter 11 and return in Chapters 17
+  and 18. They are the core reason the execution-time extension boundary needs
+  worker-side registration and serialization.
+- The table format registry appears in Chapter 12 and returns in Chapter 18. It
+  is the strongest existing model for extension registration.
+- The two extension boundaries appear in Chapter 1 and return in Chapters 3,
+  10, 11, 13, and 18. Chapter 13 separates plan-time and execution-time
+  contributions.
+- The Obsidian code vault appears in Chapter 20 and in the vault edition. It is
+  the navigable companion where book chapters, code files, fragments, crates,
+  and subsystems are linked directly.
 
 ## Code Reading Strategy
 
 Each chapter has a code map, but these are the highest-leverage excerpts to read
 first:
 
-| Question | Best Code To Read |
-|---|---|
-| How does a Spark Connect request enter Sail? | `crates/sail-spark-connect/src/service/plan_executor.rs` and `crates/sail-spark-connect/src/server.rs` |
-| How does Sail create a session? | `crates/sail-session/src/session_factory/server.rs` |
-| How does Sail customize DataFusion planning? | `crates/sail-session/src/planner.rs` |
-| How does a physical plan become distributed work? | `crates/sail-execution/src/job_graph/planner.rs` and `crates/sail-execution/src/job_runner.rs` |
-| How do tasks run on workers? | `crates/sail-execution/src/task_runner/core.rs` |
-| How does shuffle move Arrow batches? | `crates/sail-execution/src/plan/shuffle_write.rs`, `crates/sail-execution/src/plan/shuffle_read.rs`, and `crates/sail-execution/src/stream/` |
-| How do Spark functions become DataFusion functions? | `crates/sail-plan/src/resolver/expression/function.rs` and `crates/sail-plan/src/function/` |
-| How do Python UDFs execute? | `crates/sail-python-udf/src/udf/` and `crates/sail-python-udf/src/stream.rs` |
-| How do custom functions and plans reach workers? | `crates/sail-execution/src/codec.rs` |
-| How do catalogs and file formats plug in? | `crates/sail-catalog/src/manager/mod.rs`, `crates/sail-common-datafusion/src/datasource.rs`, and `crates/sail-session/src/formats.rs` |
-| How do lakehouse row-level operations work? | `crates/sail-delta-lake/`, `crates/sail-iceberg/`, `crates/sail-logical-plan/`, and `crates/sail-session/src/formats.rs` |
-| How does Flight SQL enter the same engine? | `crates/sail-flight/src/service.rs` |
-| Where are custom logical nodes planned physically? | `crates/sail-session/src/planner.rs` |
-| Where are optimizer rules registered? | `crates/sail-session/src/session_factory/server.rs` and `crates/sail-physical-optimizer/src/lib.rs` |
-| How does structured streaming change a plan? | `crates/sail-plan/src/streaming/rewriter.rs` and `crates/sail-common-datafusion/src/streaming/event/schema.rs` |
-| How should I add a feature safely? | [18. Feature Playbooks](18-feature-playbooks.md) |
-| How do I jump from prose to exact code fragments? | [20. Current Codebase Edition](20-current-codebase-edition.md) and the generated Obsidian vault. |
+- How does a Spark Connect request enter Sail? Read
+  `crates/sail-spark-connect/src/service/plan_executor.rs` and
+  `crates/sail-spark-connect/src/server.rs`.
+- How does Sail create a session? Read
+  `crates/sail-session/src/session_factory/server.rs`.
+- How does Sail customize DataFusion planning? Read
+  `crates/sail-session/src/planner.rs`.
+- How does a physical plan become distributed work? Read
+  `crates/sail-execution/src/job_graph/planner.rs` and
+  `crates/sail-execution/src/job_runner.rs`.
+- How do tasks run on workers? Read `crates/sail-execution/src/task_runner/core.rs`.
+- How does shuffle move Arrow batches? Read
+  `crates/sail-execution/src/plan/shuffle_write.rs`,
+  `crates/sail-execution/src/plan/shuffle_read.rs`, and
+  `crates/sail-execution/src/stream/`.
+- How do Spark functions become DataFusion functions? Read
+  `crates/sail-plan/src/resolver/expression/function.rs` and
+  `crates/sail-plan/src/function/`.
+- How do Python UDFs execute? Read `crates/sail-python-udf/src/udf/` and
+  `crates/sail-python-udf/src/stream.rs`.
+- How do custom functions and plans reach workers? Read
+  `crates/sail-execution/src/codec.rs`.
+- How do catalogs and file formats plug in? Read
+  `crates/sail-catalog/src/manager/mod.rs`,
+  `crates/sail-common-datafusion/src/datasource.rs`, and
+  `crates/sail-session/src/formats.rs`.
+- How do lakehouse row-level operations work? Read `crates/sail-delta-lake/`,
+  `crates/sail-iceberg/`, `crates/sail-logical-plan/`, and
+  `crates/sail-session/src/formats.rs`.
+- How does Flight SQL enter the same engine? Read `crates/sail-flight/src/service.rs`.
+- Where are custom logical nodes planned physically? Read
+  `crates/sail-session/src/planner.rs`.
+- Where are optimizer rules registered? Read
+  `crates/sail-session/src/session_factory/server.rs` and
+  `crates/sail-physical-optimizer/src/lib.rs`.
+- How does structured streaming change a plan? Read
+  `crates/sail-plan/src/streaming/rewriter.rs` and
+  `crates/sail-common-datafusion/src/streaming/event/schema.rs`.
+- How should I add a feature safely? Read Chapter 18, Feature Playbooks.
+- How do I jump from prose to exact code fragments? Read Chapter 20, Current
+  Codebase Edition, and use the generated Obsidian vault.
 
 ## What To Look For In Code Excerpts
 
