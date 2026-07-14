@@ -168,7 +168,11 @@ def render_headboard() -> None:
     pdraw = ImageDraw.Draw(panel)
     pdraw.rounded_rectangle((0, 0, panel.width, panel.height), radius=32, fill=(2, 10, 20, 150), outline=(126, 222, 255, 140), width=3)
     panel.alpha_composite(logo, (40, 30))
-    paste_with_shadow(base, panel, (125, 760))
+    paste_with_shadow(
+        base,
+        panel,
+        (canvas_size[0] - panel.width - 110, canvas_size[1] - panel.height - 95),
+    )
 
     base.convert("RGB").save(HEADBOARD_OUT, quality=95)
 
