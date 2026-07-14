@@ -55,6 +55,137 @@ field toward open water, with a lighthouse waiting on rock. That is the job of a
 good systems book. It should cut a navigable channel through a large codebase
 without pretending the ice was never there.
 
+## A Technical Overview
+
+The book starts from a simple claim: Sail is not "Spark rewritten in Rust" in
+the small sense. Sail is a Spark-compatible front door over a Rust query engine
+whose spine is Apache Arrow and Apache DataFusion.
+
+That distinction matters because it tells you how to read the code. A PySpark
+client can keep using Spark DataFrame and SQL APIs. A SQL client can enter
+through Arrow Flight SQL. The server can still converge those requests into one
+internal path:
+
+```text
+Spark Connect, SQL, or Flight SQL
+  -> Sail spec plan
+  -> DataFusion logical plan
+  -> optimized logical plan
+  -> physical execution plan
+  -> local or distributed JobRunner
+  -> Arrow RecordBatch stream
+```
+
+The codebase is organized around that flow. The book uses the current Sail
+checkout as a map, not as a pile of files. Front doors live in crates such as
+`sail-spark-connect`, `sail-flight`, `sail-python`, and `sail-cli`. Shared
+semantic structures live around `sail-common`, `sail-common-datafusion`, and the
+Sail spec layer. Planning runs through `sail-plan`, SQL parsing and analysis
+through `sail-sql-parser`, `sail-sql-analyzer`, and `sail-sql-macro`, and
+session integration through `sail-session`.
+
+Once the query is inside DataFusion's world, the important crates become the
+ones that teach how Sail bends a general query kernel toward Spark semantics:
+`sail-logical-plan`, `sail-physical-plan`, `sail-logical-optimizer`,
+`sail-physical-optimizer`, `sail-function`, `sail-execution`, and the catalog,
+lakehouse, object-store, cache, Delta, and Iceberg crates around them. The book
+is meant to make those boundaries feel navigable.
+
+## Spark Connect As The Front Door
+
+Spark Connect is the compatibility miracle. The client sends unresolved Spark
+relations, commands, expressions, session requests, artifacts, and analysis
+requests over gRPC. Sail receives those protobuf trees, converts them into its
+own unresolved spec, resolves that spec into a DataFusion logical plan, builds a
+physical plan, executes it, and streams Arrow batches back in Spark Connect
+responses.
+
+That is why the book spends real time on `sail-spark-connect`. It is not a thin
+adapter. It owns the public Spark shape of the system: session identity,
+operation IDs, reattachable execution, config behavior, command dispatch,
+schema analysis, error compatibility, and result streaming. If you understand
+that layer, you understand how a normal PySpark shell can talk to Sail while
+the server remains Rust all the way down.
+
+The chapter follows the request path from `SparkConnectServer` through plan
+execution and response encoding. It shows why Spark Connect is an external
+compatibility protocol, not Sail's internal language. Sail's internal language
+is the spec layer, because the engine must also serve SQL, Flight SQL, and
+future extension inputs without tying the whole system to one wire protocol.
+
+## Arrow And DataFusion
+
+Arrow is the data contract. It gives Sail schemas, arrays, record batches,
+extension types, IPC, PyArrow interop, and a common columnar representation at
+the Python/Rust/network boundaries. When the book talks about result batches,
+shuffle streams, PyArrow, Spark Connect `ArrowBatch` payloads, and Flight SQL
+`FlightData`, it is really talking about the same foundation from several
+angles.
+
+DataFusion is the query kernel. Sail uses DataFusion logical plans, physical
+plans, expressions, optimizers, `SessionContext`, `SessionState`,
+`ExecutionPlan`, extension planners, and record-batch streams. But Sail does
+not treat DataFusion as a sealed box. It installs Spark-compatible functions,
+custom logical nodes, custom physical nodes, session extensions, catalog
+behavior, optimizer ordering, lakehouse planners, and distributed execution
+code around DataFusion's abstractions.
+
+That is the central engineering lesson of the book. DataFusion gives Sail the
+kernel. Sail adds the Spark semantics, distributed runtime, Python bridge,
+catalog/lakehouse surface, and compatibility behavior needed to make that
+kernel feel like Spark to users.
+
+## Arrow Flight SQL
+
+Arrow Flight SQL is the second front door. Spark Connect is Spark-shaped; Flight
+SQL is SQL-shaped. It matters for ADBC clients, BI tools, JDBC-style workflows,
+and systems that already speak Arrow Flight.
+
+The book treats Flight SQL as a proof of architectural convergence. A Flight
+SQL statement enters through `sail-flight`, is parsed as SQL, becomes the same
+kind of Sail spec plan, runs through the same DataFusion planning and job
+service machinery, and returns Arrow Flight data. It does not form a second
+engine beside Spark Connect. It proves that Sail has a common planning and
+execution spine underneath multiple client protocols.
+
+For extension authors, this is a useful discipline. If a feature only works
+when the user arrives through Spark Connect protobufs, it is not really part of
+the engine yet. A good extension should usually land below the protocol front
+door, where Spark Connect, SQL, and Flight SQL can all reach it.
+
+## Extensions, Logical Plans, And Physical Plans
+
+The extension chapters are where the book becomes a contributor guide. Sail's
+architecture is layered, so an extension usually needs more than one hook. A
+new function, table format, custom relation, optimizer rule, or physical
+operator may need parser support, analyzer support, spec conversion, resolver
+behavior, DataFusion expression registration, session configuration, logical
+optimizer participation, physical planner support, distributed execution
+codecs, worker-side reconstruction, and tests.
+
+The key distinction is logical versus physical planning.
+
+A logical plan says what the query means. It is where Spark semantics,
+unresolved client intent, catalog names, custom relation nodes, and optimizer
+rules become a DataFusion-compatible representation. A physical plan says how
+the query runs. It chooses operators, partitioning, exchanges, custom
+`ExecutionPlan` implementations, lakehouse writes, shuffle boundaries, and the
+batch streams that workers will execute.
+
+If an extension creates a custom logical node, some physical planner must later
+recognize it. If a logical optimizer rewrites a join into a domain-specific
+operation, the execution side must know how to run that operation. If a
+physical plan runs on remote workers, those workers must be able to decode or
+reconstruct the same functions and operators. This is why the book keeps
+returning to logical nodes, physical nodes, optimizer order, extension planners,
+and plan codecs instead of treating plugins as a single registration callback.
+
+That knowledge is what makes Sail exciting as an ecosystem platform. With the
+right extension model, a third-party integration can participate in the same
+flow as Sail's built-in Spark compatibility: protocol intent, planning,
+optimization, physical execution, distributed runtime, Arrow data movement, and
+client-visible results.
+
 ## The First Pair Process
 
 First Pair treats a book as source code with reader-facing builds.
