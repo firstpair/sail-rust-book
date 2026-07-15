@@ -52,7 +52,8 @@ next to each other.
 
 You can find the edition from
 [First Pair Press](https://firstpair.press/), through the
-[First Pair library](https://firstpair.org/#books), and on the
+[First Pair library](https://firstpair.org/#books), on the
+[Sail Rust Book page](https://firstpair.org/books/sail-rust-book/), and on the
 [Sail Rust Book library README](https://firstpair.org/sail-rust-book/README.md).
 The book is available as a
 [hosted HTML reader](https://firstpair.org/read/sail-rust-book/),
