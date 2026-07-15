@@ -57,11 +57,11 @@ You can find the edition from
 The book is available as a
 [hosted HTML reader](https://firstpair.org/read/sail-rust-book/),
 [chapter reader](https://firstpair.org/read/sail-rust-book/chapters/),
-[PDF](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/pdf/4b0e3c74798d945d-sail-rust-book.pdf),
+[PDF](https://firstpair.org/sail-rust-book/pdf/),
 and
-[EPUB](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/epub/e7e97c4f79c8c8ff-sail-rust-book.epub).
+[EPUB](https://firstpair.org/sail-rust-book/epub/).
 The source-linked study edition is the
-[Obsidian Vault](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/vault/808baed2385167d0-sail-rust-book-full-vault%20%282026.07.14.1-ad4488e3%29.zip),
+[Obsidian Vault](https://firstpair.org/sail-rust-book/vault/),
 with a separate
 [Vault guide](https://firstpair.org/read/sail-rust-book/guide/).
 [First Pair Press](https://firstpair.press/) is the publisher; the library is
@@ -231,15 +231,15 @@ finished editions and previews. For *Sail Rust Book*, the
 [library entry](https://firstpair.org/sail-rust-book/README.md) exposes several
 formats:
 
-- [PDF](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/pdf/4b0e3c74798d945d-sail-rust-book.pdf)
+- [PDF](https://firstpair.org/sail-rust-book/pdf/)
   for a stable page layout, cover-first reading, printing, and citation.
-- [EPUB](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/epub/e7e97c4f79c8c8ff-sail-rust-book.epub)
+- [EPUB](https://firstpair.org/sail-rust-book/epub/)
   for e-readers and responsive reading systems.
 - [Hosted HTML](https://firstpair.org/read/sail-rust-book/) for quick browser
   reading without downloading a file.
 - [Hosted chapter HTML](https://firstpair.org/read/sail-rust-book/chapters/)
   for jumping into one chapter at a time.
-- [Obsidian Vault](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/vault/808baed2385167d0-sail-rust-book-full-vault%20%282026.07.14.1-ad4488e3%29.zip)
+- [Obsidian Vault](https://firstpair.org/sail-rust-book/vault/)
   for source-linked study, note navigation, and code exploration, with a
   [Vault guide](https://firstpair.org/read/sail-rust-book/guide/).
 
@@ -277,7 +277,7 @@ code without asking the reader to search a repository by hand.
 ## Installing The Obsidian Vault
 
 Download the
-[Vault archive](https://fl6nu3o2c1oqqnum.public.blob.vercel-storage.com/books/sail-rust-book/vault/808baed2385167d0-sail-rust-book-full-vault%20%282026.07.14.1-ad4488e3%29.zip)
+[Vault archive](https://firstpair.org/sail-rust-book/vault/)
 from the *Sail Rust Book*
 [library card](https://firstpair.org/sail-rust-book/README.md), then unzip it
 somewhere you keep active notes. The
