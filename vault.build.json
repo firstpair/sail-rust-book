@@ -49,8 +49,8 @@
     "desktop": {
       "output": "sail-rust-book/book/dist-obsidian/Sail Rust Book Candidate",
       "edition": "full",
-      "maxFiles": 23000,
-      "maxBytes": 110000000
+      "maxFiles": 27000,
+      "maxBytes": 130000000
     }
   }
 }
