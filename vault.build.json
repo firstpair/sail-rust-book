@@ -1,0 +1,56 @@
+{
+  "$schema": "https://firstpair.org/schemas/vault.build.schema.json",
+  "schemaVersion": 1,
+  "slug": "sail-rust-book",
+  "title": "Sail Rust Book",
+  "profile": "code",
+  "sourceCommit": "HEAD",
+  "plugin": true,
+  "nativeDriver": {
+    "build": [
+      "python3",
+      "sail-rust-book/scripts/build-obsidian-vault.py",
+      "--output",
+      "{output}"
+    ],
+    "validate": [
+      "python3",
+      "sail-rust-book/scripts/check-obsidian-vault.py",
+      "{output}"
+    ]
+  },
+  "guide": {
+    "bookSpecific": "sail-rust-book/docs/OBSIDIAN-VAULT.md"
+  },
+  "reader": [
+    { "id": "reader-guide", "title": "Reader Guide: How This Book Builds", "source": "sail-rust-book/sources/00-reader-guide.md", "preview": true },
+    { "id": "architecture", "title": "Chapter 1: Architecture Overview", "source": "sail-rust-book/sources/01-architecture-overview.md", "preview": true },
+    { "id": "rust-foundations", "title": "Chapter 2: Rust Foundations in Sail", "source": "sail-rust-book/sources/02-rust-foundations-in-sail.md" },
+    { "id": "spark-connect", "title": "Chapter 3: Spark Connect", "source": "sail-rust-book/sources/03-spark-connect.md" },
+    { "id": "pyspark", "title": "Chapter 4: PySpark and pysail", "source": "sail-rust-book/sources/04-pyspark-and-pysail.md" },
+    { "id": "arrow", "title": "Chapter 5: Apache Arrow", "source": "sail-rust-book/sources/05-apache-arrow.md" },
+    { "id": "datafusion", "title": "Chapter 6: Apache DataFusion", "source": "sail-rust-book/sources/06-apache-datafusion.md" },
+    { "id": "job-graph", "title": "Chapter 7: From Physical Plan To Job Graph", "source": "sail-rust-book/sources/07-physical-plan-to-job-graph.md" },
+    { "id": "runtime", "title": "Chapter 8: Drivers, Workers, Tasks, And Streams", "source": "sail-rust-book/sources/08-drivers-workers-tasks-and-streams.md" },
+    { "id": "shuffle", "title": "Chapter 9: Shuffle And Data Movement", "source": "sail-rust-book/sources/09-shuffle-and-data-movement.md" },
+    { "id": "resolver", "title": "Chapter 10: The Sail Spec And Plan Resolver", "source": "sail-rust-book/sources/10-sail-spec-and-plan-resolver.md" },
+    { "id": "functions", "title": "Chapter 11: Functions, UDFs, And Codecs", "source": "sail-rust-book/sources/11-functions-udfs-and-codecs.md" },
+    { "id": "catalogs", "title": "Chapter 12: Catalogs, Lakehouse Tables, And File Formats", "source": "sail-rust-book/sources/12-catalogs-lakehouse-tables-and-file-formats.md" },
+    { "id": "extensions", "title": "Chapter 13: Extension Architecture: From Proposal To Design", "source": "sail-rust-book/sources/13-extension-architecture-from-proposal-to-design.md" },
+    { "id": "flight-sql", "title": "Chapter 14: Arrow Flight SQL", "source": "sail-rust-book/sources/14-arrow-flight-sql.md" },
+    { "id": "custom-nodes", "title": "Chapter 15: Custom Nodes And Optimizers", "source": "sail-rust-book/sources/15-custom-nodes-and-optimizers.md" },
+    { "id": "local-streaming", "title": "Chapter 16: Local And Streaming Execution", "source": "sail-rust-book/sources/16-local-and-streaming-execution.md" },
+    { "id": "testing", "title": "Chapter 17: Testing Spark Compatibility", "source": "sail-rust-book/sources/17-testing-spark-compatibility.md" },
+    { "id": "playbooks", "title": "Chapter 18: Feature Playbooks", "source": "sail-rust-book/sources/18-feature-playbooks.md" },
+    { "id": "roadmap", "title": "Chapter 19: Roadmap And Codebase Navigation", "source": "sail-rust-book/sources/19-roadmap-and-codebase-navigation.md" },
+    { "id": "current-edition", "title": "Chapter 20: Current Codebase Edition", "source": "sail-rust-book/sources/20-current-codebase-edition.md" }
+  ],
+  "products": {
+    "desktop": {
+      "output": "sail-rust-book/book/dist-obsidian/Sail Rust Book Candidate",
+      "edition": "full",
+      "maxFiles": 23000,
+      "maxBytes": 110000000
+    }
+  }
+}

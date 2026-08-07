@@ -9,7 +9,8 @@ read by the centralized publisher; keep those lines simple and unbulleted.
 
 ## Ownership
 
-This source repository owns the manuscript, `book.build.json`, version metadata,
+This source repository owns the manuscript, `book.build.json`,
+`vault.build.json`, version metadata,
 source-specific hooks, canonical build artifacts, and project-owned blog or
 announcement packages under `sail-rust-book/blog/`. The FirstPair repository at
 `~/src/firstpair` owns the unified builder, publishing implementation, public
@@ -68,6 +69,37 @@ catalog/build/smoke checks, deploys production, and verifies the live catalog.
 Follow `~/src/firstpair/AGENTS.md` and
 `~/src/firstpair/publishing/PUBLISH.md`; do not reproduce or bypass the
 central deployment machinery in this repository.
+
+## Obsidian Vault Candidate
+
+`vault.build.json` is the committed title contract for the compatibility-first
+FirstPair vault framework. It delegates rich Sail code and fragment projection
+to the existing source-owned builder, while FirstPair supplies the complete
+layered guide, clean-revision binding, transactional candidate directory,
+privacy checks, and differential QA.
+
+With Obsidian closed and both this repository and the selected Sail checkout
+clean, build the non-replacing candidate from the source root:
+
+```sh
+~/src/firstpair/publishing/scripts/firstpair-vault \
+  build vault.build.json --product desktop
+```
+
+Validate and compare the result before considering replacement:
+
+```sh
+python3 sail-rust-book/scripts/check-obsidian-vault.py \
+  "sail-rust-book/book/dist-obsidian/Sail Rust Book Candidate"
+~/src/firstpair/publishing/scripts/firstpair-vault compare \
+  --baseline "sail-rust-book/book/dist-obsidian/Sail Rust Book Vault" \
+  --candidate "sail-rust-book/book/dist-obsidian/Sail Rust Book Candidate" \
+  --contract \
+  ~/src/books-local-backups/firstpair-vault-candidates/qa-2026-08-06/sail-rust-book-vault.qa.json
+```
+
+The candidate path is never a publication input until its comparison and human
+Reader review are approved.
 
 ## Maintenance
 
