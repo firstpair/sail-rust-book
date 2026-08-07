@@ -262,6 +262,12 @@ def read_text(path: Path) -> str | None:
             return None
 
 
+def normalized_source_lines(text: str) -> list[str]:
+    """Preserve source line numbers while making generated Markdown tab-free."""
+
+    return text.expandtabs(4).splitlines()
+
+
 def code_note_path(path: str) -> str:
     safe = "/".join(clean_name(part, 120) for part in PurePosixPath(path).parts)
     return f"{VAULT_BOOK}/Code/{safe}.source"
@@ -326,7 +332,7 @@ def inventory_codebase(sail_root: Path) -> list[SourceFile]:
             continue
         rel = path.relative_to(sail_root).as_posix()
         subsystem, crate = subsystem_for(rel)
-        lines = text.splitlines()
+        lines = normalized_source_lines(text)
         source = SourceFile(
             path=rel,
             absolute=path,
