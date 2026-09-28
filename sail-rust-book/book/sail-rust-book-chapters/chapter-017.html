@@ -5,8 +5,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
-  <title>Chapter 16: Local And Streaming Execution</title>
+  <meta name="dcterms.date" content="2026-09-28" />
+  <title>Local And Streaming Execution</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -108,15 +112,15 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-018.html" accesskey="n" rel="next">Chapter 17: Testing Spark Compatibility</a>
+<span class="navlink-label">Next:</span> <a href="chapter-018.html" accesskey="n" rel="next">Testing Spark Compatibility</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-016.html" accesskey="p" rel="previous">Chapter 15: Custom Nodes And Optimizers</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-016.html" accesskey="p" rel="previous">Custom Nodes And Optimizers</a>
 </span>
 </div>
 </nav>
-<h1 data-number="17" id="chapter-16"><span
-class="header-section-number">17</span> Chapter 16: Local And Streaming
+<h1 data-number="16" id="chapter-16"><span
+class="header-section-number">16</span> Local And Streaming
 Execution</h1>
 <p>The distributed chapters explain the cluster path in detail: job
 graphs, drivers, workers, task regions, streams, and shuffles. This
@@ -130,8 +134,8 @@ flow-event plan before physical execution.</li>
 </ul>
 <p>Both use the same <code>JobRunner</code> abstraction, which is
 exactly why the abstraction is valuable.</p>
-<h2 data-number="17.1" id="code-map-7"><span
-class="header-section-number">17.1</span> Code Map</h2>
+<h2 data-number="16.1" id="code-map-7"><span
+class="header-section-number">16.1</span> Code Map</h2>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -190,8 +194,8 @@ class="header-section-number">17.1</span> Code Map</h2>
 </tr>
 </tbody>
 </table>
-<h2 data-number="17.2" id="one-trait-two-execution-modes"><span
-class="header-section-number">17.2</span> One Trait, Two Execution
+<h2 data-number="16.2" id="one-trait-two-execution-modes"><span
+class="header-section-number">16.2</span> One Trait, Two Execution
 Modes</h2>
 <p>The <code>JobRunner</code> trait hides the execution backend:</p>
 <div class="sourceCode" id="cb1"><pre
@@ -211,8 +215,8 @@ code does not need to know which mode is active. It retrieves
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>service<span class="op">.</span>runner()<span class="op">.</span>execute(ctx<span class="op">,</span> plan)<span class="op">.</span><span class="kw">await</span></span></code></pre></div>
 <p>That line is one of Sail’s key architecture compression points.</p>
-<h2 data-number="17.3" id="local-execution"><span
-class="header-section-number">17.3</span> Local Execution</h2>
+<h2 data-number="16.3" id="local-execution"><span
+class="header-section-number">16.3</span> Local Execution</h2>
 <p><code>LocalJobRunner</code> is intentionally small:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> plan <span class="op">=</span> trace_execution_plan(plan<span class="op">,</span> options)<span class="op">?;</span></span>
@@ -229,12 +233,12 @@ a simpler execution backend. That makes it useful for:</p>
 <li>small deployments,</li>
 <li>debugging physical plans before cluster concerns enter.</li>
 </ul>
-<h2 data-number="17.4" id="cluster-execution"><span
-class="header-section-number">17.4</span> Cluster Execution</h2>
+<h2 data-number="16.4" id="cluster-execution"><span
+class="header-section-number">16.4</span> Cluster Execution</h2>
 <p><code>ClusterJobRunner</code> sends the physical plan to the driver
 actor:</p>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>driver<span class="op">.</span>send(<span class="pp">DriverEvent::</span>ExecuteJob <span class="op">{</span></span>
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>driver<span class="op">.</span>send(<span class="pp">DriverMessage::</span>ExecuteJob <span class="op">{</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    plan<span class="op">,</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    context<span class="op">:</span> ctx<span class="op">.</span>task_ctx()<span class="op">,</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    result<span class="op">:</span> tx<span class="op">,</span></span>
@@ -243,8 +247,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="
 the caller’s perspective, local and cluster modes both produce
 <code>SendableRecordBatchStream</code>.</p>
 <p>The difference is below the trait boundary.</p>
-<h2 data-number="17.5" id="streaming-starts-as-a-logical-rewrite"><span
-class="header-section-number">17.5</span> Streaming Starts As A Logical
+<h2 data-number="16.5" id="streaming-starts-as-a-logical-rewrite"><span
+class="header-section-number">16.5</span> Streaming Starts As A Logical
 Rewrite</h2>
 <p>Streaming is not a different protocol. A streaming query still enters
 through Spark Connect, resolves to a logical plan, and becomes a
@@ -266,8 +270,8 @@ nodes where needed. For example:</p>
 <li>filters and limits become streaming filter/limit nodes,</li>
 <li>sinks and display paths use collectors and barriers.</li>
 </ul>
-<h2 data-number="17.6" id="stream-sources"><span
-class="header-section-number">17.6</span> Stream Sources</h2>
+<h2 data-number="16.6" id="stream-sources"><span
+class="header-section-number">16.6</span> Stream Sources</h2>
 <p>A streaming source implements <code>StreamSource</code>:</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span><span class="pp">async_trait::</span>async_trait<span class="at">]</span></span>
@@ -285,8 +289,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb6-1"><a href="
 <p>The source returns an <code>ExecutionPlan</code>, not a raw stream.
 That keeps it inside the DataFusion physical-planning model. Current
 concrete examples include Sail’s rate and socket sources.</p>
-<h2 data-number="17.7" id="flow-event-schema"><span
-class="header-section-number">17.7</span> Flow Event Schema</h2>
+<h2 data-number="16.7" id="flow-event-schema"><span
+class="header-section-number">16.7</span> Flow Event Schema</h2>
 <p>Streaming records carry more than user columns. Sail prepends
 flow-event fields:</p>
 <pre class="text"><code>_marker
@@ -298,8 +302,8 @@ distinguishes normal insert events from retraction/delete events.</p>
 <code>RecordBatch</code> shape while preserving event semantics. It also
 gives future stateful operators a place to represent retract-mode
 updates.</p>
-<h2 data-number="17.8" id="streaming-physical-nodes"><span
-class="header-section-number">17.8</span> Streaming Physical Nodes</h2>
+<h2 data-number="16.8" id="streaming-physical-nodes"><span
+class="header-section-number">16.8</span> Streaming Physical Nodes</h2>
 <p>The streaming logical nodes are planned by
 <code>ExtensionPhysicalPlanner</code>, just like other custom nodes.
 Their physical counterparts live under
@@ -341,8 +345,8 @@ Their physical counterparts live under
 </table>
 <p><code>BarrierNode</code> and <code>BarrierExec</code> provide
 checkpoint-like coordination points.</p>
-<h2 data-number="17.9" id="streaming-query-lifecycle"><span
-class="header-section-number">17.9</span> Streaming Query Lifecycle</h2>
+<h2 data-number="16.9" id="streaming-query-lifecycle"><span
+class="header-section-number">16.9</span> Streaming Query Lifecycle</h2>
 <p>Spark Connect exposes streaming operations such as start, stop,
 status, and await. Sail tracks running queries with
 <code>StreamingQuery</code> and <code>StreamingQueryManager</code>.</p>
@@ -354,8 +358,8 @@ status, and await. Sail tracks running queries with
 </ul>
 <p>The manager lives in <code>SparkSessionState</code>, so streaming
 query state is scoped to the Spark session.</p>
-<h2 data-number="17.10" id="current-boundaries"><span
-class="header-section-number">17.10</span> Current Boundaries</h2>
+<h2 data-number="16.10" id="current-boundaries"><span
+class="header-section-number">16.10</span> Current Boundaries</h2>
 <p>Streaming support is real, but not all Spark streaming semantics are
 complete. Readers should distinguish:</p>
 <ul>
@@ -366,8 +370,35 @@ complete. Readers should distinguish:</p>
 architectural foundation. Full stateful aggregations, event-time
 triggers, and continuous-mode coverage are areas to verify against the
 current code before making claims.</p>
-<h2 data-number="17.11" id="takeaways-9"><span
-class="header-section-number">17.11</span> Takeaways</h2>
+<h2 data-number="16.11"
+id="execution-modes-of-the-graph-extensions"><span
+class="header-section-number">16.11</span> Execution Modes of the Graph
+Extensions</h2>
+<p>An ordinary distributed input does not make every downstream
+algorithm distributed. Pecan submits relational graph work through
+Sail’s existing query execution. Grenada follows the relational
+DataFusion path. Banda’s original native relation can gather distributed
+input and run its kernel on the driver. That is driver-native execution
+with distributed input, not a partitioned native algorithm.</p>
+<p>Argentea uses worker-native partitions and rejects local-only Sail
+execution. Its process-cluster qualifier uses two separate worker
+processes; physical multi-host qualification additionally verifies host
+identity and ownership across machines. These deployment claims should
+remain separate in documentation and benchmark labels.</p>
+<p>The bounded graph job is also different from a streaming query.
+Argentea’s native state lasts for its job, with static phase exchanges
+and a terminal result or certified failure. The current implementation
+does not provide unbounded stream state, checkpoint recovery or
+automatic replay of native mutations. Cancellation and worker loss use
+whole-query failure with cleanup.</p>
+<p>Lazy session views keep each Connect request shallow while composing
+the bounded plan. Registering a view is catalog work; the terminal
+action executes the job. Pecan’s client-controlled iterative actions are
+a different execution strategy. Both can reuse Sail without requiring a
+new graph scheduler, but their timing, staging and memory boundaries
+must be reported separately.</p>
+<h2 data-number="16.12" id="takeaways-9"><span
+class="header-section-number">16.12</span> Takeaways</h2>
 <p>Local execution and cluster execution share <code>JobRunner</code>.
 Streaming and batch execution share the planning/execution stack below a
 logical rewrite. That is the pattern to preserve: new execution behavior

@@ -5,8 +5,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
-  <title>Chapter 19: Roadmap And Codebase Navigation</title>
+  <meta name="dcterms.date" content="2026-09-28" />
+  <title>Roadmap And Codebase Navigation</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -43,25 +47,25 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-021.html" accesskey="n" rel="next">Chapter 20: Current Codebase Edition</a>
+<span class="navlink-label">Next:</span> <a href="chapter-021.html" accesskey="n" rel="next">The 0.7.2 Preparation Snapshot</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-019.html" accesskey="p" rel="previous">Chapter 18: Feature Playbooks</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-019.html" accesskey="p" rel="previous">Feature Playbooks</a>
 </span>
 </div>
 </nav>
-<h1 data-number="20" id="chapter-19"><span
-class="header-section-number">20</span> Chapter 19: Roadmap And Codebase
+<h1 data-number="19" id="chapter-19"><span
+class="header-section-number">19</span> Roadmap And Codebase
 Navigation</h1>
-<p>This final chapter is a field guide. It tells you where to start,
-what is solid, what is evolving, and how to keep your mental model
-synchronized with the code.</p>
+<p>This chapter is a field guide. It tells you where to start, what is
+solid, what is evolving, and how to keep your mental model synchronized
+with the code.</p>
 <p>Sail moves quickly, so treat exact capability claims as snapshots.
 The stable part is the architecture: front doors converge to spec, spec
 resolves to DataFusion, DataFusion plans run locally or through the
 distributed job runner, and Arrow batches move through every layer.</p>
-<h2 data-number="20.1" id="start-by-task"><span
-class="header-section-number">20.1</span> Start By Task</h2>
+<h2 data-number="19.1" id="start-by-task"><span
+class="header-section-number">19.1</span> Start By Task</h2>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -138,12 +142,64 @@ class="header-section-number">20.1</span> Start By Task</h2>
 <tr>
 <td>Understand extensions</td>
 <td><code>crates/sail-session</code>, <code>crates/sail-plan</code>,
-<code>crates/sail-execution/src/codec.rs</code></td>
+<code>crates/sail-execution/src/proto/codec.rs</code></td>
 </tr>
 </tbody>
 </table>
-<h2 data-number="20.2" id="start-by-symptom"><span
-class="header-section-number">20.2</span> Start By Symptom</h2>
+<h2 data-number="19.2" id="route-extension-work-by-ownership"><span
+class="header-section-number">19.2</span> Route Extension Work by
+Ownership</h2>
+<p>Read the upstream embedding entry point before adding session hooks:
+<code>crates/sail-spark-connect/src/entrypoint.rs</code> already exposes
+factory selection through merged #2630. Then use the experimental
+branch’s protocol and native contracts as separate examples, rather than
+assuming they are upstream APIs.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Task on the experimental branch</th>
+<th>Start here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Encode a relation request</td>
+<td><code>examples/extensions/WRITING-AN-EXTENSION.md</code></td>
+</tr>
+<tr>
+<td>Understand worker descriptors and scope</td>
+<td><code>crates/sail-common-datafusion/src/worker_extension.rs</code></td>
+</tr>
+<tr>
+<td>Understand stable native stage grouping</td>
+<td><code>crates/sail-execution/src/job_graph/worker_groups.rs</code></td>
+</tr>
+<tr>
+<td>Understand admitted native ownership</td>
+<td><code>crates/sail-common-datafusion/src/native_resource.rs</code></td>
+</tr>
+<tr>
+<td>Trace a distributed graph algorithm</td>
+<td><code>examples/extensions/argentea/src/</code> and its Python
+qualifier</td>
+</tr>
+<tr>
+<td>Reproduce quota release after failure</td>
+<td><code>examples/extensions/argentea/GRAPH_RESOURCES.md</code></td>
+</tr>
+</tbody>
+</table>
+<p>For an ABI question, inspect the package build receipt and
+compatibility matrix. For a distributed correctness question, inspect
+the complete stage/task and owner records. For a performance question,
+inspect the frozen matrix and all outcomes. These artifacts answer
+different questions; none is a substitute for the others.</p>
+<h2 data-number="19.3" id="start-by-symptom"><span
+class="header-section-number">19.3</span> Start By Symptom</h2>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -198,8 +254,8 @@ class="header-section-number">20.2</span> Start By Symptom</h2>
 </tr>
 </tbody>
 </table>
-<h2 data-number="20.3" id="what-is-mature"><span
-class="header-section-number">20.3</span> What Is Mature</h2>
+<h2 data-number="19.4" id="what-is-mature"><span
+class="header-section-number">19.4</span> What Is Mature</h2>
 <p>The following areas are central and well established
 architecturally:</p>
 <ul>
@@ -215,8 +271,8 @@ architecturally:</p>
 </ul>
 <p>Mature does not mean bug-free. It means the architecture is settled
 enough that new work should usually fit into the existing pattern.</p>
-<h2 data-number="20.4" id="what-is-evolving"><span
-class="header-section-number">20.4</span> What Is Evolving</h2>
+<h2 data-number="19.5" id="what-is-evolving"><span
+class="header-section-number">19.5</span> What Is Evolving</h2>
 <p>Several areas are active design surfaces:</p>
 <ul>
 <li>third-party extension architecture,</li>
@@ -231,8 +287,8 @@ class="header-section-number">20.4</span> What Is Evolving</h2>
 </ul>
 <p>When working in these areas, prefer small changes that preserve
 future extension options.</p>
-<h2 data-number="20.5" id="capability-snapshot"><span
-class="header-section-number">20.5</span> Capability Snapshot</h2>
+<h2 data-number="19.6" id="capability-snapshot"><span
+class="header-section-number">19.6</span> Capability Snapshot</h2>
 <p>At the time this guide was prepared, the important capability shape
 is:</p>
 <table>
@@ -305,8 +361,8 @@ variant-related work</td>
 <p>Always verify exact support in the current repository before
 documenting a public claim. Capability surfaces move faster than
 architecture chapters.</p>
-<h2 data-number="20.6" id="reading-the-crate-graph"><span
-class="header-section-number">20.6</span> Reading The Crate Graph</h2>
+<h2 data-number="19.7" id="reading-the-crate-graph"><span
+class="header-section-number">19.7</span> Reading The Crate Graph</h2>
 <p>The crate graph has a useful directional shape:</p>
 <pre class="text"><code>protocol crates
   -&gt; spec/resolver/session crates
@@ -326,8 +382,8 @@ caring which protocol produced them.</li>
 <p>When a change violates that separation, pause. Sometimes it is
 necessary, but it usually signals that a boundary type or extension
 point is missing.</p>
-<h2 data-number="20.7" id="the-files-worth-bookmarking"><span
-class="header-section-number">20.7</span> The Files Worth
+<h2 data-number="19.8" id="the-files-worth-bookmarking"><span
+class="header-section-number">19.8</span> The Files Worth
 Bookmarking</h2>
 <p>Bookmark these first:</p>
 <ul>
@@ -340,14 +396,14 @@ Bookmarking</h2>
 <li><code>crates/sail-session/src/planner.rs</code></li>
 <li><code>crates/sail-execution/src/job_runner.rs</code></li>
 <li><code>crates/sail-execution/src/job_graph/planner.rs</code></li>
-<li><code>crates/sail-execution/src/codec.rs</code></li>
+<li><code>crates/sail-execution/src/proto/codec.rs</code></li>
 <li><code>crates/sail-common-datafusion/src/session/job.rs</code></li>
 <li><code>crates/sail-common-datafusion/src/datasource.rs</code></li>
 </ul>
 <p>These files are not the whole system. They are the quickest route
 back to the architecture when you feel lost.</p>
-<h2 data-number="20.8" id="the-definitive-mental-model"><span
-class="header-section-number">20.8</span> The Definitive Mental
+<h2 data-number="19.9" id="the-definitive-mental-model"><span
+class="header-section-number">19.9</span> The Definitive Mental
 Model</h2>
 <p>The entire guide can be compressed to one path:</p>
 <pre class="text"><code>client intent
@@ -361,8 +417,8 @@ Model</h2>
   -&gt; protocol-specific response</code></pre>
 <p>And one warning:</p>
 <pre class="text"><code>If a feature cannot survive every boundary it crosses, it is not complete.</code></pre>
-<h2 data-number="20.9" id="closing"><span
-class="header-section-number">20.9</span> Closing</h2>
+<h2 data-number="19.10" id="closing"><span
+class="header-section-number">19.10</span> Closing</h2>
 <p>Sail is interesting because it is not merely a Rust rewrite of Spark.
 It is a careful compatibility layer over a modern Rust query stack. The
 best way to learn it is to follow conversions: protobuf to spec, SQL to

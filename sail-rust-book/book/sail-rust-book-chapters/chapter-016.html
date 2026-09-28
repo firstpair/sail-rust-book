@@ -5,8 +5,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
-  <title>Chapter 15: Custom Nodes And Optimizers</title>
+  <meta name="dcterms.date" content="2026-09-28" />
+  <title>Custom Nodes And Optimizers</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -108,16 +112,15 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-017.html" accesskey="n" rel="next">Chapter 16: Local And Streaming Execution</a>
+<span class="navlink-label">Next:</span> <a href="chapter-017.html" accesskey="n" rel="next">Local And Streaming Execution</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-015.html" accesskey="p" rel="previous">Chapter 14: Arrow Flight SQL</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-015.html" accesskey="p" rel="previous">Arrow Flight SQL</a>
 </span>
 </div>
 </nav>
-<h1 data-number="16" id="chapter-15"><span
-class="header-section-number">16</span> Chapter 15: Custom Nodes And
-Optimizers</h1>
+<h1 data-number="15" id="chapter-15"><span
+class="header-section-number">15</span> Custom Nodes And Optimizers</h1>
 <p>Sail uses DataFusion as its query kernel, but Spark compatibility
 requires plan constructs DataFusion does not provide directly. The
 solution is a set of custom logical nodes, custom physical plans,
@@ -126,8 +129,8 @@ planners that connect the pieces.</p>
 <p>This chapter collects that machinery in one place. Earlier chapters
 introduced it as part of DataFusion and plan resolution; here we treat
 it as a contributor’s map.</p>
-<h2 data-number="16.1" id="code-map-6"><span
-class="header-section-number">16.1</span> Code Map</h2>
+<h2 data-number="15.1" id="code-map-6"><span
+class="header-section-number">15.1</span> Code Map</h2>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -176,8 +179,8 @@ class="header-section-number">16.1</span> Code Map</h2>
 </tr>
 </tbody>
 </table>
-<h2 data-number="16.2" id="the-pattern"><span
-class="header-section-number">16.2</span> The Pattern</h2>
+<h2 data-number="15.2" id="the-pattern"><span
+class="header-section-number">15.2</span> The Pattern</h2>
 <p>A Spark-specific plan feature usually crosses five layers:</p>
 <pre class="text"><code>spec node or resolver condition
   -&gt; DataFusion LogicalPlan::Extension(UserDefinedLogicalNodeCore)
@@ -188,8 +191,8 @@ class="header-section-number">16.2</span> The Pattern</h2>
 <p>That is a lot of plumbing, but it buys a clear boundary: Sail can
 keep using DataFusion’s optimizer and execution APIs while adding
 Spark-shaped behavior.</p>
-<h2 data-number="16.3" id="logical-node-inventory"><span
-class="header-section-number">16.3</span> Logical Node Inventory</h2>
+<h2 data-number="15.3" id="logical-node-inventory"><span
+class="header-section-number">15.3</span> Logical Node Inventory</h2>
 <p>The current Sail logical extension nodes include:</p>
 <table>
 <colgroup>
@@ -266,8 +269,8 @@ class="header-section-number">16.3</span> Logical Node Inventory</h2>
 <code>crates/sail-session/src/planner.rs</code> as the authoritative
 dispatch table. If a logical node cannot be downcast there, it will not
 become a physical plan.</p>
-<h2 data-number="16.4" id="example-range"><span
-class="header-section-number">16.4</span> Example: Range</h2>
+<h2 data-number="15.4" id="example-range"><span
+class="header-section-number">15.4</span> Example: Range</h2>
 <p><code>spark.range(start, end, step, numPartitions)</code> is a good
 first node because it is a leaf plan. The logical node carries the range
 parameters and schema. The physical planner downcasts it and constructs
@@ -278,8 +281,8 @@ planning turns it into an executable operator.</code></pre>
 <p><code>Range</code> also contains partitioning logic, which makes it
 distributed-friendly. Each partition receives a slice of the range
 rather than every worker scanning the whole sequence.</p>
-<h2 data-number="16.5" id="example-explicit-repartition"><span
-class="header-section-number">16.5</span> Example: Explicit
+<h2 data-number="15.5" id="example-explicit-repartition"><span
+class="header-section-number">15.5</span> Example: Explicit
 Repartition</h2>
 <p>Spark repartitioning semantics are more explicit than DataFusion’s
 default optimizer choices. Sail models user-requested repartitioning as
@@ -294,8 +297,8 @@ later decide the right concrete physical shape:</p>
 </ul>
 <p>This is a recurring Sail technique: preserve Spark intent long enough
 that a later stage can lower it correctly.</p>
-<h2 data-number="16.6" id="the-extension-physical-planner"><span
-class="header-section-number">16.6</span> The Extension Physical
+<h2 data-number="15.6" id="the-extension-physical-planner"><span
+class="header-section-number">15.6</span> The Extension Physical
 Planner</h2>
 <p><code>ExtensionPhysicalPlanner</code> in <code>sail-session</code> is
 the central bridge. It implements DataFusion’s
@@ -321,8 +324,8 @@ each one enters the physical layer.</p>
 <p>Ordering matters. Delta and Iceberg table planners get a chance to
 handle table- format-specific nodes before the generic Sail planner
 handles ordinary logical extension nodes.</p>
-<h2 data-number="16.7" id="logical-optimizers-1"><span
-class="header-section-number">16.7</span> Logical Optimizers</h2>
+<h2 data-number="15.7" id="logical-optimizers-1"><span
+class="header-section-number">15.7</span> Logical Optimizers</h2>
 <p>Sail has a small logical optimizer layer in front of DataFusion’s
 defaults.</p>
 <p><code>DecorrelateLateralProjection</code> handles a Spark
@@ -337,8 +340,8 @@ and <code>DELETE</code> nodes into row-level write plans that
 format-specific planners can execute.</p>
 <p>That rule is the bridge between Spark SQL commands and Delta/Iceberg
 physical planning.</p>
-<h2 data-number="16.8" id="physical-optimizers-1"><span
-class="header-section-number">16.8</span> Physical Optimizers</h2>
+<h2 data-number="15.8" id="physical-optimizers-1"><span
+class="header-section-number">15.8</span> Physical Optimizers</h2>
 <p>Sail’s physical optimizer pipeline is more deliberate than “append
 some rules to DataFusion.” <code>sail-physical-optimizer</code>
 reconstructs the DataFusion rule order and adds Sail-specific rules at
@@ -378,8 +381,8 @@ selected points.</p>
 from physical optimizer changes. A logical rule rewrites
 <code>LogicalPlan</code>. A physical rule rewrites
 <code>ExecutionPlan</code>.</p>
-<h2 data-number="16.9" id="contributor-checklist"><span
-class="header-section-number">16.9</span> Contributor Checklist</h2>
+<h2 data-number="15.9" id="contributor-checklist"><span
+class="header-section-number">15.9</span> Contributor Checklist</h2>
 <p>When adding a new custom operator, ask:</p>
 <ol type="1">
 <li>Does the Sail spec need a new representation?</li>
@@ -399,8 +402,8 @@ execution?</li>
 </ol>
 <p>The codec question is easy to miss. A node that works locally can
 still fail in cluster mode if workers cannot decode it.</p>
-<h2 data-number="16.10" id="extension-implications-6"><span
-class="header-section-number">16.10</span> Extension Implications</h2>
+<h2 data-number="15.10" id="extension-implications-5"><span
+class="header-section-number">15.10</span> Extension Implications</h2>
 <p>Third-party extensions need this same multi-layer path. A physical
 operator alone is not enough. A logical optimizer rule alone is not
 enough. A function registry entry alone is not enough if the physical
@@ -416,8 +419,31 @@ registration as a bundle of contributions:</p>
 <li>table formats,</li>
 <li>codecs.</li>
 </ul>
-<h2 data-number="16.11" id="takeaways-8"><span
-class="header-section-number">16.11</span> Takeaways</h2>
+<h2 data-number="15.11"
+id="opaque-native-regions-and-visible-relational-work"><span
+class="header-section-number">15.11</span> Opaque Native Regions and
+Visible Relational Work</h2>
+<p>The experimental graph paths illustrate a useful planning boundary.
+Pecan and Nutmeg’s graph-table helpers emit ordinary relational plans,
+so Sail and DataFusion can optimize their joins, projections and
+aggregates. Native Banda and Argentea regions expose input/output
+contracts while their kernel internals remain opaque. The host cannot
+infer an arbitrary native algorithm’s cost, ordering or retry safety
+merely from its output schema.</p>
+<p>Preserve truthful <code>PlanProperties</code> and required
+distributions. Argentea’s descriptor validates integer-range routing,
+and its worker stages reuse explicit slot-sharing groups for stateful
+ownership. Those are execution requirements, not optional optimizer
+hints. A rewrite that changes partition ownership or duplicates a
+stateful region can invalidate the algorithm even if the resulting
+schema matches.</p>
+<p>Test both plan shape and execution. The expanded BFS qualification
+caught a client-side bound that prevented the composed plan from
+reaching native execution; other classes of defect require observing
+actual worker placement and phase completion. A schema-only test cannot
+certify either property.</p>
+<h2 data-number="15.12" id="takeaways-8"><span
+class="header-section-number">15.12</span> Takeaways</h2>
 <p>Custom nodes are the places where Spark semantics become
 DataFusion-compatible plans. Optimizer rules preserve or lower those
 semantics at the right stage. <code>sail-session/src/planner.rs</code>

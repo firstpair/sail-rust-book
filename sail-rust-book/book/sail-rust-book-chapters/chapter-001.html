@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
+  <meta name="dcterms.date" content="2026-09-28" />
   <title>Reader Guide: How This Book Builds</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -43,15 +47,14 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-002.html" accesskey="n" rel="next">Chapter 1: Architecture Overview</a>
+<span class="navlink-label">Next:</span> <a href="chapter-002.html" accesskey="n" rel="next">Architecture Overview</a>
 </span>
 <span class="navlink">
 <span class="navlink-label">Previous:</span> <a href="index.html" accesskey="p" rel="previous">Sail Rust Book</a>
 </span>
 </div>
 </nav>
-<h1 data-number="1" id="chapter-00"><span
-class="header-section-number">1</span> Reader Guide: How This Book
+<h1 class="unnumbered" id="chapter-00">Reader Guide: How This Book
 Builds</h1>
 <p>This book is mostly meant to be read in order, but it is also a code
 companion. Chapters 1-13 walk the core system from architecture through
@@ -59,8 +62,28 @@ extension design. Chapters 14-20 are definitive-guide companion
 chapters: they fill protocol, optimizer, streaming, testing,
 contribution, and navigation coverage that readers will want after the
 main pass.</p>
-<h2 data-number="1.1" id="chapter-links"><span
-class="header-section-number">1.1</span> Chapter Links</h2>
+<h2 data-number="0.1"
+id="source-boundaries-for-the-0.7.2-revision"><span
+class="header-section-number">0.1</span> Source boundaries for the 0.7.2
+revision</h2>
+<p>This revision prepares for Sail 0.7.2 using upstream
+<code>main</code>, whose workspace still declares 0.7.1. It does not
+announce a released 0.7.2. The upstream source snapshot is
+<code>85d06ce08825dfba4e066e9a5f54123e40829d43</code>; the separate
+extension snapshot is
+<code>dcd44f287b8422a62abd06d2410aaf96e225e136</code> on
+<code>querygraph/sail</code>, branch
+<code>work/extensions-traversal-bench</code>.</p>
+<p>Upstream includes the session-factory embedding entry point from
+merged #2630. The extension branch adds the experimental protocol,
+native package integration, and distributed graph implementation
+discussed later. A successful test on that branch does not establish
+availability in upstream Sail or a released wheel. Functional
+process-cluster, physical two-host, and benchmark evidence are separate:
+each claim must identify the executable and native package it
+tested.</p>
+<h2 data-number="0.2" id="chapter-links"><span
+class="header-section-number">0.2</span> Chapter Links</h2>
 <p>The book is organized into seven reading paths:</p>
 <ul>
 <li>System shape: Chapters 1 and 2 establish the full query pipeline and
@@ -77,14 +100,15 @@ Arrow stream movement.</li>
 Spark-compatible names, expressions, functions, commands, tables,
 writes, custom logical nodes, and optimizer rules become executable
 DataFusion objects.</li>
-<li>Extension design: Chapter 13 turns the previous patterns into a
-proposed extension architecture for discussion #2001.</li>
+<li>Extension design: Chapter 13 follows the implemented experimental
+extension architecture and distinguishes it from upstream embedding
+capabilities.</li>
 <li>Practice and navigation: Chapters 17, 18, 19, and 20 cover
-verification, feature work, codebase navigation, and the July 2026 Sail
-surface.</li>
+verification, feature work, codebase navigation, and the pinned upstream
+and extension surfaces.</li>
 </ul>
-<h2 data-number="1.2" id="concept-progression"><span
-class="header-section-number">1.2</span> Concept Progression</h2>
+<h2 data-number="0.3" id="concept-progression"><span
+class="header-section-number">0.3</span> Concept Progression</h2>
 <p>The chapters deliberately introduce concepts before relying on them.
 This section uses a list instead of a table so the PDF can break cleanly
 across pages.</p>
@@ -110,16 +134,14 @@ return in Chapters 7, 10, and 15. Chapter 13 uses them for optimizer
 rules and physical planners.</li>
 <li>Job graphs and stages appear first in Chapter 7 and return in
 Chapters 8 and
-<ol start="9" type="1">
-<li>Chapters 13 and 18 use them to show how extension plans survive
+9. Chapters 13 and 18 use them to show how extension plans survive
 distributed execution.</li>
-</ol></li>
 <li>Streaming flow events appear first in Chapter 16 and connect back to
 Chapters 5 and 15. Chapter 18 uses them for streaming sources that must
 emit the right event schema.</li>
 <li>Typed session extensions appear first in Chapter 2 and return in
-Chapters 6, 11, 12, 14, and 16. Chapter 13 proposes the extension
-registry as a session service.</li>
+Chapters 6, 11, 12, 14, and 16. Chapter 13 explains implemented
+extension contracts as session services.</li>
 <li>Function resolution and codecs appear in Chapter 11 and return in
 Chapters 17 and 18. They are the core reason the execution-time
 extension boundary needs worker-side registration and
@@ -134,8 +156,8 @@ execution-time contributions.</li>
 edition. It is the navigable companion where book chapters, code files,
 fragments, crates, and subsystems are linked directly.</li>
 </ul>
-<h2 data-number="1.3" id="code-reading-strategy"><span
-class="header-section-number">1.3</span> Code Reading Strategy</h2>
+<h2 data-number="0.4" id="code-reading-strategy"><span
+class="header-section-number">0.4</span> Code Reading Strategy</h2>
 <p>Each chapter has a code map, but these are the highest-leverage
 excerpts to read first:</p>
 <ul>
@@ -150,7 +172,7 @@ excerpts to read first:</p>
 <code>crates/sail-execution/src/job_graph/planner.rs</code> and
 <code>crates/sail-execution/src/job_runner.rs</code>.</li>
 <li>How do tasks run on workers? Read
-<code>crates/sail-execution/src/task_runner/core.rs</code>.</li>
+<code>crates/sail-execution/src/task_runner/actor/core.rs</code>.</li>
 <li>How does shuffle move Arrow batches? Read
 <code>crates/sail-execution/src/plan/shuffle_write.rs</code>,
 <code>crates/sail-execution/src/plan/shuffle_read.rs</code>, and
@@ -162,7 +184,7 @@ excerpts to read first:</p>
 <code>crates/sail-python-udf/src/udf/</code> and
 <code>crates/sail-python-udf/src/stream.rs</code>.</li>
 <li>How do custom functions and plans reach workers? Read
-<code>crates/sail-execution/src/codec.rs</code>.</li>
+<code>crates/sail-execution/src/proto/codec.rs</code>.</li>
 <li>How do catalogs and file formats plug in? Read
 <code>crates/sail-catalog/src/manager/mod.rs</code>,
 <code>crates/sail-common-datafusion/src/datasource.rs</code>, and
@@ -186,8 +208,8 @@ Playbooks.</li>
 <li>How do I jump from prose to exact code fragments? Read Chapter 20,
 Current Codebase Edition, and use the generated Obsidian vault.</li>
 </ul>
-<h2 data-number="1.4" id="what-to-look-for-in-code-excerpts"><span
-class="header-section-number">1.4</span> What To Look For In Code
+<h2 data-number="0.5" id="what-to-look-for-in-code-excerpts"><span
+class="header-section-number">0.5</span> What To Look For In Code
 Excerpts</h2>
 <p>The best excerpts in this book are not chosen because they are short.
 They are chosen because they reveal a boundary:</p>

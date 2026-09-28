@@ -1,0 +1,36 @@
+{
+  "recorded_utc": "2026-09-28T08:39:56.130114+00:00",
+  "source_commit": "b6f0f011519161ad8fd433f7ce84d4e4c58ed5cf",
+  "version": "2026.09.28.1",
+  "validation": {
+    "ordinary_firstpair_build": "passed",
+    "source_paths": 291,
+    "html_local_links": 3398,
+    "broken_html_targets": 0,
+    "epub_integrity": "passed",
+    "visual_scope": "targeted changed pages: protocol, codec, planner and crate map; not every page"
+  },
+  "artifacts": {
+    "sail-rust-book.pdf": {
+      "sha256": "4adbf1197ad1e28eafcdb640b14609c3b44e5e4aa9a3e14a0a40326a403636ac",
+      "bytes": 8516989
+    },
+    "sail-rust-book.epub": {
+      "sha256": "92e76516a6fe77c6712620a35ed7cf46529bd30d19de724143cfed7c4952a54c",
+      "bytes": 5456186
+    },
+    "sail-rust-book.html": {
+      "sha256": "a6ecb4e5dd281829ced216df179e223d2cd6713985cdd777985fffaac101cbf1",
+      "bytes": 1158994
+    },
+    "sail-rust-book.mobi": {
+      "sha256": "58960c10753964a0ff8d4cb66a928abf6e4a6fe7083486c9bce920ad2059d316",
+      "bytes": 5691263
+    },
+    "VERSION.md": {
+      "sha256": "e12da244724f897df05c2286614c49d2a61f22c35c25c5cde22e635f19cfbf2e",
+      "bytes": 977
+    }
+  },
+  "boundary": "Generated ordinary book formats. No Obsidian regeneration or FirstPair public deployment. Distributed qualification remains scoped in manuscript."
+}

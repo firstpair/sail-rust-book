@@ -5,8 +5,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
-  <title>Chapter 14: Arrow Flight SQL</title>
+  <meta name="dcterms.date" content="2026-09-28" />
+  <title>Arrow Flight SQL</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -108,16 +112,15 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-016.html" accesskey="n" rel="next">Chapter 15: Custom Nodes And Optimizers</a>
+<span class="navlink-label">Next:</span> <a href="chapter-016.html" accesskey="n" rel="next">Custom Nodes And Optimizers</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-014.html" accesskey="p" rel="previous">Chapter 13: Extension Architecture: From Proposal To Design</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-014.html" accesskey="p" rel="previous">Extension Architecture in the Implemented Branch</a>
 </span>
 </div>
 </nav>
-<h1 data-number="15" id="chapter-14"><span
-class="header-section-number">15</span> Chapter 14: Arrow Flight
-SQL</h1>
+<h1 data-number="14" id="chapter-14"><span
+class="header-section-number">14</span> Arrow Flight SQL</h1>
 <p>Spark Connect is Sail’s primary front door, but it is not the only
 one. Sail also exposes Apache Arrow Flight SQL for clients that want SQL
 over Arrow-native transport rather than PySpark over Spark Connect.</p>
@@ -126,8 +129,8 @@ over Arrow-native transport rather than PySpark over Spark Connect.</p>
 protocol surface that converges on the same SQL parser, Sail spec layer,
 DataFusion physical planning, <code>JobService</code>, and Arrow
 <code>RecordBatch</code> streams.</p>
-<h2 data-number="15.1" id="code-map-5"><span
-class="header-section-number">15.1</span> Code Map</h2>
+<h2 data-number="14.1" id="code-map-5"><span
+class="header-section-number">14.1</span> Code Map</h2>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -174,9 +177,9 @@ class="header-section-number">15.1</span> Code Map</h2>
 </tr>
 </tbody>
 </table>
-<h2 data-number="15.2"
+<h2 data-number="14.2"
 id="why-flight-sql-exists-beside-spark-connect"><span
-class="header-section-number">15.2</span> Why Flight SQL Exists Beside
+class="header-section-number">14.2</span> Why Flight SQL Exists Beside
 Spark Connect</h2>
 <p>Spark Connect is Spark-shaped. It carries unresolved Spark relations,
 commands, expressions, config operations, reattachable execution,
@@ -195,8 +198,8 @@ the same.</p>
 <img src="diagrams/14-diagram-01.svg" alt="Flowchart 14.1" />
 <figcaption aria-hidden="true">Flowchart 14.1</figcaption>
 </figure>
-<h2 data-number="15.3" id="the-service-shape"><span
-class="header-section-number">15.3</span> The Service Shape</h2>
+<h2 data-number="14.3" id="the-service-shape"><span
+class="header-section-number">14.3</span> The Service Shape</h2>
 <p><code>SailFlightSqlService</code> is small compared with
 <code>SparkConnectServer</code>:</p>
 <div class="sourceCode" id="cb2"><pre
@@ -217,8 +220,8 @@ are:</p>
 <p>Other Flight SQL methods can remain unimplemented until Sail needs
 them. This is a different compatibility posture than Spark Connect,
 where PySpark expects a wider service surface.</p>
-<h2 data-number="15.4" id="phase-one-getflightinfo"><span
-class="header-section-number">15.4</span> Phase One:
+<h2 data-number="14.4" id="phase-one-getflightinfo"><span
+class="header-section-number">14.4</span> Phase One:
 <code>GetFlightInfo</code></h2>
 <p>Flight SQL separates planning from fetching. The first request is
 <code>GetFlightInfo(CommandStatementQuery)</code>. Sail parses the SQL
@@ -247,8 +250,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>state<span class="op">.</span>lock()<span class="op">.</span><span class="kw">await</span><span class="op">.</span>add_stream(handle<span class="op">.</span>clone()<span class="op">,</span> stream)<span class="op">;</span></span></code></pre></div>
 <p>The returned <code>FlightInfo</code> contains the schema and a
 <code>TicketStatementQuery</code> carrying that handle.</p>
-<h2 data-number="15.5" id="phase-two-doget"><span
-class="header-section-number">15.5</span> Phase Two:
+<h2 data-number="14.5" id="phase-two-doget"><span
+class="header-section-number">14.5</span> Phase Two:
 <code>DoGet</code></h2>
 <p>The second request presents the ticket:</p>
 <div class="sourceCode" id="cb6"><pre
@@ -271,8 +274,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="
 <p>This is where Flight SQL differs from Spark Connect at the wire
 level. Spark Connect wraps Arrow IPC bytes in Spark protobuf messages.
 Flight SQL sends Arrow Flight frames directly.</p>
-<h2 data-number="15.6" id="the-shared-session-model"><span
-class="header-section-number">15.6</span> The Shared Session Model</h2>
+<h2 data-number="14.6" id="the-shared-session-model"><span
+class="header-section-number">14.6</span> The Shared Session Model</h2>
 <p>The current Flight SQL service uses a shared default session:</p>
 <div class="sourceCode" id="cb8"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> DEFAULT_SESSION_ID<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span> <span class="op">=</span> <span class="st">&quot;flight-default&quot;</span><span class="op">;</span></span>
@@ -285,8 +288,8 @@ client-provided session IDs.</p>
 important architectural point is that the same
 <code>SessionManager</code> and <code>SessionContext</code> machinery
 still applies.</p>
-<h2 data-number="15.7" id="commands-1"><span
-class="header-section-number">15.7</span> Commands</h2>
+<h2 data-number="14.7" id="commands-1"><span
+class="header-section-number">14.7</span> Commands</h2>
 <p>SQL commands are different from queries because the effect matters
 more than the result stream. Sail classifies the parsed plan:</p>
 <div class="sourceCode" id="cb9"><pre
@@ -300,8 +303,8 @@ completed before the client receives <code>FlightInfo</code>.</p>
 <p>This detail matters for DDL. A BI client that sends
 <code>CREATE TABLE</code> should not have to call <code>DoGet</code>
 just to make the side effect happen.</p>
-<h2 data-number="15.8" id="metrics"><span
-class="header-section-number">15.8</span> Metrics</h2>
+<h2 data-number="14.8" id="metrics"><span
+class="header-section-number">14.8</span> Metrics</h2>
 <p>When OpenTelemetry metrics are available, <code>sail-flight</code>
 wraps the result stream in <code>MetricsRecordingStream</code>. The
 wrapper records row counts, batch counts, elapsed time, and statement
@@ -309,8 +312,8 @@ type.</p>
 <p>This mirrors a general Sail design habit: protocol crates should add
 protocol-level metrics around streams without changing the core
 execution layer.</p>
-<h2 data-number="15.9" id="spark-connect-versus-flight-sql"><span
-class="header-section-number">15.9</span> Spark Connect Versus Flight
+<h2 data-number="14.9" id="spark-connect-versus-flight-sql"><span
+class="header-section-number">14.9</span> Spark Connect Versus Flight
 SQL</h2>
 <table>
 <colgroup>
@@ -364,18 +367,31 @@ SQL</h2>
 </tr>
 </tbody>
 </table>
-<h2 data-number="15.10" id="extension-implications-5"><span
-class="header-section-number">15.10</span> Extension Implications</h2>
-<p>Flight SQL is a useful test for extension design. If a future
-extension only works when a user enters through Spark Connect protobufs,
-then SQL clients cannot use it. If it registers through the common
-spec/resolver/function/table-format layers, both front doors can use
-it.</p>
-<p>For extension authors, this gives a simple rule:</p>
-<pre class="text"><code>Protocol-specific dispatch is allowed, but semantic registration should happen below
-the protocol boundary whenever possible.</code></pre>
-<h2 data-number="15.11" id="takeaways-7"><span
-class="header-section-number">15.11</span> Takeaways</h2>
+<h2 data-number="14.10"
+id="extension-boundaries-across-front-doors"><span
+class="header-section-number">14.10</span> Extension Boundaries Across
+Front Doors</h2>
+<p>Flight SQL and Spark Connect converge on common planning and
+execution services, but their protocol-specific dispatch remains
+different. The upstream Flight entry point calls
+<code>create_flight_session_manager</code>; Spark Connect’s merged #2630
+factory-selection entry point does not automatically replace Flight
+startup.</p>
+<p>A scalar or data-source registration installed in the appropriate
+session can be used by the ordinary resolver. A Spark Connect
+<code>Relation.extension</code> envelope, however, is not a Flight SQL
+request. The experimental Nutmeg and Argentea clients use that Connect
+path. Their successful Connect qualification is not evidence that a
+Flight client can send the same payload or invoke the same
+operations.</p>
+<p>To expose an operation through another front door, define its
+client-visible representation and wire it to the shared semantic layer,
+then test that protocol’s session setup, plan creation, execution and
+cleanup. Keep worker package decoding and resource lifetime common where
+possible. This preserves the shared engine without pretending the
+protocols have identical extension surfaces.</p>
+<h2 data-number="14.11" id="takeaways-7"><span
+class="header-section-number">14.11</span> Takeaways</h2>
 <p>Flight SQL is not a separate query engine inside Sail. It is another
 way to reach the same SQL parser, Sail spec IR, DataFusion planning
 path, and job runner. The protocol differences are real, especially

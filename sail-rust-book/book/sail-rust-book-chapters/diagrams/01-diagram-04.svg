@@ -1,43 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="893" viewBox="0 0 964 957">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 1646 476">
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
     <path d="M0,0 L0,6 L8,3 z" fill="#5f6f85"/>
   </marker>
 </defs>
-<rect x="0" y="0" width="964" height="957" fill="white"/>
+<rect x="0" y="0" width="1646" height="476" fill="white"/>
 
-<line x1="274" y1="99" x2="321" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="274" y1="99" x2="377" y2="254" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="274" y1="99" x2="356" y2="409" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="274" y1="99" x2="335" y2="564" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="274" y1="99" x2="335" y2="719" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="274" y1="99" x2="328" y2="874" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="629" y1="99" x2="662" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="573" y1="254" x2="662" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="594" y1="409" x2="662" y2="99" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="615" y1="564" x2="690" y2="254" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="615" y1="719" x2="676" y2="409" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="622" y1="874" x2="669" y2="564" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="36" y="68" width="238" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="155" y="99" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="155" dy="0">SailExtension</tspan></text>
-<rect x="321" y="36" width="308" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="475" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="475" dy="0">Spark Connect</tspan><tspan x="475" dy="32">dispatcher</tspan><tspan x="475" dy="32">plan-time boundary</tspan></text>
-<rect x="377" y="207" width="196" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="475" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="475" dy="0">Function</tspan><tspan x="475" dy="32">registries</tspan></text>
-<rect x="356" y="362" width="238" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="475" y="393" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="475" dy="0">SessionConfig</tspan><tspan x="475" dy="32">extensions</tspan></text>
-<rect x="335" y="517" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="475" y="548" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="475" dy="0">Logical/physical</tspan><tspan x="475" dy="32">optimizer rules</tspan></text>
-<rect x="335" y="672" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="475" y="703" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="475" dy="0">ExtensionPlanner</tspan><tspan x="475" dy="32">chain</tspan></text>
-<rect x="328" y="827" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="475" y="858" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="475" dy="0">Distributed codec</tspan><tspan x="475" dy="32">fallback registry</tspan></text>
-<rect x="662" y="68" width="266" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="795" y="99" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="795" dy="0">Plan resolution</tspan></text>
-<rect x="690" y="207" width="210" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="795" y="238" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="795" dy="0">Optimized</tspan><tspan x="795" dy="32">LogicalPlan</tspan></text>
-<rect x="676" y="378" width="238" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="795" y="409" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="795" dy="0">ExecutionPlan</tspan></text>
-<rect x="669" y="485" width="252" height="158" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
-<text x="795" y="516" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="795" dy="0">Remote worker</tspan><tspan x="795" dy="32">decode</tspan><tspan x="795" dy="32">execution-time</tspan><tspan x="795" dy="32">boundary</tspan></text>
+<line x1="302" y1="83" x2="356" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="302" y1="83" x2="349" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="316" y1="238" x2="363" y2="393" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="629" y1="393" x2="676" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="636" y1="83" x2="718" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="643" y1="238" x2="718" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="956" y1="83" x2="718" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="914" y1="238" x2="982" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1290" y1="83" x2="1302" y2="83" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="1290" y1="83" x2="1358" y2="238" stroke="#5f6f85" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="50" y="52" width="252" height="62" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="176" y="83" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">Connect client</tspan></text>
+<rect x="356" y="36" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="496" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="496" dy="0">Registered</tspan><tspan x="496" dy="32">relation payload</tspan></text>
+<rect x="349" y="191" width="294" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="496" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="496" dy="0">Ordinary function</tspan><tspan x="496" dy="32">call</tspan></text>
+<rect x="36" y="191" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="176" y="222" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="176" dy="0">Installed native</tspan><tspan x="176" dy="32">package</tspan></text>
+<rect x="363" y="346" width="266" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="496" y="377" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="496" dy="0">Manifest and</tspan><tspan x="496" dy="32">identity checks</tspan></text>
+<rect x="676" y="36" width="280" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="816" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="816" dy="0">Session binding</tspan><tspan x="816" dy="32">and FFI capsules</tspan></text>
+<rect x="718" y="175" width="196" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="816" y="206" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="816" dy="0">Sail and</tspan><tspan x="816" dy="32">DataFusion</tspan><tspan x="816" dy="32">planning</tspan></text>
+<rect x="982" y="36" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1136" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1136" dy="0">Existing job graph</tspan><tspan x="1136" dy="32">and workers</tspan></text>
+<rect x="1302" y="36" width="308" height="94" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1456" y="67" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1456" dy="0">Native state with</tspan><tspan x="1456" dy="32">admitted ownership</tspan></text>
+<rect x="1358" y="175" width="196" height="126" rx="8" fill="#f6f8fb" stroke="#496a9a" stroke-width="1.5"/>
+<text x="1456" y="206" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#1f2937"><tspan x="1456" dy="0">Ordinary</tspan><tspan x="1456" dy="32">relational</tspan><tspan x="1456" dy="32">execution</tspan></text>
 </svg>

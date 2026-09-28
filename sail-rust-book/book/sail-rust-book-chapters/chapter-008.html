@@ -5,8 +5,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
-  <title>Chapter 7: From Physical Plan To Job Graph</title>
+  <meta name="dcterms.date" content="2026-09-28" />
+  <title>From Physical Plan To Job Graph</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -108,16 +112,16 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-009.html" accesskey="n" rel="next">Chapter 8: Drivers, Workers, Tasks, And Streams</a>
+<span class="navlink-label">Next:</span> <a href="chapter-009.html" accesskey="n" rel="next">Drivers, Workers, Tasks, And Streams</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-007.html" accesskey="p" rel="previous">Chapter 6: Apache DataFusion</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-007.html" accesskey="p" rel="previous">Apache DataFusion</a>
 </span>
 </div>
 </nav>
-<h1 data-number="8" id="chapter-07"><span
-class="header-section-number">8</span> Chapter 7: From Physical Plan To
-Job Graph</h1>
+<h1 data-number="7" id="chapter-07"><span
+class="header-section-number">7</span> From Physical Plan To Job
+Graph</h1>
 <p>The previous chapter ended with a DataFusion physical plan:</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;</span></span></code></pre></div>
@@ -139,8 +143,8 @@ decide:</p>
 <pre class="text"><code>DataFusion ExecutionPlan -&gt; Sail JobGraph -&gt; JobTopology -&gt; task regions -&gt; task definitions</code></pre>
 <p>The job graph is where DataFusion’s local, partitioned execution
 model becomes Sail’s distributed execution model.</p>
-<h2 data-number="8.1" id="the-core-files"><span
-class="header-section-number">8.1</span> The Core Files</h2>
+<h2 data-number="7.1" id="the-core-files"><span
+class="header-section-number">7.1</span> The Core Files</h2>
 <p>The main files for this chapter are:</p>
 <table>
 <colgroup>
@@ -213,8 +217,8 @@ inputs</td>
 </table>
 <p>The first file to read is <code>job_graph/mod.rs</code>. It defines
 the vocabulary.</p>
-<h2 data-number="8.2" id="local-runner-versus-cluster-runner"><span
-class="header-section-number">8.2</span> Local Runner Versus Cluster
+<h2 data-number="7.2" id="local-runner-versus-cluster-runner"><span
+class="header-section-number">7.2</span> Local Runner Versus Cluster
 Runner</h2>
 <p>Sail can execute the same DataFusion physical plan locally or through
 the cluster runtime.</p>
@@ -233,7 +237,7 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="
 <p>The cluster runner sends the plan to the driver actor:</p>
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>driver</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>send(<span class="pp">DriverEvent::</span>ExecuteJob <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>send(<span class="pp">DriverMessage::</span>ExecuteJob <span class="op">{</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        plan<span class="op">,</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        context<span class="op">:</span> ctx<span class="op">.</span>task_ctx()<span class="op">,</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        result<span class="op">:</span> tx<span class="op">,</span></span>
@@ -253,8 +257,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="
 <figcaption aria-hidden="true">Flowchart 07.1</figcaption>
 </figure>
 <p>This chapter is about the cluster branch.</p>
-<h2 data-number="8.3" id="what-a-job-graph-represents"><span
-class="header-section-number">8.3</span> What A Job Graph
+<h2 data-number="7.3" id="what-a-job-graph-represents"><span
+class="header-section-number">7.3</span> What A Job Graph
 Represents</h2>
 <p><code>JobGraph</code> is defined in
 <code>crates/sail-execution/src/job_graph/mod.rs</code>:</p>
@@ -301,9 +305,9 @@ links them with placeholders.</p>
 </figure>
 <p><code>StageInputExec</code> is the placeholder that marks “read
 another stage’s output here.”</p>
-<h2 data-number="8.4"
+<h2 data-number="7.4"
 id="stageinputexec-a-placeholder-not-an-operator"><span
-class="header-section-number">8.4</span> <code>StageInputExec</code>: A
+class="header-section-number">7.4</span> <code>StageInputExec</code>: A
 Placeholder, Not An Operator</h2>
 <p><code>crates/sail-execution/src/plan/stage_input.rs</code> defines
 <code>StageInputExec&lt;I&gt;</code>.</p>
@@ -347,8 +351,8 @@ describes where those inputs come from.</li>
 <p>This separation is neat. The plan stays serializable as a DataFusion
 physical plan, while stage dependencies stay explicit in the job
 graph.</p>
-<h2 data-number="8.5" id="stage-inputs-and-input-modes"><span
-class="header-section-number">8.5</span> Stage Inputs And Input
+<h2 data-number="7.5" id="stage-inputs-and-input-modes"><span
+class="header-section-number">7.5</span> Stage Inputs And Input
 Modes</h2>
 <p><code>StageInput</code> has two fields:</p>
 <div class="sourceCode" id="cb10"><pre
@@ -420,8 +424,8 @@ channels, then shuffle input groups are:</p>
 output partition 1 reads: (input p0, channel 1), (input p1, channel 1), ...
 ...</code></pre>
 <p>That is the exchange pattern for repartitioning.</p>
-<h2 data-number="8.6" id="output-distribution"><span
-class="header-section-number">8.6</span> Output Distribution</h2>
+<h2 data-number="7.6" id="output-distribution"><span
+class="header-section-number">7.6</span> Output Distribution</h2>
 <p>A stage’s output distribution describes how each task splits its
 output into channels:</p>
 <div class="sourceCode" id="cb14"><pre
@@ -448,8 +452,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href=
 reason the extensions chapter will need to care about physical-plan
 codecs. If an extension introduces a custom physical expression,
 distributed workers must be able to deserialize it.</p>
-<h2 data-number="8.7" id="how-jobgraphtry_new-starts"><span
-class="header-section-number">8.7</span> How
+<h2 data-number="7.7" id="how-jobgraphtry_new-starts"><span
+class="header-section-number">7.7</span> How
 <code>JobGraph::try_new</code> Starts</h2>
 <p>The entry point is:</p>
 <div class="sourceCode" id="cb16"><pre
@@ -480,9 +484,9 @@ expose its task streams as job output.</p>
 <img src="diagrams/07-diagram-03.svg" alt="Flowchart 07.3" />
 <figcaption aria-hidden="true">Flowchart 07.3</figcaption>
 </figure>
-<h2 data-number="8.8"
+<h2 data-number="7.8"
 id="rewrite-1-global-limit-needs-one-input-partition"><span
-class="header-section-number">8.8</span> Rewrite 1: Global Limit Needs
+class="header-section-number">7.8</span> Rewrite 1: Global Limit Needs
 One Input Partition</h2>
 <p><code>ensure_single_input_partition_for_global_limit</code> rewrites
 every <code>GlobalLimitExec</code>.</p>
@@ -500,9 +504,9 @@ DataFusion created, but ensures the final global limit sees a single
 partition.</p>
 <p>This is an example of distributed correctness requiring a physical
 rewrite after DataFusion planning.</p>
-<h2 data-number="8.9"
+<h2 data-number="7.9"
 id="rewrite-2-collect-left-hash-joins-and-unmatched-rows"><span
-class="header-section-number">8.9</span> Rewrite 2: Collect-Left Hash
+class="header-section-number">7.9</span> Rewrite 2: Collect-Left Hash
 Joins And Unmatched Rows</h2>
 <p><code>ensure_partitioned_hash_join_if_build_side_emits_unmatched_rows</code>
 handles a more subtle distributed problem.</p>
@@ -530,8 +534,8 @@ distributed execution model.</p>
 <p>The lesson is that physical plans produced by a single-node optimizer
 sometimes need a distribution-aware fixup before being split into
 stages.</p>
-<h2 data-number="8.10" id="recursive-stage-splitting"><span
-class="header-section-number">8.10</span> Recursive Stage Splitting</h2>
+<h2 data-number="7.10" id="recursive-stage-splitting"><span
+class="header-section-number">7.10</span> Recursive Stage Splitting</h2>
 <p>The heart of the planner is <code>build_job_graph</code>.</p>
 <p>It walks the physical plan tree from the leaves upward. First it
 recursively processes children. Then it decides whether the current node
@@ -571,8 +575,8 @@ when the execution pattern changes across partitions.</p>
 <p>In the job graph, <code>RepartitionExec</code> itself is replaced by
 a stage boundary: stage 0 writes channels; stage 1 reads those
 channels.</p>
-<h2 data-number="8.11" id="partition-usage-single-versus-shared"><span
-class="header-section-number">8.11</span> Partition Usage: Single Versus
+<h2 data-number="7.11" id="partition-usage-single-versus-shared"><span
+class="header-section-number">7.11</span> Partition Usage: Single Versus
 Shared</h2>
 <p>The <code>PartitionUsage</code> enum has two variants:</p>
 <div class="sourceCode" id="cb22"><pre
@@ -602,8 +606,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href=
 <p>So a shared input becomes broadcast-like downstream consumption.</p>
 <p>This is a nice example of a local execution property becoming a
 distributed data movement decision.</p>
-<h2 data-number="8.12" id="create_shuffle"><span
-class="header-section-number">8.12</span>
+<h2 data-number="7.12" id="create_shuffle"><span
+class="header-section-number">7.12</span>
 <code>create_shuffle</code></h2>
 <p><code>create_shuffle</code> is used for repartition and
 coalesce-style boundaries.</p>
@@ -641,8 +645,8 @@ partitioning. The job graph sees a dependency on a previous stage.</p>
 <img src="diagrams/07-diagram-05.svg" alt="Flowchart 07.5" />
 <figcaption aria-hidden="true">Flowchart 07.5</figcaption>
 </figure>
-<h2 data-number="8.13" id="merge-and-rescale-boundaries"><span
-class="header-section-number">8.13</span> Merge And Rescale
+<h2 data-number="7.13" id="merge-and-rescale-boundaries"><span
+class="header-section-number">7.13</span> Merge And Rescale
 Boundaries</h2>
 <p><code>SortPreservingMergeExec</code> uses
 <code>create_merge_input</code>.</p>
@@ -664,8 +668,8 @@ everything into one partition.</p>
 <img src="diagrams/07-diagram-06.svg" alt="Flowchart 07.6" />
 <figcaption aria-hidden="true">Flowchart 07.6</figcaption>
 </figure>
-<h2 data-number="8.14" id="driver-stages"><span
-class="header-section-number">8.14</span> Driver Stages</h2>
+<h2 data-number="7.14" id="driver-stages"><span
+class="header-section-number">7.14</span> Driver Stages</h2>
 <p>Most stages run on workers:</p>
 <div class="sourceCode" id="cb29"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>placement<span class="op">:</span> <span class="pp">TaskPlacement::</span>Worker</span></code></pre></div>
@@ -687,8 +691,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb30-1"><a href=
 is an important limitation for extension design. If a future extension
 introduces a driver-only physical operator that consumes distributed
 inputs, Sail would need to extend this part of the planner.</p>
-<h2 data-number="8.15" id="topological-order"><span
-class="header-section-number">8.15</span> Topological Order</h2>
+<h2 data-number="7.15" id="topological-order"><span
+class="header-section-number">7.15</span> Topological Order</h2>
 <p><code>JobGraph</code> stores stages in topological order:</p>
 <div class="sourceCode" id="cb31"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// For any stage, all its input stages are guaranteed to</span></span>
@@ -710,8 +714,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb32-1"><a href=
 <p>Once a stage is inserted into the graph, its index is the stable
 identity used by the scheduler, task runner, stream manager, and job
 output system.</p>
-<h2 data-number="8.16" id="replicas-and-repeated-consumption"><span
-class="header-section-number">8.16</span> Replicas And Repeated
+<h2 data-number="7.16" id="replicas-and-repeated-consumption"><span
+class="header-section-number">7.16</span> Replicas And Repeated
 Consumption</h2>
 <p><code>JobGraph::replicas(stage)</code> computes how many replicas of
 a stage’s output are needed:</p>
@@ -729,8 +733,8 @@ downstream partitions may read the same upstream streams. If output is
 pipelined and stored locally, Sail must keep enough stream replicas
 available for all consumers.</p>
 <p>This is the data-plane cost of repeated consumption.</p>
-<h2 data-number="8.17" id="from-job-graph-to-job-topology"><span
-class="header-section-number">8.17</span> From Job Graph To Job
+<h2 data-number="7.17" id="from-job-graph-to-job-topology"><span
+class="header-section-number">7.17</span> From Job Graph To Job
 Topology</h2>
 <p>After <code>JobGraph::try_new</code>, the scheduler creates a
 <code>JobDescriptor</code>:</p>
@@ -769,8 +773,8 @@ coordination.</li>
 <img src="diagrams/07-diagram-07.svg" alt="Flowchart 07.7" />
 <figcaption aria-hidden="true">Flowchart 07.7</figcaption>
 </figure>
-<h2 data-number="8.18" id="region-dependencies"><span
-class="header-section-number">8.18</span> Region Dependencies</h2>
+<h2 data-number="7.18" id="region-dependencies"><span
+class="header-section-number">7.18</span> Region Dependencies</h2>
 <p>After regions are created, the topology builder adds
 dependencies.</p>
 <p>For <code>Forward</code> input, a task depends on the corresponding
@@ -792,8 +796,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb37-1"><a href=
 <p>This is conservative and correct. Shuffle, broadcast, merge, and
 rescale may need data from multiple upstream partitions, so downstream
 regions wait until the relevant upstream regions are complete.</p>
-<h2 data-number="8.19" id="task-definitions"><span
-class="header-section-number">8.19</span> Task Definitions</h2>
+<h2 data-number="7.19" id="task-definitions"><span
+class="header-section-number">7.19</span> Task Definitions</h2>
 <p>A worker does not receive a Rust <code>Stage</code> object. It
 receives a serialized <code>TaskDefinition</code>:</p>
 <div class="sourceCode" id="cb38"><pre
@@ -823,8 +827,8 @@ type system but not fully implemented in the code paths shown here.</p>
 <p>This is another extension lesson: physical plans and expressions must
 be serializable if they are going to run on workers. A local-only
 extension is much easier than a distributed-safe extension.</p>
-<h2 data-number="8.20" id="job-output"><span
-class="header-section-number">8.20</span> Job Output</h2>
+<h2 data-number="7.20" id="job-output"><span
+class="header-section-number">7.20</span> Job Output</h2>
 <p>The final stage’s output becomes the stream returned to Spark Connect
 or Flight SQL.</p>
 <p><code>build_job_output</code> creates:</p>
@@ -854,8 +858,8 @@ final tasks are still running. That is why the output mode is currently
 <p>The stream also handles task attempts carefully. If a later attempt
 supersedes an earlier attempt for the same task stream, the wrapper can
 mute the older stream so the client does not see duplicate output.</p>
-<h2 data-number="8.21" id="a-worked-example-hash-aggregate"><span
-class="header-section-number">8.21</span> A Worked Example: Hash
+<h2 data-number="7.21" id="a-worked-example-hash-aggregate"><span
+class="header-section-number">7.21</span> A Worked Example: Hash
 Aggregate</h2>
 <p>Imagine a query that scans a table and groups by
 <code>customer_id</code>:</p>
@@ -887,8 +891,8 @@ partition.</li>
 <li>and so on.</li>
 </ul>
 <p>That is a distributed hash exchange.</p>
-<h2 data-number="8.22" id="a-worked-example-global-limit"><span
-class="header-section-number">8.22</span> A Worked Example: Global
+<h2 data-number="7.22" id="a-worked-example-global-limit"><span
+class="header-section-number">7.22</span> A Worked Example: Global
 Limit</h2>
 <p>Consider:</p>
 <div class="sourceCode" id="cb44"><pre
@@ -908,9 +912,9 @@ The upstream stage produces partitioned output, and the final stage
 reads it as a coalesced input before applying the global limit.</p>
 <p>Correctness beats parallelism here. The global decision has to be
 made in one place.</p>
-<h2 data-number="8.23"
+<h2 data-number="7.23"
 id="a-worked-example-broadcast-like-shared-input"><span
-class="header-section-number">8.23</span> A Worked Example:
+class="header-section-number">7.23</span> A Worked Example:
 Broadcast-Like Shared Input</h2>
 <p>Some joins reuse one side. In Sail’s planner, that shows up as
 <code>PartitionUsage::Shared</code>. Shared usage turns into
@@ -925,8 +929,8 @@ all read it.</p>
 <p>The key point is not that Sail necessarily implements every broadcast
 join optimization you might imagine. The key point is that the job graph
 has an explicit mode for repeated consumption of upstream data.</p>
-<h2 data-number="8.24" id="why-this-design-works"><span
-class="header-section-number">8.24</span> Why This Design Works</h2>
+<h2 data-number="7.24" id="why-this-design-works"><span
+class="header-section-number">7.24</span> Why This Design Works</h2>
 <p>Sail does not throw away the DataFusion plan and invent a separate
 distributed IR. Instead, it:</p>
 <ol type="1">
@@ -951,8 +955,8 @@ scheduling.</li>
 <li>The final output is still a normal Arrow <code>RecordBatch</code>
 stream.</li>
 </ul>
-<h2 data-number="8.25" id="extension-implications-1"><span
-class="header-section-number">8.25</span> Extension Implications</h2>
+<h2 data-number="7.25" id="extension-implications-1"><span
+class="header-section-number">7.25</span> Extension Implications</h2>
 <p>For discussion #2001, this chapter is the warning label on the
 box.</p>
 <p>It is not enough for an extension to register a DataFusion function
@@ -977,9 +981,9 @@ broadcast?</li>
 general extension API will need a way for extensions to declare
 distributed planning behavior, or at least a fallback policy that
 rejects unsupported distributed plans clearly.</p>
-<h2 data-number="8.26"
+<h2 data-number="7.26"
 id="reading-exercise-trace-a-repartition-boundary"><span
-class="header-section-number">8.26</span> Reading Exercise: Trace A
+class="header-section-number">7.26</span> Reading Exercise: Trace A
 Repartition Boundary</h2>
 <p>Follow a repartition from DataFusion physical plan to job graph:</p>
 <ol type="1">
@@ -999,14 +1003,14 @@ Repartition Boundary</h2>
 </ol>
 <p>At the end, you should be able to explain which upstream task streams
 a downstream shuffle partition reads.</p>
-<h2 data-number="8.27" id="reading-exercise-trace-job-acceptance"><span
-class="header-section-number">8.27</span> Reading Exercise: Trace Job
+<h2 data-number="7.27" id="reading-exercise-trace-job-acceptance"><span
+class="header-section-number">7.27</span> Reading Exercise: Trace Job
 Acceptance</h2>
 <p>Follow a cluster query:</p>
 <ol type="1">
 <li>Start in <code>crates/sail-execution/src/job_runner.rs</code>.</li>
 <li>Find <code>ClusterJobRunner::execute</code>.</li>
-<li>Follow <code>DriverEvent::ExecuteJob</code>.</li>
+<li>Follow <code>DriverMessage::ExecuteJob</code>.</li>
 <li>Open
 <code>crates/sail-execution/src/driver/actor/handler.rs</code>.</li>
 <li>Find <code>handle_execute_job</code>.</li>
@@ -1018,8 +1022,46 @@ Acceptance</h2>
 </ol>
 <p>That is the control path from a physical plan to a client-visible
 output stream.</p>
-<h2 data-number="8.28" id="takeaways-2"><span
-class="header-section-number">8.28</span> Takeaways</h2>
+<h2 data-number="7.28"
+id="worker-native-regions-in-the-extension-branch"><span
+class="header-section-number">7.28</span> Worker-Native Regions in the
+Extension Branch</h2>
+<p>The following additions belong to the pinned experimental branch, not
+upstream main. They reuse job stages and slot-sharing groups rather than
+adding a graph scheduler. <code>WorkerExtensionExec</code> transports a
+bounded descriptor and ordinary host child plans. It does not serialize
+a driver pointer or a process-local plan registry identifier.</p>
+<p><code>WorkerDescriptor</code> in
+<code>crates/sail-common-datafusion/src/worker_extension.rs</code>
+records package identity, relation type URL, an operation label, opaque
+payload, input names and schemas, input routing, output schema and
+partition count. The host validates descriptor bounds, input
+cardinalities and unique names. Integer-range routing requires an Int64
+column and strictly increasing split points with one interval per
+partition. The worker’s task scope is supplied by Sail; a payload cannot
+grant itself a host job or worker identity.</p>
+<p><code>crates/sail-execution/src/job_graph/worker_groups.rs</code>
+finds native operations in stages and assigns their existing
+<code>Stage.group</code> values. It groups by package and operation
+identity and joins groups transitively when operations share a stage.
+The earliest stage supplies a deterministic job-local group name.
+Ordinary source widths must not shift the task-set buckets of stateful
+stages. This is why grouping is more than attaching an arbitrary string
+to one operator.</p>
+<p>The scheduler treats jobs containing these stateful regions as
+fail-fast. A lost acknowledgement cannot prove whether native mutation
+committed. Retrying an upstream ordinary region can also deliver its
+contribution twice, so the boundary covers the whole job rather than
+only the immediately native stage. Recovery would require an additional
+state/replay protocol; it is not obtained from ordinary task retry.</p>
+<p>This placement contract is exercised with empty owners, skewed
+ownership, multiple phases, cancellation and worker loss. A functional
+answer alone is not sufficient: qualification checks the complete native
+stage/partition matrix, actual worker assignments and attempt numbers.
+See Chapter 17 for the distinction between process-cluster and physical
+two-host evidence.</p>
+<h2 data-number="7.29" id="takeaways-2"><span
+class="header-section-number">7.29</span> Takeaways</h2>
 <p>The job graph is Sail’s distributed version of a DataFusion physical
 plan. It keeps each stage as an <code>ExecutionPlan</code>, but replaces
 cross-stage edges with <code>StageInputExec</code> placeholders and

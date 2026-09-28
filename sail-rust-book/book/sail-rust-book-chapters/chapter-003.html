@@ -5,8 +5,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
-  <title>Chapter 2: Rust Foundations in Sail</title>
+  <meta name="dcterms.date" content="2026-09-28" />
+  <title>Rust Foundations in Sail</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -108,16 +112,15 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-004.html" accesskey="n" rel="next">Chapter 3: Spark Connect</a>
+<span class="navlink-label">Next:</span> <a href="chapter-004.html" accesskey="n" rel="next">Spark Connect</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-002.html" accesskey="p" rel="previous">Chapter 1: Architecture Overview</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-002.html" accesskey="p" rel="previous">Architecture Overview</a>
 </span>
 </div>
 </nav>
-<h1 data-number="3" id="chapter-02"><span
-class="header-section-number">3</span> Chapter 2: Rust Foundations in
-Sail</h1>
+<h1 data-number="2" id="chapter-02"><span
+class="header-section-number">2</span> Rust Foundations in Sail</h1>
 <p>This chapter is not a full Rust tutorial. It is a map of the Rust
 ideas you need in order to read Sail without feeling like every file is
 speaking a private dialect.</p>
@@ -133,8 +136,8 @@ Rust makes those interfaces explicit.</code></pre>
 <code>Box&lt;dyn JobRunner&gt;</code>, <code>SessionExtension</code>, or
 <code>ActorHandle&lt;DriverActor&gt;</code>, you are seeing the
 architecture in Rust form.</p>
-<h2 data-number="3.1" id="the-rust-shape-of-sail"><span
-class="header-section-number">3.1</span> The Rust Shape of Sail</h2>
+<h2 data-number="2.1" id="the-rust-shape-of-sail"><span
+class="header-section-number">2.1</span> The Rust Shape of Sail</h2>
 <p>Chapter 1 described Sail as a pipeline:</p>
 <pre class="text"><code>Spark Connect request
   -&gt; Sail spec
@@ -204,8 +207,8 @@ layers</td>
 <p>These are the vocabulary words of the Sail codebase. The rest of the
 chapter explains each one through files you have already touched in the
 architecture overview.</p>
-<h2 data-number="3.2" id="shared-ownership-with-arc"><span
-class="header-section-number">3.2</span> Shared Ownership With
+<h2 data-number="2.2" id="shared-ownership-with-arc"><span
+class="header-section-number">2.2</span> Shared Ownership With
 <code>Arc</code></h2>
 <p><code>Arc&lt;T&gt;</code> means “atomically reference-counted
 pointer.” In practical terms, it lets multiple owners hold the same
@@ -252,8 +255,8 @@ interface.</p>
 </figure>
 <p>The <code>Arc</code> part lets the plan be shared. The
 <code>dyn ExecutionPlan</code> part lets the plan be polymorphic.</p>
-<h2 data-number="3.3" id="trait-objects-dyn-trait"><span
-class="header-section-number">3.3</span> Trait Objects:
+<h2 data-number="2.3" id="trait-objects-dyn-trait"><span
+class="header-section-number">2.3</span> Trait Objects:
 <code>dyn Trait</code></h2>
 <p>Traits define behavior. Trait objects let Sail pick an implementation
 at runtime.</p>
@@ -288,13 +291,14 @@ just calls:</p>
 <div class="sourceCode" id="cb9"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>service<span class="op">.</span>runner()<span class="op">.</span>execute(ctx<span class="op">,</span> plan)<span class="op">.</span><span class="kw">await</span></span></code></pre></div>
 <p>The object behind <code>runner()</code> decides what that means.</p>
-<p>The same pattern appears in the extension proposal. A future
-<code>SailExtension</code> trait would probably be used behind
-<code>Arc&lt;dyn SailExtension&gt;</code> because Sail must hold a list
-of unknown third-party extension implementations.</p>
-<h2 data-number="3.4"
+<p>The extension implementation also retains shared objects behind
+reference-counted handles. Its native package boundary uses the pinned
+FFI capsule contract described in chapter 13, rather than passing a
+public Rust <code>SailExtension</code> trait object across independently
+built libraries.</p>
+<h2 data-number="2.4"
 id="local-and-cluster-runners-share-one-interface"><span
-class="header-section-number">3.4</span> Local and Cluster Runners Share
+class="header-section-number">2.4</span> Local and Cluster Runners Share
 One Interface</h2>
 <p><code>LocalJobRunner</code> and <code>ClusterJobRunner</code> are a
 small but powerful comparison.</p>
@@ -304,7 +308,7 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href=
 <p>The cluster runner sends the same plan to a driver actor:</p>
 <div class="sourceCode" id="cb11"><pre
 class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>driver</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>send(<span class="pp">DriverEvent::</span>ExecuteJob <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>send(<span class="pp">DriverMessage::</span>ExecuteJob <span class="op">{</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        plan<span class="op">,</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        context<span class="op">:</span> ctx<span class="op">.</span>task_ctx()<span class="op">,</span></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        result<span class="op">:</span> tx<span class="op">,</span></span>
@@ -318,8 +322,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href=
 <p>This is one of the most important Rust design moves in Sail: put the
 architectural decision behind a trait, then pass the trait object
 through the rest of the system.</p>
-<h2 data-number="3.5" id="send-sync-and-static"><span
-class="header-section-number">3.5</span> <code>Send</code>,
+<h2 data-number="2.5" id="send-sync-and-static"><span
+class="header-section-number">2.5</span> <code>Send</code>,
 <code>Sync</code>, and <code>'static</code></h2>
 <p>You will often see trait bounds like this:</p>
 <div class="sourceCode" id="cb12"><pre
@@ -334,18 +338,14 @@ still need it.</p>
 worker processes. If a service may be stored in a session, used by a
 task, or held across an <code>.await</code>, Rust needs to know it is
 safe to move and share.</p>
-<p>The proposed extension API in discussion #2001 uses the same
-idea:</p>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SailExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">{</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">;</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>That bound is a design statement. Extensions are not just parser
-plugins. They may participate in planning and execution paths that cross
-async and distributed boundaries.</p>
-<h2 data-number="3.6" id="async-traits"><span
-class="header-section-number">3.6</span> Async Traits</h2>
+<p>These bounds also matter for extension-owned state that can outlive a
+planning call or be accessed by asynchronous tasks. Inside one compiled
+Rust program, trait objects express such contracts. Across separately
+built native wheels, Rust trait-object layout is not a stable binary
+interface; the implemented experiment uses explicit FFI capsules and
+lifetime contracts instead.</p>
+<h2 data-number="2.6" id="async-traits"><span
+class="header-section-number">2.6</span> Async Traits</h2>
 <p>Rust traits do not natively support async methods in the most
 ergonomic way for this kind of code, so Sail uses
 <code>#[tonic::async_trait]</code> or <code>#[async_trait]</code>.</p>
@@ -357,19 +357,19 @@ stream-producing result.</li>
 <li><code>Actor</code>, where startup and shutdown may be async.</li>
 </ul>
 <p>The <code>Actor</code> trait in
-<code>crates/sail-server/src/actor.rs</code> looks like this:</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span><span class="pp">tonic::</span>async_trait<span class="at">]</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> Actor<span class="op">:</span> <span class="bu">Sized</span> <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="ot">&#39;static</span> <span class="op">{</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> Message: Send + SpanAssociation + &#39;static<span class="op">;</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> Options<span class="op">;</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name() <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> new(options<span class="op">:</span> <span class="dt">Self</span><span class="pp">::</span>Options) <span class="op">-&gt;</span> <span class="dt">Self</span><span class="op">;</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> start(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ActorContext<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;</span>) <span class="op">{}</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> receive(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ActorContext<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;,</span> message<span class="op">:</span> <span class="dt">Self</span><span class="pp">::</span>Message) <span class="op">-&gt;</span> ActorAction<span class="op">;</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> stop(<span class="kw">self</span><span class="op">,</span> ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ActorContext<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;</span>) <span class="op">{}</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<code>crates/sail-common/src/actor.rs</code> looks like this:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span><span class="pp">tonic::</span>async_trait<span class="at">]</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> Actor<span class="op">:</span> <span class="bu">Sized</span> <span class="op">+</span> <span class="bu">Send</span> <span class="op">+</span> <span class="ot">&#39;static</span> <span class="op">{</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> Message: Send + SpanAssociation + &#39;static<span class="op">;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> Options<span class="op">;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name() <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> new(options<span class="op">:</span> <span class="dt">Self</span><span class="pp">::</span>Options) <span class="op">-&gt;</span> <span class="dt">Self</span><span class="op">;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> start(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ActorContext<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;</span>) <span class="op">{}</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> receive(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ActorContext<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;,</span> message<span class="op">:</span> <span class="dt">Self</span><span class="pp">::</span>Message) <span class="op">-&gt;</span> ActorAction<span class="op">;</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">async</span> <span class="kw">fn</span> stop(<span class="kw">self</span><span class="op">,</span> ctx<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> ActorContext<span class="op">&lt;</span><span class="dt">Self</span><span class="op">&gt;</span>) <span class="op">{}</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>Notice the split:</p>
 <ul>
 <li><code>start</code> and <code>stop</code> are async because they may
@@ -379,86 +379,73 @@ needs async work, it spawns a task via the actor context.</li>
 </ul>
 <p>That is a deliberate concurrency model. Actor message handling stays
 sequential, while longer async work is pushed into spawned tasks.</p>
-<h2 data-number="3.7" id="actors-the-control-plane-in-rust"><span
-class="header-section-number">3.7</span> Actors: The Control Plane in
+<h2 data-number="2.7" id="actors-the-control-plane-in-rust"><span
+class="header-section-number">2.7</span> Actors: The Control Plane in
 Rust</h2>
 <p>Sail’s distributed execution control plane uses actors. An actor owns
 state. Other code sends it messages through an
 <code>ActorHandle&lt;T&gt;</code>.</p>
 <p>The generic actor system is in
-<code>crates/sail-server/src/actor.rs</code>:</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> ActorHandle<span class="op">&lt;</span>T<span class="op">:</span> Actor<span class="op">&gt;</span> <span class="op">{</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    sender<span class="op">:</span> <span class="pp">mpsc::</span>Sender<span class="op">&lt;</span>MessageEnvelop<span class="op">&lt;</span><span class="pp">T::</span>Message<span class="op">&gt;&gt;,</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<code>crates/sail-common/src/actor.rs</code>:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">struct</span> ActorHandle<span class="op">&lt;</span>T<span class="op">:</span> Actor<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    sender<span class="op">:</span> <span class="pp">mpsc::</span>Sender<span class="op">&lt;</span>MessageEnvelop<span class="op">&lt;</span><span class="pp">T::</span>Message<span class="op">&gt;&gt;,</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>An <code>ActorHandle&lt;DriverActor&gt;</code> can send only
 <code>DriverActor</code> messages. An
 <code>ActorHandle&lt;WorkerActor&gt;</code> can send only
 <code>WorkerActor</code> messages. This gives the message-passing system
 compile-time shape.</p>
 <p>The worker gRPC service shows the pattern. In
-<code>crates/sail-execution/src/worker/server.rs</code>, a
-<code>run_task</code> request is decoded into a typed
-<code>WorkerEvent::RunTask</code> and sent to the worker actor:</p>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">self</span><span class="op">.</span>handle</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>send(event)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="kw">await</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>map_err(<span class="pp">ExecutionError::</span>from)<span class="op">?;</span></span></code></pre></div>
-<p>So the server’s job is mostly translation:</p>
-<pre class="text"><code>gRPC request
-  -&gt; typed request struct
-  -&gt; domain event
-  -&gt; actor message</code></pre>
-<p>The actor’s job is stateful behavior:</p>
-<pre class="text"><code>receive event
-  -&gt; update state
-  -&gt; spawn tasks
-  -&gt; send follow-up events
-  -&gt; report status</code></pre>
+<code>crates/sail-execution/src/worker/server.rs</code>,
+<code>run_task_batch</code> decodes the task definition, validates
+integer conversions for stages and attempts, and sends
+<code>TaskRunnerMessage::RunTaskBatch</code> through its task-runner
+handle. A oneshot channel returns the result to the RPC handler.</p>
 <figure>
 <img src="diagrams/02-diagram-03.svg" alt="Sequence diagram 02.3" />
 <figcaption aria-hidden="true">Sequence diagram 02.3</figcaption>
 </figure>
-<p>Rust helps here by making invalid message routes hard to express. You
-cannot accidentally send a <code>DriverEvent</code> to an
-<code>ActorHandle&lt;WorkerActor&gt;</code> without fighting the type
-system.</p>
-<h2 data-number="3.8" id="typed-session-extensions"><span
-class="header-section-number">3.8</span> Typed Session Extensions</h2>
+<p>The worker lifecycle actor remains responsible for readiness,
+heartbeats and shutdown. Rust’s typed handles distinguish it from the
+task runner: a message for the driver is not a valid message for
+<code>ActorHandle&lt;TaskRunnerActor&gt;</code>. Follow the current
+message types rather than older <code>WorkerEvent</code> examples when
+adding an RPC path.</p>
+<h2 data-number="2.8" id="typed-session-extensions"><span
+class="header-section-number">2.8</span> Typed Session Extensions</h2>
 <p>DataFusion’s <code>SessionConfig</code> can store extensions. Sail
 wraps that in a small trait:</p>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SessionExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">+</span> <span class="ot">&#39;static</span> <span class="op">{</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name() <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> SessionExtension<span class="op">:</span> <span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">+</span> <span class="ot">&#39;static</span> <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> name() <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;static</span> <span class="dt">str</span><span class="op">;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>Then <code>SessionExtensionAccessor</code> provides typed lookup from
 <code>SessionContext</code>, <code>SessionState</code>,
 <code>TaskContext</code>, and DataFusion’s <code>Session</code>
 trait:</p>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> extension<span class="op">&lt;</span>T<span class="op">:</span> SessionExtension<span class="op">&gt;</span>(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span>T<span class="op">&gt;&gt;;</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> extension<span class="op">&lt;</span>T<span class="op">:</span> SessionExtension<span class="op">&gt;</span>(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span>T<span class="op">&gt;&gt;;</span></span></code></pre></div>
 <p>This turns session services into type-safe dependencies. For example,
 Spark Connect execution can ask the session for its
 <code>SparkSession</code> extension. Planning and physical execution
-code can ask for the catalog manager, table format registry, job
-service, activity tracker, repartition config, or system table
-service.</p>
+code can ask for the catalog manager, data source registry, job service,
+activity tracker, repartition config, or system table service.</p>
 <p>The pattern is:</p>
 <pre class="text"><code>register typed extension during session creation
   -&gt; retrieve typed extension where needed
   -&gt; fail clearly if missing</code></pre>
 <p>In <code>ServerSessionFactory::create_session_config</code>, Sail
 registers many extensions:</p>
-<div class="sourceCode" id="cb22"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="pp">SessionConfig::</span>new()</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(create_table_format_registry()<span class="op">?</span>)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(create_catalog_manager(<span class="op">...</span>)<span class="op">?</span>))</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">ActivityTracker::</span>new()))</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">JobService::</span>new(job_runner)))</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">RepartitionBufferConfig::</span>new(<span class="op">...</span>)))</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="kw">self</span><span class="op">.</span>create_system_table_service(info)<span class="op">?</span>))</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">DeltaTableCache::</span><span class="kw">default</span>()))</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="pp">SessionConfig::</span>new()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(create_data_source_registry()<span class="op">?</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(create_catalog_manager(<span class="op">...</span>)<span class="op">?</span>))</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">ActivityTracker::</span>new()))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">JobService::</span>new(job_runner)))</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">RepartitionBufferConfig::</span>new(<span class="op">...</span>)))</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="kw">self</span><span class="op">.</span>create_system_table_service(info)<span class="op">?</span>))</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_extension(<span class="pp">Arc::</span>new(<span class="pp">DeltaTableCache::</span><span class="kw">default</span>()))</span></code></pre></div>
 <p>This matters for extensions because many third-party integrations
 need session state. Sedona-style spatial planning, for example, may need
 options that optimizer rules can read. The current
@@ -467,22 +454,22 @@ options that optimizer rules can read. The current
 but discussion #2001 argues that this is not enough because functions,
 codec re-resolution, and extension planner registration live
 elsewhere.</p>
-<h2 data-number="3.9" id="builders-and-mutators"><span
-class="header-section-number">3.9</span> Builders and Mutators</h2>
+<h2 data-number="2.9" id="builders-and-mutators"><span
+class="header-section-number">2.9</span> Builders and Mutators</h2>
 <p>Sail often uses builder-style APIs because DataFusion itself uses
 them. Session creation is the main example.</p>
 <p><code>ServerSessionFactory::create_session_state</code> builds a
 DataFusion session state:</p>
-<div class="sourceCode" id="cb23"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> builder <span class="op">=</span> <span class="pp">SessionStateBuilder::</span>new()</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_config(config)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_runtime_env(runtime)</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_analyzer_rules(default_analyzer_rules())</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_optimizer_rules(default_optimizer_rules())</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_physical_optimizer_rules(get_physical_optimizers(<span class="op">...</span>))</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_query_planner(new_query_planner())<span class="op">;</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> builder <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>mutator<span class="op">.</span>mutate_state(builder<span class="op">,</span> info)<span class="op">?;</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="cn">Ok</span>(builder<span class="op">.</span>build())</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> builder <span class="op">=</span> <span class="pp">SessionStateBuilder::</span>new()</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_config(config)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_runtime_env(runtime)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_analyzer_rules(default_analyzer_rules())</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_optimizer_rules(default_optimizer_rules())</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_physical_optimizer_rules(get_physical_optimizers(<span class="op">...</span>))</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>with_query_planner(new_query_planner())<span class="op">;</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> builder <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>mutator<span class="op">.</span>mutate_state(builder<span class="op">,</span> info)<span class="op">?;</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="cn">Ok</span>(builder<span class="op">.</span>build())</span></code></pre></div>
 <p>The builder has two jobs:</p>
 <ul>
 <li>Accumulate configuration in a readable order.</li>
@@ -490,43 +477,45 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href=
 session state is built.</li>
 </ul>
 <p>The mutator has a narrower purpose:</p>
-<div class="sourceCode" id="cb24"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> ServerSessionMutator<span class="op">:</span> <span class="bu">Send</span> <span class="op">{</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> mutate_config(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SessionConfig<span class="op">&gt;;</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> mutate_state(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SessionStateBuilder<span class="op">&gt;;</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> mutate_runtime_env(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>RuntimeEnvBuilder<span class="op">&gt;;</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">trait</span> ServerSessionMutator<span class="op">:</span> <span class="bu">Send</span> <span class="op">{</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> mutate_config(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SessionConfig<span class="op">&gt;;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> mutate_state(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>SessionStateBuilder<span class="op">&gt;;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fn</span> mutate_runtime_env(<span class="op">...</span>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>RuntimeEnvBuilder<span class="op">&gt;;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>This is already an extension-like boundary. But it is
 embedder-oriented, not package/plugin-oriented. It does not solve
-plan-time function registries or worker-side UDF decoding. That is why
-discussion #2001 proposes a higher-level <code>SailExtension</code>.</p>
-<h2 data-number="3.10" id="downcasting-extension-nodes"><span
-class="header-section-number">3.10</span> Downcasting Extension
+plan-time function registries or worker-side UDF decoding. The
+experimental package contract in Chapter 13 addresses additional
+registration, serialization and lifetime requirements beyond this
+embedding hook.</p>
+<h2 data-number="2.10" id="downcasting-extension-nodes"><span
+class="header-section-number">2.10</span> Downcasting Extension
 Nodes</h2>
 <p>DataFusion has extension traits for custom logical and physical
 behavior. Sail uses them heavily.</p>
 <p>In <code>crates/sail-session/src/planner.rs</code>,
 <code>ExtensionPhysicalPlanner</code> receives a generic
 <code>UserDefinedLogicalNode</code>:</p>
-<div class="sourceCode" id="cb25"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">fn</span> plan_extension(</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    planner<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> PhysicalPlanner<span class="op">,</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    node<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> UserDefinedLogicalNode<span class="op">,</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    logical_inputs<span class="op">:</span> <span class="op">&amp;</span>[<span class="op">&amp;</span>LogicalPlan]<span class="op">,</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    physical_inputs<span class="op">:</span> <span class="op">&amp;</span>[Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;</span>]<span class="op">,</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    session_state<span class="op">:</span> <span class="op">&amp;</span>SessionState<span class="op">,</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Option</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">fn</span> plan_extension(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    planner<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> PhysicalPlanner<span class="op">,</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    node<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> UserDefinedLogicalNode<span class="op">,</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    logical_inputs<span class="op">:</span> <span class="op">&amp;</span>[<span class="op">&amp;</span>LogicalPlan]<span class="op">,</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    physical_inputs<span class="op">:</span> <span class="op">&amp;</span>[Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;</span>]<span class="op">,</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    session_state<span class="op">:</span> <span class="op">&amp;</span>SessionState<span class="op">,</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Option</span><span class="op">&lt;</span>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;&gt;&gt;</span></span></code></pre></div>
 <p>The planner then asks, one type at a time, whether the node is a Sail
 node:</p>
-<div class="sourceCode" id="cb26"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>RangeNode<span class="op">&gt;</span>() <span class="op">{</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>ShowStringNode<span class="op">&gt;</span>() <span class="op">{</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>MapPartitionsNode<span class="op">&gt;</span>() <span class="op">{</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>RangeNode<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>ShowStringNode<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(node) <span class="op">=</span> node<span class="op">.</span>as_any()<span class="op">.</span><span class="pp">downcast_ref::</span><span class="op">&lt;</span>MapPartitionsNode<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>This is Rust’s way of combining an open interface with concrete
 behavior. The planner receives “some extension node.” It can only plan
 nodes it recognizes. Recognition happens through <code>Any</code>
@@ -539,8 +528,8 @@ downcasting.</p>
 <p>For extension authors, it explains why planner ordering matters. If
 one planner errors on unknown nodes instead of returning
 <code>Ok(None)</code>, later planners never get a chance.</p>
-<h2 data-number="3.11" id="error-types"><span
-class="header-section-number">3.11</span> Error Types</h2>
+<h2 data-number="2.11" id="error-types"><span
+class="header-section-number">2.11</span> Error Types</h2>
 <p>Sail has separate error layers:</p>
 <ul>
 <li><code>PlanError</code> in <code>sail-plan</code>.</li>
@@ -549,10 +538,10 @@ class="header-section-number">3.11</span> Error Types</h2>
 <li>DataFusion’s own <code>DataFusionError</code>.</li>
 </ul>
 <p>The aliases are simple:</p>
-<div class="sourceCode" id="cb28"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">type</span> PlanResult<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">=</span> <span class="dt">Result</span><span class="op">&lt;</span>T<span class="op">,</span> PlanError<span class="op">&gt;;</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">type</span> ExecutionResult<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">=</span> <span class="dt">Result</span><span class="op">&lt;</span>T<span class="op">,</span> ExecutionError<span class="op">&gt;;</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">type</span> SparkResult<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">=</span> <span class="dt">Result</span><span class="op">&lt;</span>T<span class="op">,</span> SparkError<span class="op">&gt;;</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">type</span> PlanResult<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">=</span> <span class="dt">Result</span><span class="op">&lt;</span>T<span class="op">,</span> PlanError<span class="op">&gt;;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">type</span> ExecutionResult<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">=</span> <span class="dt">Result</span><span class="op">&lt;</span>T<span class="op">,</span> ExecutionError<span class="op">&gt;;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">type</span> SparkResult<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">=</span> <span class="dt">Result</span><span class="op">&lt;</span>T<span class="op">,</span> SparkError<span class="op">&gt;;</span></span></code></pre></div>
 <p>The point is not just style. Each layer needs to add context in its
 own vocabulary.</p>
 <p>Planning errors talk about unsupported functions, invalid
@@ -564,13 +553,13 @@ and Spark-compatible error responses.</p>
 worker task should not leak as an arbitrary Rust panic. An unknown Spark
 function should become a planning error. A malformed protobuf request
 should become a Spark Connect status error.</p>
-<h2 data-number="3.12"
+<h2 data-number="2.12"
 id="a-mini-example-what-happens-to-a-query-plan-type"><span
-class="header-section-number">3.12</span> A Mini Example: What Happens
+class="header-section-number">2.12</span> A Mini Example: What Happens
 to a Query Plan Type</h2>
 <p>Here is the lifecycle of one important type:</p>
-<div class="sourceCode" id="cb29"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Arc<span class="op">&lt;</span><span class="kw">dyn</span> ExecutionPlan<span class="op">&gt;</span></span></code></pre></div>
 <p>In local mode:</p>
 <pre class="text"><code>Arc&lt;dyn ExecutionPlan&gt;
   -&gt; LocalJobRunner::execute
@@ -579,7 +568,7 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href=
 <p>In cluster mode:</p>
 <pre class="text"><code>Arc&lt;dyn ExecutionPlan&gt;
   -&gt; ClusterJobRunner::execute
-  -&gt; DriverEvent::ExecuteJob
+  -&gt; DriverMessage::ExecuteJob
   -&gt; JobGraph::try_new
   -&gt; Stage plans
   -&gt; serialized task definitions
@@ -589,43 +578,36 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href=
 <p>This is why <code>Arc&lt;dyn ExecutionPlan&gt;</code> is not just a
 pointer. It is the main currency between DataFusion and Sail’s execution
 system.</p>
-<h2 data-number="3.13" id="how-rust-shapes-the-extension-proposal"><span
-class="header-section-number">3.13</span> How Rust Shapes the Extension
-Proposal</h2>
-<p>Discussion #2001 proposes a <code>SailExtension</code> trait that can
-contribute functions, optimizer rules, config extensions, physical
-planners, and distributed UDF re-resolution. Rust affects that proposal
-in several ways.</p>
-<p>First, extensions will likely be trait objects:</p>
-<div class="sourceCode" id="cb32"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>Arc<span class="op">&lt;</span><span class="kw">dyn</span> SailExtension<span class="op">&gt;</span></span></code></pre></div>
-<p>That allows multiple independently implemented extensions to be
-registered in one session factory.</p>
-<p>Second, extension contributions must be thread-safe:</p>
-<div class="sourceCode" id="cb33"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="bu">Send</span> <span class="op">+</span> <span class="bu">Sync</span> <span class="op">+</span> <span class="ot">&#39;static</span></span></code></pre></div>
-<p>They may be shared across sessions, stored in configs, used during
-async planning, or needed on workers.</p>
-<p>Third, extension contributions must cross several existing typed
-registries:</p>
-<pre class="text"><code>HashMap&lt;String, Arc&lt;ScalarUDF&gt;&gt;
-HashMap&lt;String, Arc&lt;AggregateUDF&gt;&gt;
-Vec&lt;Arc&lt;dyn OptimizerRule + Send + Sync&gt;&gt;
-Vec&lt;Arc&lt;dyn ExtensionPlanner + Send + Sync&gt;&gt;</code></pre>
-<p>Fourth, Python-discovered extensions create an ABI and packaging
-problem. Python entry points can discover a <code>pysail-sedona</code>
-package, but the object handed back into Rust must still match the exact
-Rust crate versions expected by <code>pysail</code>. Rust trait objects
-do not have a stable cross-version ABI. This is why discussion #2001
-calls out version coupling between <code>pysail</code>,
-<code>datafusion</code>, <code>arrow</code>, <code>pyo3</code>, and the
-plugin wheel.</p>
-<p>The Rust design question is therefore not “can we make a plugin
-trait?” That part is straightforward. The deeper question is “where does
-the trait object live, who owns it, how is it shared, and how do workers
-reconstruct the same extension-provided behavior?”</p>
-<h2 data-number="3.14" id="reading-exercises"><span
-class="header-section-number">3.14</span> Reading Exercises</h2>
+<h2 data-number="2.13"
+id="how-rust-shapes-the-implemented-extension-boundary"><span
+class="header-section-number">2.13</span> How Rust Shapes the
+Implemented Extension Boundary</h2>
+<p>Within Sail, <code>Arc</code>, typed session services and trait
+objects organize ownership and dispatch. Across the native package
+boundary, the experiment uses named DataFusion FFI capsules plus an
+explicit resource-lease ABI. A Python entry point is discovery and
+bootstrap; it does not make an arbitrary Rust object safe to interpret
+using the host’s crate layout.</p>
+<p>The loader checks declared API, DataFusion and Arrow compatibility
+and validates package identity for distributed execution. The
+qualification matrix tests particular unchanged-wheel and host
+combinations. Those observations are more specific than a universal
+stable-ABI claim. Compiler versions and source SHAs remain artifact
+provenance, not substitutes for checking the actual compatibility
+contract.</p>
+<p>The lifetime question is concrete: a native graph state, a returned
+Arrow buffer, and a session registry can each hold references. A
+host-funded memory lease must remain alive until the final admitted
+owner releases it, including output retained after the computation
+returns. <code>Arc</code> sharing helps implement that ownership; it
+does not by itself charge memory to DataFusion’s pool.</p>
+<p>For distributed native work, serialize a descriptor and reconstruct
+it on the worker. A driver-local pointer or plan identifier has no
+meaning in another process. Sail supplies authoritative task scope; the
+extension supplies its domain state and validates its messages within
+that scope.</p>
+<h2 data-number="2.14" id="reading-exercises"><span
+class="header-section-number">2.14</span> Reading Exercises</h2>
 <p>Read these files with one question in mind: what interface is this
 code defining, and what concrete implementation sits behind it?</p>
 <ol type="1">
@@ -639,9 +621,9 @@ code defining, and what concrete implementation sits behind it?</p>
 <ul>
 <li>Follow local execution from <code>execute_stream</code>.</li>
 <li>Follow cluster execution into
-<code>DriverEvent::ExecuteJob</code>.</li>
+<code>DriverMessage::ExecuteJob</code>.</li>
 </ul></li>
-<li><code>crates/sail-server/src/actor.rs</code>
+<li><code>crates/sail-common/src/actor.rs</code>
 <ul>
 <li>Identify the actor message type.</li>
 <li>Look at how <code>ActorHandle&lt;T&gt;</code> preserves message
@@ -665,8 +647,8 @@ typing.</li>
 node.</li>
 </ul></li>
 </ol>
-<h2 data-number="3.15" id="chapter-takeaways-1"><span
-class="header-section-number">3.15</span> Chapter Takeaways</h2>
+<h2 data-number="2.15" id="chapter-takeaways-1"><span
+class="header-section-number">2.15</span> Chapter Takeaways</h2>
 <p>Rust makes Sail’s architecture visible. <code>Arc</code> shows what
 is shared. <code>Box&lt;dyn Trait&gt;</code> and
 <code>Arc&lt;dyn Trait&gt;</code> show where implementations are chosen
@@ -684,5 +666,32 @@ execution.</p>
 follow a PySpark request through Sail’s gRPC service, session manager,
 relation and command handlers, Arrow response stream, and error
 model.</p>
+<h2 data-number="2.16"
+id="allocation-and-accounting-in-the-current-source"><span
+class="header-section-number">2.16</span> Allocation and accounting in
+the current source</h2>
+<p>At upstream <code>b2470ea4b</code>, the workspace uses Rust edition
+2024 and requires Rust 1.97.1. That commit introduces
+<code>sail-mimalloc</code>, selected as the Rust global allocator by the
+CLI and Python extension. Its <code>GlobalAlloc</code> implementation
+uses mimalloc’s aligned allocation, zeroing, reallocation, and free
+functions. This is an allocation implementation, not a query-memory
+admission policy.</p>
+<p>Keep three questions separate when reading extension code: which
+allocator owns a buffer; which query or native operation reserves its
+budget; and which owner releases both. A native wheel is a separately
+built library. The host’s global allocator declaration does not
+establish that every extension allocation uses the same allocator
+instance or participates in DataFusion’s memory pool. The extension
+experiment therefore carries explicit resource leases across its FFI
+boundary and retains them with the actual Arrow/native owners. Release
+callbacks must free through the allocation’s proper ownership path.</p>
+<p>The retained extension benchmarks predate this upstream allocator
+change. Their results describe their recorded host/native binaries; they
+cannot be attributed to the newer allocator without a new qualified
+build and measurement. See <code>crates/sail-mimalloc/src/lib.rs</code>,
+<code>crates/sail-cli/src/main.rs</code>, and
+<code>crates/sail-python/src/lib.rs</code> in the pinned upstream
+tree.</p>
 </body>
 </html>

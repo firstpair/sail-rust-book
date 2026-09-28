@@ -5,8 +5,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
-  <title>Chapter 5: Apache Arrow</title>
+  <meta name="dcterms.date" content="2026-09-28" />
+  <title>Apache Arrow</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -108,15 +112,15 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-007.html" accesskey="n" rel="next">Chapter 6: Apache DataFusion</a>
+<span class="navlink-label">Next:</span> <a href="chapter-007.html" accesskey="n" rel="next">Apache DataFusion</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-005.html" accesskey="p" rel="previous">Chapter 4: PySpark and pysail</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-005.html" accesskey="p" rel="previous">PySpark and pysail</a>
 </span>
 </div>
 </nav>
-<h1 data-number="6" id="chapter-05"><span
-class="header-section-number">6</span> Chapter 5: Apache Arrow</h1>
+<h1 data-number="5" id="chapter-05"><span
+class="header-section-number">5</span> Apache Arrow</h1>
 <p>Apache Arrow is the data plane hiding in plain sight throughout
 Sail.</p>
 <p>Spark Connect gives Sail a protocol for receiving unresolved Spark
@@ -142,8 +146,8 @@ geography, and variants.</li>
 <p>This chapter is about learning Arrow through Sail’s code. We will use
 the official Arrow documentation as the reference vocabulary, then map
 that vocabulary to the concrete Rust modules that make Sail work.</p>
-<h2 data-number="6.1" id="definitive-references"><span
-class="header-section-number">6.1</span> Definitive References</h2>
+<h2 data-number="5.1" id="definitive-references"><span
+class="header-section-number">5.1</span> Definitive References</h2>
 <p>Keep these open while reading the chapter:</p>
 <ul>
 <li><a href="https://arrow.apache.org/docs/format/Columnar.html">Apache
@@ -164,8 +168,8 @@ defines the memory layout, data types, schemas, record batches, and IPC
 messages. The Flight specification explains the network layer built on
 Arrow IPC and gRPC. The PyArrow documentation matters because Sail
 crosses the Rust/Python boundary for PySpark UDFs.</p>
-<h2 data-number="6.2" id="where-arrow-lives-in-sail"><span
-class="header-section-number">6.2</span> Where Arrow Lives In Sail</h2>
+<h2 data-number="5.2" id="where-arrow-lives-in-sail"><span
+class="header-section-number">5.2</span> Where Arrow Lives In Sail</h2>
 <p>Here are the main code paths for this chapter:</p>
 <table>
 <colgroup>
@@ -244,8 +248,8 @@ streams</td>
 <figcaption aria-hidden="true">Flowchart 05.1</figcaption>
 </figure>
 <p>Arrow is the contract between almost every box in that diagram.</p>
-<h2 data-number="6.3" id="the-arrow-mental-model"><span
-class="header-section-number">6.3</span> The Arrow Mental Model</h2>
+<h2 data-number="5.3" id="the-arrow-mental-model"><span
+class="header-section-number">5.3</span> The Arrow Mental Model</h2>
 <p>Arrow is a columnar memory format. A table is not stored as a
 sequence of row objects. It is stored as arrays, one array per column,
 with a schema describing the column names, logical types, nullability,
@@ -320,8 +324,8 @@ objects.</li>
 <li>Metadata can carry logical semantics beyond the physical storage
 type.</li>
 </ul>
-<h2 data-number="6.4" id="why-arc-shows-up-everywhere"><span
-class="header-section-number">6.4</span> Why <code>Arc</code> Shows Up
+<h2 data-number="5.4" id="why-arc-shows-up-everywhere"><span
+class="header-section-number">5.4</span> Why <code>Arc</code> Shows Up
 Everywhere</h2>
 <p>In Sail’s Rust code, Arrow objects are usually wrapped in
 <code>Arc</code>.</p>
@@ -346,8 +350,8 @@ Arrow-native:</p>
 <img src="diagrams/05-diagram-02.svg" alt="Flowchart 05.2" />
 <figcaption aria-hidden="true">Flowchart 05.2</figcaption>
 </figure>
-<h2 data-number="6.5" id="recordbatch-as-the-unit-of-execution"><span
-class="header-section-number">6.5</span> RecordBatch As The Unit Of
+<h2 data-number="5.5" id="recordbatch-as-the-unit-of-execution"><span
+class="header-section-number">5.5</span> RecordBatch As The Unit Of
 Execution</h2>
 <p>Most query engines have a concept like “a batch of rows.” In Sail,
 that concept is concretely Arrow’s <code>RecordBatch</code>.</p>
@@ -384,9 +388,9 @@ Arrow arrays.</li>
 </ul>
 <p>Once you learn to recognize <code>SendableRecordBatchStream</code>,
 you can follow data through Sail.</p>
-<h2 data-number="6.6"
+<h2 data-number="5.6"
 id="spark-connect-output-arrow-ipc-in-protobuf-clothing"><span
-class="header-section-number">6.6</span> Spark Connect Output: Arrow IPC
+class="header-section-number">5.6</span> Spark Connect Output: Arrow IPC
 In Protobuf Clothing</h2>
 <p>Spark Connect uses Protobuf messages for the control protocol, but
 tabular results are encoded as Arrow batches.</p>
@@ -453,9 +457,9 @@ interval.</li>
 <code>RecordBatch::new_empty(self.stream.schema())</code>. The stream
 contract remains Arrow-shaped even when the batch contains zero
 rows.</p>
-<h2 data-number="6.7"
+<h2 data-number="5.7"
 id="schema-conversion-arrow-back-to-spark-types"><span
-class="header-section-number">6.7</span> Schema Conversion: Arrow Back
+class="header-section-number">5.7</span> Schema Conversion: Arrow Back
 To Spark Types</h2>
 <p>Sail must speak Arrow internally and Spark externally. The conversion
 from Arrow types to Spark Connect types lives in
@@ -497,8 +501,8 @@ deliberately, often through:</p>
 <li>Arrow extension types,</li>
 <li>or explicit conversion rules.</li>
 </ul>
-<h2 data-number="6.8" id="extension-types-geoarrow-and-variant"><span
-class="header-section-number">6.8</span> Extension Types: GeoArrow And
+<h2 data-number="5.8" id="extension-types-geoarrow-and-variant"><span
+class="header-section-number">5.8</span> Extension Types: GeoArrow And
 Variant</h2>
 <p>Arrow supports extension types: a field can have a physical storage
 type plus metadata that names a higher-level logical meaning.</p>
@@ -548,8 +552,8 @@ often use Arrow’s existing storage plus extension metadata:</p>
 </figure>
 <p>That architecture keeps data compatible with Arrow tooling while
 preserving domain meaning.</p>
-<h2 data-number="6.9" id="pyarrow-the-python-boundary"><span
-class="header-section-number">6.9</span> PyArrow: The Python
+<h2 data-number="5.9" id="pyarrow-the-python-boundary"><span
+class="header-section-number">5.9</span> PyArrow: The Python
 Boundary</h2>
 <p>The Python side of Sail depends heavily on Arrow because PySpark UDFs
 should not have to receive rows one Python object at a time.</p>
@@ -607,8 +611,8 @@ exposes schemas, columns, row counts, zero-copy slices, filters,
 <code>take</code>, conversion from arrays, and IPC serialization
 methods. Sail’s Rust side uses the same conceptual model, but with Rust
 ownership and type checks.</p>
-<h2 data-number="6.10" id="udf-kinds-and-arrow-native-execution"><span
-class="header-section-number">6.10</span> UDF Kinds And Arrow-Native
+<h2 data-number="5.10" id="udf-kinds-and-arrow-native-execution"><span
+class="header-section-number">5.10</span> UDF Kinds And Arrow-Native
 Execution</h2>
 <p>The PySpark UDF kind enum includes several execution modes:</p>
 <div class="sourceCode" id="cb15"><pre
@@ -635,9 +639,9 @@ vectorization and avoids unnecessary row materialization.</p>
 makes the same point: Arrow UDFs avoid copying data into row-oriented
 Python objects and let the Rust engine and Python function share Arrow
 data through the Arrow/PyArrow boundary.</p>
-<h2 data-number="6.11"
+<h2 data-number="5.11"
 id="distributed-shuffle-arrow-as-the-exchange-unit"><span
-class="header-section-number">6.11</span> Distributed Shuffle: Arrow As
+class="header-section-number">5.11</span> Distributed Shuffle: Arrow As
 The Exchange Unit</h2>
 <p>Distributed query processing needs exchanges. A join, aggregation,
 sort, or repartition may require data from one set of workers to move to
@@ -689,8 +693,8 @@ implementation detail hidden between write and read nodes.</p>
 <p>Notice the absence of a Sail-specific row format. The shuffle API
 talks in task stream locations, but the payload remains Arrow
 batches.</p>
-<h2 data-number="6.12" id="row-round-robin-repartition"><span
-class="header-section-number">6.12</span> Row Round-Robin
+<h2 data-number="5.12" id="row-round-robin-repartition"><span
+class="header-section-number">5.12</span> Row Round-Robin
 Repartition</h2>
 <p>Hash partitioning can delegate to DataFusion’s
 <code>BatchPartitioner</code>. Sail also has a row round-robin
@@ -716,8 +720,8 @@ to select rows from every column. The output is one
 <p>This is the practical meaning of vectorized execution: even
 operations that are row-directed can often be implemented as array
 operations.</p>
-<h2 data-number="6.13" id="flight-sql-arrow-on-the-network"><span
-class="header-section-number">6.13</span> Flight SQL: Arrow On The
+<h2 data-number="5.13" id="flight-sql-arrow-on-the-network"><span
+class="header-section-number">5.13</span> Flight SQL: Arrow On The
 Network</h2>
 <p>Sail also exposes a Flight SQL service in
 <code>crates/sail-flight/src/service.rs</code>. The official Arrow
@@ -758,8 +762,8 @@ different protocol doors:</p>
 <p>This is a powerful architectural property. Sail’s execution engine
 does not need separate data representations for Spark Connect and Flight
 SQL. Protocols wrap the same Arrow stream abstraction.</p>
-<h2 data-number="6.14" id="arrow-ipc-versus-flight"><span
-class="header-section-number">6.14</span> Arrow IPC Versus Flight</h2>
+<h2 data-number="5.14" id="arrow-ipc-versus-flight"><span
+class="header-section-number">5.14</span> Arrow IPC Versus Flight</h2>
 <p>It is easy to blur Arrow IPC and Arrow Flight. Sail uses both, so it
 helps to separate them:</p>
 <table>
@@ -810,8 +814,8 @@ streams.</li>
 <li>PyArrow is Python’s Arrow implementation and API surface.</li>
 </ul>
 <p>Sail benefits because these layers are designed to compose.</p>
-<h2 data-number="6.15" id="a-small-end-to-end-example-1"><span
-class="header-section-number">6.15</span> A Small End-To-End
+<h2 data-number="5.15" id="a-small-end-to-end-example-1"><span
+class="header-section-number">5.15</span> A Small End-To-End
 Example</h2>
 <p>Imagine a PySpark client runs:</p>
 <div class="sourceCode" id="cb20"><pre
@@ -839,8 +843,8 @@ client.</li>
 <figcaption aria-hidden="true">Sequence diagram 05.7</figcaption>
 </figure>
 <p>That is the central architecture of Sail result execution.</p>
-<h2 data-number="6.16" id="what-arrow-does-not-solve-by-itself"><span
-class="header-section-number">6.16</span> What Arrow Does Not Solve By
+<h2 data-number="5.16" id="what-arrow-does-not-solve-by-itself"><span
+class="header-section-number">5.16</span> What Arrow Does Not Solve By
 Itself</h2>
 <p>Arrow gives Sail a powerful data representation, but it does not
 solve every problem.</p>
@@ -867,9 +871,9 @@ not merely say “use Arrow.” It should identify:</p>
 <li>the distributed shuffle compatibility story,</li>
 <li>and the protocol boundary behavior.</li>
 </ul>
-<h2 data-number="6.17"
+<h2 data-number="5.17"
 id="extension-design-pattern-arrow-first-semantics"><span
-class="header-section-number">6.17</span> Extension Design Pattern:
+class="header-section-number">5.17</span> Extension Design Pattern:
 Arrow-First Semantics</h2>
 <p>The GeoArrow code suggests a reusable pattern for future
 extensions:</p>
@@ -895,46 +899,46 @@ machine-learning vector extension might store
 and metric assumptions.</p>
 <p>The best extensions feel native to Arrow rather than bolted onto
 it.</p>
-<h2 data-number="6.18"
+<h2 data-number="5.18"
 id="common-mistakes-when-learning-arrow-in-sail"><span
-class="header-section-number">6.18</span> Common Mistakes When Learning
+class="header-section-number">5.18</span> Common Mistakes When Learning
 Arrow In Sail</h2>
-<h3 data-number="6.18.1"
+<h3 data-number="5.18.1"
 id="mistake-1-thinking-recordbatch-means-row-oriented"><span
-class="header-section-number">6.18.1</span> Mistake 1: Thinking
+class="header-section-number">5.18.1</span> Mistake 1: Thinking
 <code>RecordBatch</code> Means Row-Oriented</h3>
 <p>A <code>RecordBatch</code> is a batch of rows from the outside, but
 internally it is columnar. Operators should usually work
 column-by-column.</p>
-<h3 data-number="6.18.2"
+<h3 data-number="5.18.2"
 id="mistake-2-treating-schema-metadata-as-decoration"><span
-class="header-section-number">6.18.2</span> Mistake 2: Treating Schema
+class="header-section-number">5.18.2</span> Mistake 2: Treating Schema
 Metadata As Decoration</h3>
 <p>Schema and field metadata can carry compatibility-critical
 information. Sail’s UDT and GeoArrow conversions depend on metadata to
 recover Spark semantics.</p>
-<h3 data-number="6.18.3"
+<h3 data-number="5.18.3"
 id="mistake-3-copying-data-at-language-boundaries"><span
-class="header-section-number">6.18.3</span> Mistake 3: Copying Data At
+class="header-section-number">5.18.3</span> Mistake 3: Copying Data At
 Language Boundaries</h3>
 <p>Python integration should use PyArrow whenever possible. Converting
 every row into Python objects defeats the point of using a columnar
 engine.</p>
-<h3 data-number="6.18.4" id="mistake-4-forgetting-empty-batches"><span
-class="header-section-number">6.18.4</span> Mistake 4: Forgetting Empty
+<h3 data-number="5.18.4" id="mistake-4-forgetting-empty-batches"><span
+class="header-section-number">5.18.4</span> Mistake 4: Forgetting Empty
 Batches</h3>
 <p>Empty batches are still meaningful. They carry schema, heartbeats,
 and protocol state. Sail’s Spark Connect executor intentionally emits
 empty batches in some cases.</p>
-<h3 data-number="6.18.5"
+<h3 data-number="5.18.5"
 id="mistake-5-ignoring-unsupported-type-mappings"><span
-class="header-section-number">6.18.5</span> Mistake 5: Ignoring
+class="header-section-number">5.18.5</span> Mistake 5: Ignoring
 Unsupported Type Mappings</h3>
 <p>Arrow and Spark type systems overlap but are not identical.
 Unsupported units, dictionary encodings, unions, and lossy string-like
 conversions must be handled explicitly.</p>
-<h2 data-number="6.19" id="reading-exercise-follow-one-batch"><span
-class="header-section-number">6.19</span> Reading Exercise: Follow One
+<h2 data-number="5.19" id="reading-exercise-follow-one-batch"><span
+class="header-section-number">5.19</span> Reading Exercise: Follow One
 Batch</h2>
 <p>To build intuition, trace one <code>RecordBatch</code> through the
 code:</p>
@@ -961,8 +965,8 @@ code:</p>
 </ol>
 <p>After these two traces, you will understand the two biggest Arrow
 output paths in Sail.</p>
-<h2 data-number="6.20" id="reading-exercise-follow-one-python-udf"><span
-class="header-section-number">6.20</span> Reading Exercise: Follow One
+<h2 data-number="5.20" id="reading-exercise-follow-one-python-udf"><span
+class="header-section-number">5.20</span> Reading Exercise: Follow One
 Python UDF</h2>
 <p>For Python UDFs:</p>
 <ol type="1">
@@ -980,8 +984,8 @@ Python UDF</h2>
 <code>cast(&amp;make_array(data), &amp;self.output_type)</code>.</li>
 </ol>
 <p>This is the Arrow/PyArrow bridge in miniature.</p>
-<h2 data-number="6.21" id="how-this-prepares-us-for-datafusion"><span
-class="header-section-number">6.21</span> How This Prepares Us For
+<h2 data-number="5.21" id="how-this-prepares-us-for-datafusion"><span
+class="header-section-number">5.21</span> How This Prepares Us For
 DataFusion</h2>
 <p>The next chapter can now talk about DataFusion with the right
 foundation. DataFusion is not just a planner that happens to use Arrow.
@@ -1002,8 +1006,34 @@ Arrow-native?</p>
 <li>shuffle exchanges,</li>
 <li>and future extension APIs.</li>
 </ul>
-<h2 data-number="6.22" id="takeaways"><span
-class="header-section-number">6.22</span> Takeaways</h2>
+<h2 data-number="5.22" id="native-extension-ownership-across-ffi"><span
+class="header-section-number">5.22</span> Native Extension Ownership
+Across FFI</h2>
+<p>In the experimental branch, native packages export DataFusion objects
+through named FFI capsules. Arrow buffers can outlive the function or
+algorithm call that produced them. A zero-copy handoff therefore
+transfers or shares an owner; it does not make the lifetime or
+allocation cost disappear.</p>
+<p>The host’s native resource lease must remain reachable from every
+retained graph state or output buffer that consumes its admitted quota.
+Closing a session-owned registry entry can remove one reference while a
+consumer still holds a batch. The final release path, rather than the
+moment a query returns, determines when that reservation can be
+returned. Release callbacks must free using the correct allocation owner
+across the library boundary.</p>
+<p>The Sedona example also demonstrates why a <code>Field</code> matters
+alongside an array. Geometry WKB remains binary at the storage level,
+while compatible GeoArrow metadata gives it logical meaning. Metadata
+must survive the supported expression and shuffle paths without being
+copied onto incompatible ordinary binary or geography values. Correct
+bytes with an incorrect field are still an incorrect result.</p>
+<p>Arrow interoperability does not prove resource admission,
+spillability or a shared allocator across wheels. The branch tests
+native lease ownership separately from RSS and records wheel/platform
+identity. See Chapter 13 for the package boundary and Chapter 17 for
+retained-output and same-worker quota-reuse tests.</p>
+<h2 data-number="5.23" id="takeaways"><span
+class="header-section-number">5.23</span> Takeaways</h2>
 <p>Apache Arrow is Sail’s data plane. The most important concrete type
 is <code>RecordBatch</code>, and the most important execution
 abstraction is <code>SendableRecordBatchStream</code>.</p>

@@ -5,8 +5,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
-  <title>Chapter 18: Feature Playbooks</title>
+  <meta name="dcterms.date" content="2026-09-28" />
+  <title>Feature Playbooks</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -43,24 +47,23 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-020.html" accesskey="n" rel="next">Chapter 19: Roadmap And Codebase Navigation</a>
+<span class="navlink-label">Next:</span> <a href="chapter-020.html" accesskey="n" rel="next">Roadmap And Codebase Navigation</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-018.html" accesskey="p" rel="previous">Chapter 17: Testing Spark Compatibility</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-018.html" accesskey="p" rel="previous">Testing Spark Compatibility</a>
 </span>
 </div>
 </nav>
-<h1 data-number="19" id="chapter-18"><span
-class="header-section-number">19</span> Chapter 18: Feature
-Playbooks</h1>
+<h1 data-number="18" id="chapter-18"><span
+class="header-section-number">18</span> Feature Playbooks</h1>
 <p>This chapter is a practical contributor guide. It turns the
 architecture from the previous chapters into checklists for common
 changes.</p>
 <p>The point is not to replace code review. The point is to help a
 contributor avoid the classic Sail mistake: implementing one layer of a
 feature and forgetting the other four.</p>
-<h2 data-number="19.1" id="adding-a-spark-function"><span
-class="header-section-number">19.1</span> Adding A Spark Function</h2>
+<h2 data-number="18.1" id="adding-a-spark-function"><span
+class="header-section-number">18.1</span> Adding A Spark Function</h2>
 <p>Start by classifying the function.</p>
 <table>
 <colgroup>
@@ -116,8 +119,8 @@ encoding is involved.</li>
 </ol>
 <p>Prefer expression-level registration when possible. It keeps the
 function visible to DataFusion optimization.</p>
-<h2 data-number="19.2" id="adding-a-python-udf-path"><span
-class="header-section-number">19.2</span> Adding A Python UDF Path</h2>
+<h2 data-number="18.2" id="adding-a-python-udf-path"><span
+class="header-section-number">18.2</span> Adding A Python UDF Path</h2>
 <p>Python UDF work crosses a wide boundary:</p>
 <pre class="text"><code>Spark Connect function payload
   -&gt; Sail spec
@@ -146,8 +149,8 @@ class="header-section-number">19.2</span> Adding A Python UDF Path</h2>
 <li>Does the codec preserve it for workers?</li>
 <li>Are Python exceptions mapped back to Spark-friendly errors?</li>
 </ol>
-<h2 data-number="19.3" id="adding-a-catalog-backend"><span
-class="header-section-number">19.3</span> Adding A Catalog Backend</h2>
+<h2 data-number="18.3" id="adding-a-catalog-backend"><span
+class="header-section-number">18.3</span> Adding A Catalog Backend</h2>
 <p>Catalogs answer questions about names, databases, tables, and
 views.</p>
 <ol type="1">
@@ -166,12 +169,13 @@ location, and properties.</li>
 </ol>
 <p>Do not stop at metadata tests. A catalog backend is only useful if
 its <code>TableStatus</code> leads to the right table provider.</p>
-<h2 data-number="19.4" id="adding-a-table-format"><span
-class="header-section-number">19.4</span> Adding A Table Format</h2>
+<h2 data-number="18.4" id="adding-a-data-source"><span
+class="header-section-number">18.4</span> Adding a Data Source</h2>
 <p>Table formats translate table metadata into read and write
 behavior.</p>
 <ol type="1">
-<li>Implement or extend the <code>TableFormat</code> contract.</li>
+<li>Implement or extend <code>DataSource</code>; writes return logical
+plans.</li>
 <li>Register it in <code>crates/sail-session/src/formats.rs</code>.</li>
 <li>Define source and sink option resolution.</li>
 <li>Implement scan creation.</li>
@@ -181,15 +185,17 @@ behavior.</p>
 <li>Add write-mode tests.</li>
 <li>Add catalog integration tests.</li>
 </ol>
-<p>For lakehouse formats, also ask:</p>
+<p>For lakehouse formats, expose the optional <code>LakeSource</code>
+capability and test its metadata, DDL and row-level contracts
+separately. Also ask:</p>
 <ul>
 <li>Does this format support row-level operations?</li>
 <li>Does it need logical expansion rules?</li>
 <li>Does it need an extension physical planner?</li>
 <li>Does it need metadata columns for merge/delete?</li>
 </ul>
-<h2 data-number="19.5" id="adding-a-logical-plan-node"><span
-class="header-section-number">19.5</span> Adding A Logical Plan
+<h2 data-number="18.5" id="adding-a-logical-plan-node"><span
+class="header-section-number">18.5</span> Adding A Logical Plan
 Node</h2>
 <p>Use this path when Spark has a logical concept DataFusion does not
 represent natively.</p>
@@ -209,8 +215,8 @@ workers.</li>
 </ol>
 <p>The physical planner registration belongs in
 <code>sail-session</code>, not <code>sail-plan</code>.</p>
-<h2 data-number="19.6" id="adding-a-physical-optimizer-rule"><span
-class="header-section-number">19.6</span> Adding A Physical Optimizer
+<h2 data-number="18.6" id="adding-a-physical-optimizer-rule"><span
+class="header-section-number">18.6</span> Adding A Physical Optimizer
 Rule</h2>
 <p>Physical optimizer rules rewrite executable plans. They should be
 used when:</p>
@@ -230,8 +236,8 @@ point.</li>
 <li>Confirm the rule does not fight DataFusion’s own rules.</li>
 <li>Test local and cluster execution when distribution changes.</li>
 </ol>
-<h2 data-number="19.7" id="adding-a-streaming-source"><span
-class="header-section-number">19.7</span> Adding A Streaming Source</h2>
+<h2 data-number="18.7" id="adding-a-streaming-source"><span
+class="header-section-number">18.7</span> Adding A Streaming Source</h2>
 <p>Streaming sources implement <code>StreamSource</code>.</p>
 <ol type="1">
 <li>Define source options and schema.</li>
@@ -247,8 +253,8 @@ class="header-section-number">19.7</span> Adding A Streaming Source</h2>
 <p>The source should not return ordinary user-schema batches from
 physical execution. It must produce the flow-event schema expected by
 streaming physical operators.</p>
-<h2 data-number="19.8" id="adding-distributed-codec-support"><span
-class="header-section-number">19.8</span> Adding Distributed Codec
+<h2 data-number="18.8" id="adding-distributed-codec-support"><span
+class="header-section-number">18.8</span> Adding Distributed Codec
 Support</h2>
 <p>If a feature creates a physical object that workers need to execute,
 the remote execution codec has to know about it.</p>
@@ -258,14 +264,62 @@ the remote execution codec has to know about it.</p>
 workers?</li>
 <li>Does DataFusion’s protobuf codec already support it?</li>
 <li>If not, does Sail’s codec need a custom representation?</li>
-<li>Does the worker session have all function/table-format registrations
+<li>Does the worker session have all function/data-source registrations
 required to decode or re-resolve it?</li>
 <li>Are version mismatches possible?</li>
 </ol>
 <p>Codec work is often the difference between “works locally” and “works
 in Sail.”</p>
-<h2 data-number="19.9" id="debugging-a-compatibility-bug"><span
-class="header-section-number">19.9</span> Debugging A Compatibility
+<h2 data-number="18.9"
+id="adding-a-separately-packaged-native-extension"><span
+class="header-section-number">18.9</span> Adding a Separately Packaged
+Native Extension</h2>
+<p>Start from the pinned Sedona scalar package or Nutmeg relation
+package under <code>examples/extensions/</code>. Keep the package’s
+Cargo workspace and native wheel independent of Sail engine crates.
+Declare the entry point, manifest versions, relation input bounds and
+placement before adding domain code.</p>
+<p>For a scalar contribution, test resolution by ordinary function name
+and actual worker execution after codec reconstruction. For a relation,
+return a provider that describes execution; schema inspection must not
+stage a graph or run an algorithm. For a mutation, return and consume a
+receipt relation. Do not introduce raw command/expression dispatch
+accidentally through client examples when the host does not implement
+it.</p>
+<p>If the operation retains native state, first identify its owner and
+release path. Request an admitted resource lease before expansion and
+keep it with retained buffers. Test cancellation, state drop, retained
+output, session shutdown and subsequent admission. The graph-resource
+qualifier is a concrete example of proving reuse on live workers after a
+post-initialization refusal.</p>
+<h2 data-number="18.10" id="adding-a-worker-native-algorithm"><span
+class="header-section-number">18.10</span> Adding a Worker-Native
+Algorithm</h2>
+<p>Use Argentea’s request/core/adapter/client separation. The core owns
+the algorithm and validates its phase messages. The native adapter binds
+that core to worker scope and Arrow batches. The client composes bounded
+phases and owns temporary views and staging. Sail supplies decoding,
+scheduling, placement and lifecycle.</p>
+<p>Before changing Sail, try to express the operation through ordinary
+relations. Pecan is the control example. If native state is required,
+document the missing host invariant and its existing owner: worker
+session registration, codec, job-group placement, memory domain, task
+scope or close lifecycle. Reuse the existing shuffle path for messages
+rather than adding graph-specific transport.</p>
+<p>Validate an independent answer oracle first, then empty owners, skew,
+signed-ID extrema, duplicates, unreachable vertices, nonconvergence caps
+and malformed messages. Exercise the maximum supported plan and actual
+algorithm work at that bound; a large plan that immediately converges is
+a different test. Finally, validate cancellation, loss and memory
+refusal before measuring performance.</p>
+<p>For performance work, freeze the exact artifacts and workload first.
+Distinguish reference and advanced implementations, including
+differences in convergence and normalization. Record every outcome and
+the time/memory observation boundary. A native local kernel and a
+distributed relational query are different execution classes even when
+both return the same graph result.</p>
+<h2 data-number="18.11" id="debugging-a-compatibility-bug"><span
+class="header-section-number">18.11</span> Debugging A Compatibility
 Bug</h2>
 <p>Use this order:</p>
 <ol type="1">
@@ -279,8 +333,8 @@ Bug</h2>
 <li>Run in cluster mode if the feature is distributed-sensitive.</li>
 <li>Add the smallest regression test that would have caught it.</li>
 </ol>
-<h2 data-number="19.10" id="takeaways-11"><span
-class="header-section-number">19.10</span> Takeaways</h2>
+<h2 data-number="18.12" id="takeaways-11"><span
+class="header-section-number">18.12</span> Takeaways</h2>
 <p>Sail features are pipelines. A complete contribution usually needs
 protocol/spec, resolver, DataFusion planning, execution, tests, and
 sometimes distributed codec support. The playbook is there to keep those

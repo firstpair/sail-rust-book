@@ -5,8 +5,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Alexy Khrabrov ∈ LakeSail Team" />
-  <meta name="dcterms.date" content="2026-07-14" />
-  <title>Chapter 4: PySpark and pysail</title>
+  <meta name="dcterms.date" content="2026-09-28" />
+  <title>PySpark and pysail</title>
   <style>
     div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
     span.navlink { flex: 1; }
@@ -15,8 +15,12 @@
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -108,16 +112,15 @@
 </div>
 <div class="sitenav">
 <span class="navlink">
-<span class="navlink-label">Next:</span> <a href="chapter-006.html" accesskey="n" rel="next">Chapter 5: Apache Arrow</a>
+<span class="navlink-label">Next:</span> <a href="chapter-006.html" accesskey="n" rel="next">Apache Arrow</a>
 </span>
 <span class="navlink">
-<span class="navlink-label">Previous:</span> <a href="chapter-004.html" accesskey="p" rel="previous">Chapter 3: Spark Connect</a>
+<span class="navlink-label">Previous:</span> <a href="chapter-004.html" accesskey="p" rel="previous">Spark Connect</a>
 </span>
 </div>
 </nav>
-<h1 data-number="5" id="chapter-04"><span
-class="header-section-number">5</span> Chapter 4: PySpark and
-pysail</h1>
+<h1 data-number="4" id="chapter-04"><span
+class="header-section-number">4</span> PySpark and pysail</h1>
 <p>PySpark is the user experience Sail tries to preserve.
 <code>pysail</code> is the Python package that makes Sail feel like
 something a Python developer can install, start, test, and use from
@@ -139,8 +142,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a hr
 href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.SparkSession.builder.remote.html"><code>SparkSession.builder.remote</code></a>.
 Sail’s job is to provide a compatible Spark Connect server at that
 address.</p>
-<h2 data-number="5.1" id="the-main-files-1"><span
-class="header-section-number">5.1</span> The Main Files</h2>
+<h2 data-number="4.1" id="the-main-files-1"><span
+class="header-section-number">4.1</span> The Main Files</h2>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -200,8 +203,8 @@ expressions</td>
 
 Engine-facing Rust/PyO3 bindings:
   _native module, SparkConnectServer, Python UDF runtime</code></pre>
-<h2 data-number="5.2" id="package-shape"><span
-class="header-section-number">5.2</span> Package Shape</h2>
+<h2 data-number="4.2" id="package-shape"><span
+class="header-section-number">4.2</span> Package Shape</h2>
 <p>The Python package is defined in <code>pyproject.toml</code>.</p>
 <p>It is named <code>pysail</code>, supports Python
 <code>&gt;=3.10,&lt;3.15</code>, and is built with <code>maturin</code>.
@@ -246,8 +249,8 @@ projects:</p>
 <img src="diagrams/04-diagram-01.svg" alt="Flowchart 04.1" />
 <figcaption aria-hidden="true">Flowchart 04.1</figcaption>
 </figure>
-<h2 data-number="5.3" id="starting-sail-from-python"><span
-class="header-section-number">5.3</span> Starting Sail From Python</h2>
+<h2 data-number="4.3" id="starting-sail-from-python"><span
+class="header-section-number">4.3</span> Starting Sail From Python</h2>
 <p>The public Python wrapper is tiny:</p>
 <div class="sourceCode" id="cb8"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SparkConnectServer:</span>
@@ -296,8 +299,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a h
 <img src="diagrams/04-diagram-02.svg" alt="Sequence diagram 04.2" />
 <figcaption aria-hidden="true">Sequence diagram 04.2</figcaption>
 </figure>
-<h2 data-number="5.4" id="the-global-runtime"><span
-class="header-section-number">5.4</span> The Global Runtime</h2>
+<h2 data-number="4.4" id="the-global-runtime"><span
+class="header-section-number">4.4</span> The Global Runtime</h2>
 <p><code>crates/sail-python/src/globals.rs</code> contains
 <code>GlobalState</code>.</p>
 <p>This is where <code>pysail</code> creates a global Sail runtime and
@@ -324,8 +327,8 @@ late.</p>
   -&gt; create runtime
   -&gt; initialize telemetry
   -&gt; snapshot Sail environment variables</code></pre>
-<h2 data-number="5.5" id="releasing-the-gil"><span
-class="header-section-number">5.5</span> Releasing the GIL</h2>
+<h2 data-number="4.5" id="releasing-the-gil"><span
+class="header-section-number">4.5</span> Releasing the GIL</h2>
 <p>When Python calls into Rust and Rust blocks, Python’s global
 interpreter lock can prevent other Python code from running. That is
 dangerous for Sail because Python UDFs may need to run while the server
@@ -344,8 +347,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href=
 <pre class="text"><code>Long-running Rust server work should not hold the Python GIL.</code></pre>
 <p>Without that, Sail could start fine and then mysteriously deadlock or
 starve Python UDF execution.</p>
-<h2 data-number="5.6" id="connecting-with-pyspark"><span
-class="header-section-number">5.6</span> Connecting With PySpark</h2>
+<h2 data-number="4.6" id="connecting-with-pyspark"><span
+class="header-section-number">4.6</span> Connecting With PySpark</h2>
 <p>Sail’s own tests show the intended user pattern in
 <code>python/pysail/tests/spark/conftest.py</code>:</p>
 <div class="sourceCode" id="cb15"><pre
@@ -374,8 +377,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a h
   -&gt; DataFusion logical plan
   -&gt; DataFusion physical plan
   -&gt; Arrow result batches</code></pre>
-<h2 data-number="5.7" id="pysail-is-not-a-pyspark-fork"><span
-class="header-section-number">5.7</span> pysail Is Not a PySpark
+<h2 data-number="4.7" id="pysail-is-not-a-pyspark-fork"><span
+class="header-section-number">4.7</span> pysail Is Not a PySpark
 Fork</h2>
 <p>This is subtle but central. <code>pysail</code> does not replace
 PySpark classes like <code>DataFrame</code>, <code>Column</code>, or
@@ -398,8 +401,8 @@ in test matrices:</p>
 class="sourceCode toml"><code class="sourceCode toml"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[[tool.hatch.envs.test.matrix]]</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dt">spark</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;3.5.7&quot;</span><span class="op">,</span> <span class="st">&quot;4.0.1&quot;</span><span class="op">,</span> <span class="st">&quot;4.1.1&quot;</span><span class="op">]</span></span></code></pre></div>
 <p>The engine is Sail. The client is still PySpark.</p>
-<h2 data-number="5.8" id="python-udfs-enter-through-spark-connect"><span
-class="header-section-number">5.8</span> Python UDFs Enter Through Spark
+<h2 data-number="4.8" id="python-udfs-enter-through-spark-connect"><span
+class="header-section-number">4.8</span> Python UDFs Enter Through Spark
 Connect</h2>
 <p>PySpark UDFs are user-provided Python functions. In Spark Connect,
 the function is serialized into the request and sent to the server.</p>
@@ -450,8 +453,8 @@ href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/
 <li><a
 href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.mapInArrow.html"><code>pyspark.sql.DataFrame.mapInArrow</code></a></li>
 </ul>
-<h2 data-number="5.9" id="udf-kinds"><span
-class="header-section-number">5.9</span> UDF Kinds</h2>
+<h2 data-number="4.9" id="udf-kinds"><span
+class="header-section-number">4.9</span> UDF Kinds</h2>
 <p><code>crates/sail-python-udf/src/udf/pyspark_udf.rs</code> defines
 the scalar UDF kinds Sail supports:</p>
 <div class="sourceCode" id="cb22"><pre
@@ -514,8 +517,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb22-1"><a href=
 of view. Sail’s code answers the engine question: what kind of object
 should DataFusion execute when such a function appears in a query
 plan?</p>
-<h2 data-number="5.10" id="loading-a-pyspark-udf-payload"><span
-class="header-section-number">5.10</span> Loading a PySpark UDF
+<h2 data-number="4.10" id="loading-a-pyspark-udf-payload"><span
+class="header-section-number">4.10</span> Loading a PySpark UDF
 Payload</h2>
 <p><code>crates/sail-python-udf/src/cereal/pyspark_udf.rs</code> handles
 the serialized UDF payload format.</p>
@@ -544,8 +547,8 @@ the same Python wrapper behavior Spark users expect.</p>
 <img src="diagrams/04-diagram-03.svg" alt="Flowchart 04.3" />
 <figcaption aria-hidden="true">Flowchart 04.3</figcaption>
 </figure>
-<h2 data-number="5.11" id="executing-python-udfs-in-process"><span
-class="header-section-number">5.11</span> Executing Python UDFs in
+<h2 data-number="4.11" id="executing-python-udfs-in-process"><span
+class="header-section-number">4.11</span> Executing Python UDFs in
 Process</h2>
 <p><code>PySparkUDF</code> implements DataFusion’s
 <code>ScalarUDFImpl</code>.</p>
@@ -582,8 +585,8 @@ and use Arrow-native UDFs for the most direct Arrow sharing.</p>
 <img src="diagrams/04-diagram-04.svg" alt="Flowchart 04.4" />
 <figcaption aria-hidden="true">Flowchart 04.4</figcaption>
 </figure>
-<h2 data-number="5.12" id="python-conversion-code"><span
-class="header-section-number">5.12</span> Python Conversion Code</h2>
+<h2 data-number="4.12" id="python-conversion-code"><span
+class="header-section-number">4.12</span> Python Conversion Code</h2>
 <p>The Python helper module embedded in Rust is
 <code>crates/sail-python-udf/src/python/spark.py</code>.</p>
 <p>It contains conversion wrappers for:</p>
@@ -605,8 +608,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href=
 <p>This is a nice pattern: Sail can ship its Python-side UDF helpers
 inside the Rust extension module, so it does not need to locate a
 separate Python file at runtime.</p>
-<h2 data-number="5.13" id="config-for-python-udf-behavior"><span
-class="header-section-number">5.13</span> Config for Python UDF
+<h2 data-number="4.13" id="config-for-python-udf-behavior"><span
+class="header-section-number">4.13</span> Config for Python UDF
 Behavior</h2>
 <p><code>PySparkUdfConfig</code> captures the Spark/PySpark settings
 that affect Python UDF behavior:</p>
@@ -629,8 +632,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb26-1"><a href=
 behave differently depending on Spark configuration. Sail has to carry
 those settings from Spark Connect session state into the UDF payload and
 wrapper.</p>
-<h2 data-number="5.14" id="udtfs-and-python-side-analysis"><span
-class="header-section-number">5.14</span> UDTFs and Python-Side
+<h2 data-number="4.14" id="udtfs-and-python-side-analysis"><span
+class="header-section-number">4.14</span> UDTFs and Python-Side
 Analysis</h2>
 <p>PySpark UDTFs can have an <code>analyze</code> static method. The
 official <a
@@ -655,17 +658,20 @@ values. That means Python code can participate in planning, not just
 execution.</p>
 <p>For the extension proposal, this is a preview of a broader rule:</p>
 <pre class="text"><code>Extensions may need hooks before execution starts.</code></pre>
-<h2 data-number="5.15" id="python-data-sources"><span
-class="header-section-number">5.15</span> Python Data Sources</h2>
+<h2 data-number="4.15" id="python-data-sources"><span
+class="header-section-number">4.15</span> Python Data Sources</h2>
 <p>Spark Connect can register Python data sources. Sail handles
 <code>RegisterDataSource</code> in
 <code>crates/sail-spark-connect/src/service/plan_executor.rs</code>.</p>
 <p>The handler extracts the pickled Python data source class and
-registers a session-scoped <code>PythonTableFormat</code> in the
-<code>TableFormatRegistry</code>:</p>
+registers a session-scoped <code>PythonDataSourceAdapter</code> in the
+<code>DataSourceRegistry</code>:</p>
 <div class="sourceCode" id="cb29"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> format <span class="op">=</span> <span class="pp">Arc::</span>new(<span class="pp">PythonTableFormat::</span>with_pickled_class(name<span class="op">.</span>clone()<span class="op">,</span> command))<span class="op">;</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>registry<span class="op">.</span>register(format)</span></code></pre></div>
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> source <span class="op">=</span> <span class="pp">Arc::</span>new(<span class="pp">PythonDataSourceAdapter::</span>with_pickled_class(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    name<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    command<span class="op">,</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>))<span class="op">;</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>registry<span class="op">.</span>register_data_source(source)<span class="op">?;</span></span></code></pre></div>
 <p>This is parallel to Python UDF registration:</p>
 <pre class="text"><code>Python behavior arrives through Spark Connect
   -&gt; Sail stores it in session-scoped registry
@@ -673,8 +679,8 @@ class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href=
 <p>The important architectural point is session isolation. A registered
 Python data source belongs to that session’s table format registry, not
 a global singleton shared by all users.</p>
-<h2 data-number="5.16" id="testing-pyspark-compatibility"><span
-class="header-section-number">5.16</span> Testing PySpark
+<h2 data-number="4.16" id="testing-pyspark-compatibility"><span
+class="header-section-number">4.16</span> Testing PySpark
 Compatibility</h2>
 <p>Sail’s Python tests are themselves a guide to compatibility.</p>
 <p>The fixture in <code>python/pysail/tests/spark/conftest.py</code>
@@ -699,8 +705,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a h
 <p>The test matrix explicitly checks different PySpark versions. That is
 because Spark Connect is a moving protocol and PySpark’s UDF behavior
 evolves. Sail has to track both API surface and wire behavior.</p>
-<h2 data-number="5.17" id="why-pyspark-versions-matter"><span
-class="header-section-number">5.17</span> Why PySpark Versions
+<h2 data-number="4.17" id="why-pyspark-versions-matter"><span
+class="header-section-number">4.17</span> Why PySpark Versions
 Matter</h2>
 <p>The UDF payload builder contains version-specific logic:</p>
 <div class="sourceCode" id="cb32"><pre
@@ -717,18 +723,22 @@ target. Spark 3.5, Spark 4.0, and Spark 4.1 differ in function support,
 UDF payload details, UDTF behavior, Arrow APIs, and type handling.</p>
 <p><code>pyproject.toml</code> reflects this with test dependencies and
 test matrices for multiple Spark versions.</p>
-<h2 data-number="5.18" id="what-pysail-means-for-extensions"><span
-class="header-section-number">5.18</span> What pysail Means for
+<h2 data-number="4.18" id="what-pysail-means-for-extensions"><span
+class="header-section-number">4.18</span> What pysail Means for
 Extensions</h2>
-<p>Discussion #2001 proposes Python entry points such as:</p>
+<p>The experimental branch implements opt-in Python entry points such
+as:</p>
 <div class="sourceCode" id="cb33"><pre
 class="sourceCode toml"><code class="sourceCode toml"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[project.entry-points.&quot;</span><span class="dt">pysail.extensions&quot;</span><span class="kw">]</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="dt">sedona</span> <span class="op">=</span> <span class="st">&quot;pysail_sedona:register&quot;</span></span></code></pre></div>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="dt">sedona</span> <span class="op">=</span> <span class="st">&quot;sail_sedona:extension&quot;</span></span></code></pre></div>
 <p>This is a natural Python packaging experience:</p>
 <div class="sourceCode" id="cb34"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pysail pysail-sedona</span></code></pre></div>
-<p>Then, when <code>pysail</code> starts, it could discover installed
-extension packages and register them.</p>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> examples/extensions/scripts/build.sh</span></code></pre></div>
+<p>On the experimental branch,
+<code>SAIL_EXPERIMENTAL_EXTENSIONS=1</code> enables discovery and
+manifest validation. Use its source-distribution tutorial and built
+wheels; this is not a promise that the named example packages are
+published on PyPI.</p>
 <p>But this chapter should make the hard parts clear.</p>
 <p>First, discovery is Python-level, but most extension hooks are
 Rust/DataFusion-level:</p>
@@ -753,8 +763,8 @@ before <code>analyze_plan</code> resolves the query.</p>
 </figure>
 <p>The pleasant user story is Pythonic. The engine story is Rust and
 distributed.</p>
-<h2 data-number="5.19" id="a-small-end-to-end-example"><span
-class="header-section-number">5.19</span> A Small End-to-End
+<h2 data-number="4.19" id="a-small-end-to-end-example"><span
+class="header-section-number">4.19</span> A Small End-to-End
 Example</h2>
 <p>Suppose the user writes:</p>
 <div class="sourceCode" id="cb36"><pre
@@ -783,8 +793,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a h
 surface, translate through Spark Connect, execute in
 Rust/DataFusion/Arrow, and invoke Python only where Python semantics are
 actually needed.</p>
-<h2 data-number="5.20" id="reading-exercises-2"><span
-class="header-section-number">5.20</span> Reading Exercises</h2>
+<h2 data-number="4.20" id="reading-exercises-2"><span
+class="header-section-number">4.20</span> Reading Exercises</h2>
 <ol type="1">
 <li>Read <code>python/pysail/spark/__init__.py</code>.
 <ul>
@@ -830,8 +840,8 @@ class="header-section-number">5.20</span> Reading Exercises</h2>
 <li>Find how Pandas and Arrow wrappers shape Python execution.</li>
 </ul></li>
 </ol>
-<h2 data-number="5.21" id="chapter-takeaways-3"><span
-class="header-section-number">5.21</span> Chapter Takeaways</h2>
+<h2 data-number="4.21" id="chapter-takeaways-3"><span
+class="header-section-number">4.21</span> Chapter Takeaways</h2>
 <p><code>pysail</code> is the Python package that makes Sail usable from
 Python, but PySpark remains the primary user API. <code>pysail</code>
 starts and packages a Rust Spark Connect server. PySpark connects to
