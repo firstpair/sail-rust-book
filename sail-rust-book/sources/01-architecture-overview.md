@@ -99,11 +99,11 @@ The Python package `pysail` is thin by design. The public Python class `python/p
 
 The Rust side lives in `crates/sail-python/src/spark/server.rs`. It loads `AppConfig`, grabs the global Tokio runtime, binds a TCP listener, and starts the Spark Connect server in a background thread. The implementation explicitly releases the Python GIL while waiting for the server so Python UDFs are not blocked by the server thread.
 
-This shape is important for the extension proposal. If third-party extensions are discovered from Python wheels, `pysail` startup is the natural discovery point. But the extension object has to cross from Python packaging into Rust planning and execution. Discussion #2001 proposes Python entry points such as:
+This shape is important for the extension proposal. If third-party extensions are discovered from Python wheels, `pysail` startup is the natural discovery point. But the extension object has to cross from Python packaging into Rust planning and execution. The experimental branch implements opt-in Python entry points such as:
 
 ```toml
 [project.entry-points."pysail.extensions"]
-sedona = "pysail_sedona:register"
+sedona = "sail_sedona:extension"
 ```
 
 That works as user experience only if the registered extension can contribute to the same Rust-side machinery used by the CLI and by custom embedders.
@@ -138,12 +138,13 @@ Then it creates a `SessionStateBuilder` with Sail's analyzer rules, optimizer ru
 That custom query planner is in `crates/sail-session/src/planner.rs`. `ExtensionQueryPlanner` builds a DataFusion `DefaultPhysicalPlanner` with Sail's extension planners:
 
 ```text
-lakehouse extension planners
-  -> system table physical planner
+Delta and Iceberg planners
+  -> system table planner
+  -> listing, console, noop and Python planners
   -> Sail ExtensionPhysicalPlanner
 ```
 
-`ExtensionPhysicalPlanner` recognizes Sail logical extension nodes such as range, show string, map partitions, monotonic IDs, Spark partition IDs, file writes, file deletes, streaming nodes, catalog commands, explicit repartition, and barriers. It turns them into physical `ExecutionPlan` implementations from `sail-physical-plan` and related crates.
+`ExtensionPhysicalPlanner` recognizes Sail logical extension nodes such as range, show string, map partitions, monotonic IDs, Spark partition IDs, streaming nodes, catalog commands, explicit repartition, checkpoints, and barriers. It turns them into physical `ExecutionPlan` implementations from `sail-physical-plan` and related crates.
 
 This is where discussion #2001 finds one of its sharp edges. Today, if `ExtensionPhysicalPlanner` does not recognize a logical extension node, it returns an internal error. DataFusion's extension planner convention is to return `Ok(None)` when a planner does not own a node, allowing later planners in the chain to try. For third-party planners, that difference controls whether composition works.
 
@@ -164,7 +165,7 @@ Local mode is ideal for learning DataFusion because all of DataFusion's partitio
 
 ## Cluster Execution Adds a Driver, Workers, Stages, and Shuffles
 
-Cluster mode swaps in `ClusterJobRunner`. Instead of executing the physical plan directly, it sends a `DriverEvent::ExecuteJob` to a driver actor. The driver builds a distributed job graph and schedules tasks on workers.
+Cluster mode swaps in `ClusterJobRunner`. Instead of executing the physical plan directly, it sends a `DriverMessage::ExecuteJob` to a driver actor. The driver builds a distributed job graph and schedules tasks on workers.
 
 The core data structure is `JobGraph` in `crates/sail-execution/src/job_graph/mod.rs`. The code comments are wonderfully plain: a job has stages, each stage has partitions, and tasks execute individual stage partitions. Each task can produce output split into channels.
 
@@ -230,7 +231,7 @@ The public architecture docs describe Arrow Flight as Sail's data plane for shuf
 
 Sail has a Spark-compatible function layer in `crates/sail-plan/src/function`. Built-in scalar, generator, table, aggregate, and window functions are stored in static registries. The resolver uses those registries to turn unresolved Spark functions into DataFusion expressions and UDF objects.
 
-But distributed execution adds another requirement: workers must be able to decode the physical plan they receive. That is why `crates/sail-execution/src/codec.rs` has explicit UDF and UDAF encode/decode logic. It can rebuild PySpark UDFs from serialized payloads, and it can re-resolve many built-in UDF names when decoding standard functions.
+But distributed execution adds another requirement: workers must be able to decode the physical plan they receive. That is why `crates/sail-execution/src/proto/codec.rs` has explicit UDF and UDAF encode/decode logic. It can rebuild PySpark UDFs from serialized payloads, and it can re-resolve many built-in UDF names when decoding standard functions.
 
 This is the most important extension lesson in the chapter:
 
@@ -241,47 +242,38 @@ Distributed execution-time registry is also necessary.
 
 If an extension contributes `ST_Intersects`, it is not enough for the planner to know the function. A remote worker decoding a physical plan also has to know how to reconstruct the same `ScalarUDF` or `AggregateUDF`. Discussion #2001 calls this out directly for Sedona-style extensions.
 
-## Where Extensions Want to Plug In
+## Where the Implemented Extensions Fit
 
-Discussion #2001 proposes a unified `SailExtension` trait. Its motivation is that real DataFusion integrations usually need several hooks at once:
+The experimental branch separates client intent from native execution. Clients
+use registered relation payloads or ordinary function calls. Installed packages
+bind through Python bootstrap objects and DataFusion FFI capsules. They do not
+implement a public cross-library Rust `SailExtension` trait.
 
-- Scalar UDFs.
-- Aggregate UDAFs.
-- Window UDFs.
-- Generator and table functions.
-- Session config extensions.
-- Logical optimizer rules.
-- Physical optimizer rules.
-- Physical extension planners.
-- UDF/UDAF re-resolution during distributed physical-plan decoding.
-
-The proposal's motivating example is Apache SedonaDB. A spatial query might need `ST_*` scalar UDFs during plan resolution, session options during optimization, a logical optimizer rule to replace a cross join plus spatial predicate with a spatial join logical extension node, a physical planner to create `SpatialJoinExec`, and worker-side UDF re-resolution in a cluster.
-
-This means the final chapter of the book should not treat extensions as a plugin convenience feature. Extensions are a stress test of the architecture. They ask whether Sail's layers are composable in the same direction data actually flows.
-
-Chapter 13 develops the proposal in two parts. Extensions cross **two boundaries** with different stability requirements:
-
-- A **plan-time boundary** where a client expresses intent. It runs once per query and wants forward and backward wire compatibility, language neutrality, and a format that survives DataFusion and Arrow upgrades. Spark Connect's `Relation.extension`, `Command.extension`, and `Expression.extension` messages are the natural channel.
-- An **execution-time boundary** where workers run operators on Arrow batches. It runs once per batch, wants native dispatch and zero-copy access, and accepts version coupling in return. DataFusion FFI is the natural channel.
-
-The same `SailExtension` object registers contributions to both. Some extensions only need one.
+Sedona exercises scalar registration, geometry fields and worker decoding. Nutmeg
+adds explicit native graph staging, admission and ownership. Pecan demonstrates
+which graph work can remain ordinary Sail plans. Argentea adds worker-native
+state while reusing job stages, slot-sharing groups and existing shuffle streams.
+The algorithm code remains outside Sail's engine crates.
 
 ```mermaid
 flowchart LR
-    Ext["SailExtension"] --> SCDispatch["Spark Connect dispatcher<br/>plan-time boundary"]
-    Ext --> Funcs["Function registries"]
-    Ext --> Config["SessionConfig extensions"]
-    Ext --> Optimizers["Logical/physical optimizer rules"]
-    Ext --> Planners["ExtensionPlanner chain"]
-    Ext --> Codec["Distributed codec fallback registry"]
-
-    SCDispatch --> Resolve["Plan resolution"]
-    Funcs --> Resolve
-    Config --> Resolve
-    Optimizers --> Logical["Optimized LogicalPlan"]
-    Planners --> Physical["ExecutionPlan"]
-    Codec --> Workers["Remote worker decode<br/>execution-time boundary"]
+    Client["Connect client"] --> Relation["Registered relation payload"]
+    Client --> Function["Ordinary function call"]
+    Package["Installed native package"] --> Manifest["Manifest and identity checks"]
+    Manifest --> Binding["Session binding and FFI capsules"]
+    Relation --> Plan["Sail and DataFusion planning"]
+    Function --> Plan
+    Binding --> Plan
+    Plan --> Job["Existing job graph and workers"]
+    Job --> Native["Native state with admitted ownership"]
+    Job --> Relational["Ordinary relational execution"]
 ```
+
+Raw Connect expression and command extension dispatch remain unsupported in this
+branch. An indexed spatial join is also outside the delivered Sedona scalar
+surface. Chapter 13 distinguishes implemented contracts, their artifacts and
+remaining qualification from the broader design possibilities.
+
 
 ## A First Reading Path Through the Code
 
@@ -299,7 +291,7 @@ For this chapter, read these files in order:
 10. `crates/sail-execution/src/job_graph/planner.rs`
 11. `crates/sail-execution/src/plan/shuffle_write.rs`
 12. `crates/sail-execution/src/plan/shuffle_read.rs`
-13. `crates/sail-execution/src/codec.rs`
+13. `crates/sail-execution/src/proto/codec.rs`
 
 Do not try to understand every operator yet. Follow the type transitions:
 
@@ -329,6 +321,6 @@ Once those two paths feel familiar, the rest of the book can zoom into each laye
 
 Sail's architecture is a layered translation pipeline. PySpark speaks Spark Connect. Spark Connect becomes Sail's internal spec. The spec resolves into DataFusion logical plans. DataFusion optimizes and physical-plans the query, with Sail adding Spark semantics through custom functions, logical nodes, physical nodes, optimizer rules, and session extensions. Local mode executes the physical plan directly. Cluster mode decomposes it into stages and tasks, moving Arrow record batches through shuffle streams.
 
-The extension proposal in discussion #2001 matters because it turns this architecture inside out. A third-party integration must be able to contribute to every layer where its semantics appear. If Sail exposes only one hook, extensions will work in toy examples and fail when optimization, physical planning, or distributed execution enters the picture.
+The implemented extension experiment tests these boundaries with scalar functions, relational graph plans and retained native graph state. Each path needs a specific combination of registration, planning, physical reconstruction and ownership guarantees. Chapter 13 distinguishes the package contract from internal extension points and explains the focused host changes needed for distributed state.
 
 The next chapter should slow down and teach the Rust patterns that make this architecture possible: trait objects, `Arc`, async services, actor handles, DataFusion extension traits, and typed session extensions.

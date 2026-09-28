@@ -80,7 +80,7 @@ execution backend. That makes it useful for:
 `ClusterJobRunner` sends the physical plan to the driver actor:
 
 ```rust
-self.driver.send(DriverEvent::ExecuteJob {
+self.driver.send(DriverMessage::ExecuteJob {
     plan,
     context: ctx.task_ctx(),
     result: tx,
@@ -197,6 +197,33 @@ Readers should distinguish:
 The flow-event schema, streaming rewriter, and query manager are the architectural
 foundation. Full stateful aggregations, event-time triggers, and continuous-mode
 coverage are areas to verify against the current code before making claims.
+
+## Execution Modes of the Graph Extensions
+
+An ordinary distributed input does not make every downstream algorithm
+distributed. Pecan submits relational graph work through Sail's existing query
+execution. Grenada follows the relational DataFusion path. Banda's original
+native relation can gather distributed input and run its kernel on the driver.
+That is driver-native execution with distributed input, not a partitioned native
+algorithm.
+
+Argentea uses worker-native partitions and rejects local-only Sail execution.
+Its process-cluster qualifier uses two separate worker processes; physical
+multi-host qualification additionally verifies host identity and ownership across
+machines. These deployment claims should remain separate in documentation and
+benchmark labels.
+
+The bounded graph job is also different from a streaming query. Argentea's native
+state lasts for its job, with static phase exchanges and a terminal result or
+certified failure. The current implementation does not provide unbounded stream
+state, checkpoint recovery or automatic replay of native mutations. Cancellation
+and worker loss use whole-query failure with cleanup.
+
+Lazy session views keep each Connect request shallow while composing the bounded
+plan. Registering a view is catalog work; the terminal action executes the job.
+Pecan's client-controlled iterative actions are a different execution strategy.
+Both can reuse Sail without requiring a new graph scheduler, but their timing,
+staging and memory boundaries must be reported separately.
 
 ## Takeaways
 

@@ -203,19 +203,24 @@ metrics around streams without changing the core execution layer.
 | Planning convergence | `spec::Plan` | `spec::Plan` |
 | Execution convergence | `JobService` / `JobRunner` | `JobService` / `JobRunner` |
 
-## Extension Implications
+## Extension Boundaries Across Front Doors
 
-Flight SQL is a useful test for extension design. If a future extension only works
-when a user enters through Spark Connect protobufs, then SQL clients cannot use it.
-If it registers through the common spec/resolver/function/table-format layers, both
-front doors can use it.
+Flight SQL and Spark Connect converge on common planning and execution services,
+but their protocol-specific dispatch remains different. The upstream Flight
+entry point calls `create_flight_session_manager`; Spark Connect's merged #2630
+factory-selection entry point does not automatically replace Flight startup.
 
-For extension authors, this gives a simple rule:
+A scalar or data-source registration installed in the appropriate session can
+be used by the ordinary resolver. A Spark Connect `Relation.extension` envelope,
+however, is not a Flight SQL request. The experimental Nutmeg and Argentea clients
+use that Connect path. Their successful Connect qualification is not evidence
+that a Flight client can send the same payload or invoke the same operations.
 
-```text
-Protocol-specific dispatch is allowed, but semantic registration should happen below
-the protocol boundary whenever possible.
-```
+To expose an operation through another front door, define its client-visible
+representation and wire it to the shared semantic layer, then test that protocol's
+session setup, plan creation, execution and cleanup. Keep worker package decoding
+and resource lifetime common where possible. This preserves the shared engine
+without pretending the protocols have identical extension surfaces.
 
 ## Takeaways
 

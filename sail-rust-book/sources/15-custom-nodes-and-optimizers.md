@@ -197,6 +197,26 @@ bundle of contributions:
 - table formats,
 - codecs.
 
+## Opaque Native Regions and Visible Relational Work
+
+The experimental graph paths illustrate a useful planning boundary. Pecan and
+Nutmeg's graph-table helpers emit ordinary relational plans, so Sail and DataFusion
+can optimize their joins, projections and aggregates. Native Banda and Argentea
+regions expose input/output contracts while their kernel internals remain opaque.
+The host cannot infer an arbitrary native algorithm's cost, ordering or retry
+safety merely from its output schema.
+
+Preserve truthful `PlanProperties` and required distributions. Argentea's descriptor
+validates integer-range routing, and its worker stages reuse explicit slot-sharing
+groups for stateful ownership. Those are execution requirements, not optional
+optimizer hints. A rewrite that changes partition ownership or duplicates a
+stateful region can invalidate the algorithm even if the resulting schema matches.
+
+Test both plan shape and execution. The expanded BFS qualification caught a
+client-side bound that prevented the composed plan from reaching native execution;
+other classes of defect require observing actual worker placement and phase
+completion. A schema-only test cannot certify either property.
+
 ## Takeaways
 
 Custom nodes are the places where Spark semantics become DataFusion-compatible

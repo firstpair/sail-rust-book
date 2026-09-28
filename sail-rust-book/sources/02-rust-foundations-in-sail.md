@@ -132,7 +132,7 @@ service.runner().execute(ctx, plan).await
 
 The object behind `runner()` decides what that means.
 
-The same pattern appears in the extension proposal. A future `SailExtension` trait would probably be used behind `Arc<dyn SailExtension>` because Sail must hold a list of unknown third-party extension implementations.
+The extension implementation also retains shared objects behind reference-counted handles. Its native package boundary uses the pinned FFI capsule contract described in chapter 13, rather than passing a public Rust `SailExtension` trait object across independently built libraries.
 
 ## Local and Cluster Runners Share One Interface
 
@@ -148,7 +148,7 @@ The cluster runner sends the same plan to a driver actor:
 
 ```rust
 self.driver
-    .send(DriverEvent::ExecuteJob {
+    .send(DriverMessage::ExecuteJob {
         plan,
         context: ctx.task_ctx(),
         result: tx,
@@ -184,16 +184,11 @@ These are not noise.
 
 Sail is full of async tasks, actor messages, gRPC handlers, and worker processes. If a service may be stored in a session, used by a task, or held across an `.await`, Rust needs to know it is safe to move and share.
 
-The proposed extension API in discussion #2001 uses the same idea:
-
-```rust
-pub trait SailExtension: Send + Sync {
-    fn name(&self) -> &str;
-    ...
-}
-```
-
-That bound is a design statement. Extensions are not just parser plugins. They may participate in planning and execution paths that cross async and distributed boundaries.
+These bounds also matter for extension-owned state that can outlive a planning
+call or be accessed by asynchronous tasks. Inside one compiled Rust program,
+trait objects express such contracts. Across separately built native wheels,
+Rust trait-object layout is not a stable binary interface; the implemented
+experiment uses explicit FFI capsules and lifetime contracts instead.
 
 ## Async Traits
 
@@ -205,7 +200,7 @@ You see it in three central places:
 - `JobRunner`, where execution returns an async stream-producing result.
 - `Actor`, where startup and shutdown may be async.
 
-The `Actor` trait in `crates/sail-server/src/actor.rs` looks like this:
+The `Actor` trait in `crates/sail-common/src/actor.rs` looks like this:
 
 ```rust
 #[tonic::async_trait]
@@ -232,7 +227,7 @@ That is a deliberate concurrency model. Actor message handling stays sequential,
 
 Sail's distributed execution control plane uses actors. An actor owns state. Other code sends it messages through an `ActorHandle<T>`.
 
-The generic actor system is in `crates/sail-server/src/actor.rs`:
+The generic actor system is in `crates/sail-common/src/actor.rs`:
 
 ```rust
 pub struct ActorHandle<T: Actor> {
@@ -242,49 +237,29 @@ pub struct ActorHandle<T: Actor> {
 
 An `ActorHandle<DriverActor>` can send only `DriverActor` messages. An `ActorHandle<WorkerActor>` can send only `WorkerActor` messages. This gives the message-passing system compile-time shape.
 
-The worker gRPC service shows the pattern. In `crates/sail-execution/src/worker/server.rs`, a `run_task` request is decoded into a typed `WorkerEvent::RunTask` and sent to the worker actor:
-
-```rust
-self.handle
-    .send(event)
-    .await
-    .map_err(ExecutionError::from)?;
-```
-
-So the server's job is mostly translation:
-
-```text
-gRPC request
-  -> typed request struct
-  -> domain event
-  -> actor message
-```
-
-The actor's job is stateful behavior:
-
-```text
-receive event
-  -> update state
-  -> spawn tasks
-  -> send follow-up events
-  -> report status
-```
+The worker gRPC service shows the pattern. In
+`crates/sail-execution/src/worker/server.rs`, `run_task_batch` decodes the task
+definition, validates integer conversions for stages and attempts, and sends
+`TaskRunnerMessage::RunTaskBatch` through its task-runner handle. A oneshot
+channel returns the result to the RPC handler.
 
 ```mermaid
 sequenceDiagram
-    participant Driver as DriverActor
-    participant Client as WorkerClient
+    participant Driver as Driver
     participant Server as WorkerServer
-    participant Worker as WorkerActor
-
-    Driver->>Client: run_task RPC
-    Client->>Server: RunTaskRequest
-    Server->>Server: decode TaskDefinition
-    Server->>Worker: WorkerEvent::RunTask
-    Worker->>Worker: run task / manage state
+    participant Runner as TaskRunnerActor
+    Driver->>Server: RunTaskBatchRequest
+    Server->>Server: decode definition and validate identifiers
+    Server->>Runner: TaskRunnerMessage::RunTaskBatch
+    Runner-->>Server: oneshot result
+    Server-->>Driver: RunTaskBatchResponse
 ```
 
-Rust helps here by making invalid message routes hard to express. You cannot accidentally send a `DriverEvent` to an `ActorHandle<WorkerActor>` without fighting the type system.
+The worker lifecycle actor remains responsible for readiness, heartbeats and
+shutdown. Rust's typed handles distinguish it from the task runner: a message
+for the driver is not a valid message for `ActorHandle<TaskRunnerActor>`. Follow
+the current message types rather than older `WorkerEvent` examples when adding
+an RPC path.
 
 ## Typed Session Extensions
 
@@ -302,7 +277,7 @@ Then `SessionExtensionAccessor` provides typed lookup from `SessionContext`, `Se
 fn extension<T: SessionExtension>(&self) -> Result<Arc<T>>;
 ```
 
-This turns session services into type-safe dependencies. For example, Spark Connect execution can ask the session for its `SparkSession` extension. Planning and physical execution code can ask for the catalog manager, table format registry, job service, activity tracker, repartition config, or system table service.
+This turns session services into type-safe dependencies. For example, Spark Connect execution can ask the session for its `SparkSession` extension. Planning and physical execution code can ask for the catalog manager, data source registry, job service, activity tracker, repartition config, or system table service.
 
 The pattern is:
 
@@ -316,7 +291,7 @@ In `ServerSessionFactory::create_session_config`, Sail registers many extensions
 
 ```rust
 SessionConfig::new()
-    .with_extension(create_table_format_registry()?)
+    .with_extension(create_data_source_registry()?)
     .with_extension(Arc::new(create_catalog_manager(...)?))
     .with_extension(Arc::new(ActivityTracker::new()))
     .with_extension(Arc::new(JobService::new(job_runner)))
@@ -360,7 +335,8 @@ pub trait ServerSessionMutator: Send {
 }
 ```
 
-This is already an extension-like boundary. But it is embedder-oriented, not package/plugin-oriented. It does not solve plan-time function registries or worker-side UDF decoding. That is why discussion #2001 proposes a higher-level `SailExtension`.
+This is already an extension-like boundary. But it is embedder-oriented, not package/plugin-oriented. It does not solve plan-time function registries or worker-side UDF decoding. The experimental package contract in Chapter 13 addresses additional registration,
+serialization and lifetime requirements beyond this embedding hook.
 
 ## Downcasting Extension Nodes
 
@@ -449,7 +425,7 @@ In cluster mode:
 ```text
 Arc<dyn ExecutionPlan>
   -> ClusterJobRunner::execute
-  -> DriverEvent::ExecuteJob
+  -> DriverMessage::ExecuteJob
   -> JobGraph::try_new
   -> Stage plans
   -> serialized task definitions
@@ -461,38 +437,31 @@ Same Rust type, different execution strategy.
 
 This is why `Arc<dyn ExecutionPlan>` is not just a pointer. It is the main currency between DataFusion and Sail's execution system.
 
-## How Rust Shapes the Extension Proposal
+## How Rust Shapes the Implemented Extension Boundary
 
-Discussion #2001 proposes a `SailExtension` trait that can contribute functions, optimizer rules, config extensions, physical planners, and distributed UDF re-resolution. Rust affects that proposal in several ways.
+Within Sail, `Arc`, typed session services and trait objects organize ownership
+and dispatch. Across the native package boundary, the experiment uses named
+DataFusion FFI capsules plus an explicit resource-lease ABI. A Python entry point
+is discovery and bootstrap; it does not make an arbitrary Rust object safe to
+interpret using the host's crate layout.
 
-First, extensions will likely be trait objects:
+The loader checks declared API, DataFusion and Arrow compatibility and validates
+package identity for distributed execution. The qualification matrix tests
+particular unchanged-wheel and host combinations. Those observations are more
+specific than a universal stable-ABI claim. Compiler versions and source SHAs
+remain artifact provenance, not substitutes for checking the actual compatibility
+contract.
 
-```rust
-Arc<dyn SailExtension>
-```
+The lifetime question is concrete: a native graph state, a returned Arrow buffer,
+and a session registry can each hold references. A host-funded memory lease must
+remain alive until the final admitted owner releases it, including output retained
+after the computation returns. `Arc` sharing helps implement that ownership; it
+does not by itself charge memory to DataFusion's pool.
 
-That allows multiple independently implemented extensions to be registered in one session factory.
-
-Second, extension contributions must be thread-safe:
-
-```rust
-Send + Sync + 'static
-```
-
-They may be shared across sessions, stored in configs, used during async planning, or needed on workers.
-
-Third, extension contributions must cross several existing typed registries:
-
-```text
-HashMap<String, Arc<ScalarUDF>>
-HashMap<String, Arc<AggregateUDF>>
-Vec<Arc<dyn OptimizerRule + Send + Sync>>
-Vec<Arc<dyn ExtensionPlanner + Send + Sync>>
-```
-
-Fourth, Python-discovered extensions create an ABI and packaging problem. Python entry points can discover a `pysail-sedona` package, but the object handed back into Rust must still match the exact Rust crate versions expected by `pysail`. Rust trait objects do not have a stable cross-version ABI. This is why discussion #2001 calls out version coupling between `pysail`, `datafusion`, `arrow`, `pyo3`, and the plugin wheel.
-
-The Rust design question is therefore not "can we make a plugin trait?" That part is straightforward. The deeper question is "where does the trait object live, who owns it, how is it shared, and how do workers reconstruct the same extension-provided behavior?"
+For distributed native work, serialize a descriptor and reconstruct it on the
+worker. A driver-local pointer or plan identifier has no meaning in another
+process. Sail supplies authoritative task scope; the extension supplies its
+domain state and validates its messages within that scope.
 
 ## Reading Exercises
 
@@ -504,9 +473,9 @@ Read these files with one question in mind: what interface is this code defining
 
 2. `crates/sail-execution/src/job_runner.rs`
    - Follow local execution from `execute_stream`.
-   - Follow cluster execution into `DriverEvent::ExecuteJob`.
+   - Follow cluster execution into `DriverMessage::ExecuteJob`.
 
-3. `crates/sail-server/src/actor.rs`
+3. `crates/sail-common/src/actor.rs`
    - Identify the actor message type.
    - Look at how `ActorHandle<T>` preserves message typing.
 
@@ -528,3 +497,27 @@ Rust makes Sail's architecture visible. `Arc` shows what is shared. `Box<dyn Tra
 These patterns are also the foundation for the extension proposal. A useful Sail extension API will not be a single callback. It will be a set of Rust trait-object contributions that can be registered, shared, ordered, used during planning, and reconstructed during distributed execution.
 
 The next chapter moves back to the front door: Spark Connect. We will follow a PySpark request through Sail's gRPC service, session manager, relation and command handlers, Arrow response stream, and error model.
+
+
+## Allocation and accounting in the current source
+
+At upstream `b2470ea4b`, the workspace uses Rust edition 2024 and requires
+Rust 1.97.1. That commit introduces `sail-mimalloc`, selected as the Rust global
+allocator by the CLI and Python extension. Its `GlobalAlloc` implementation
+uses mimalloc's aligned allocation, zeroing, reallocation, and free functions.
+This is an allocation implementation, not a query-memory admission policy.
+
+Keep three questions separate when reading extension code: which allocator
+owns a buffer; which query or native operation reserves its budget; and which
+owner releases both. A native wheel is a separately built library. The host's
+global allocator declaration does not establish that every extension allocation
+uses the same allocator instance or participates in DataFusion's memory pool.
+The extension experiment therefore carries explicit resource leases across its
+FFI boundary and retains them with the actual Arrow/native owners. Release
+callbacks must free through the allocation's proper ownership path.
+
+The retained extension benchmarks predate this upstream allocator change.
+Their results describe their recorded host/native binaries; they cannot be
+attributed to the newer allocator without a new qualified build and measurement.
+See `crates/sail-mimalloc/src/lib.rs`, `crates/sail-cli/src/main.rs`, and
+`crates/sail-python/src/lib.rs` in the pinned upstream tree.

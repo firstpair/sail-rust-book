@@ -26,6 +26,37 @@ Use these official references alongside this chapter:
 - [PySpark API Reference](https://spark.apache.org/docs/latest/api/python/reference/index.html): the official API index; it marks the Spark SQL, Pandas API on Spark, Structured Streaming, and DataFrame-based MLlib surfaces that support Spark Connect.
 - [Spark Connect protobuf definitions](https://github.com/apache/spark/tree/master/sql/connect/common/src/main/protobuf/spark/connect): the authoritative Spark repository location for `base.proto`, `relations.proto`, `expressions.proto`, `commands.proto`, `types.proto`, and related protocol files.
 
+## Choosing a session factory as an embedder
+
+Merged upstream PR #2630 adds `serve_with_session_factory` in
+`crates/sail-spark-connect/src/entrypoint.rs`. The ordinary `serve` function
+calls it with `create_spark_session_factory`, preserving the default Spark
+session setup. An embedder can choose a different factory without replacing the
+gRPC service, session-manager actor, or shutdown sequence.
+
+The shared type in `crates/sail-session/src/session_manager/mod.rs` is:
+
+```rust
+pub type ServerSessionFactoryFn =
+    fn(Arc<AppConfig>, RuntimeHandle) -> Box<dyn SessionFactory<ServerSessionInfo>>;
+```
+
+This is a factory-construction function pointer, not a closure capturing arbitrary
+state. It receives application configuration and the runtime handle and returns
+the existing session-factory trait object. The Spark entry point forwards it to
+`create_spark_session_manager_with_factory`. `SparkSessionMutator` remains the
+place that installs Spark session configuration and planning services; an
+embedding mutator can wrap it while adding its own registrations.
+
+This merged upstream capability is narrower than a portable extension loader.
+Selecting the server-session factory does not by itself install a package on
+workers, encode custom physical plans, or account native graph allocations.
+The experimental extension branch builds those facilities on the existing
+session and execution paths. Keep the embedding entry point distinct from those
+additional branch changes when reading Chapter 13.
+
+Source: upstream `b2470ea4b`, containing merged commit `e976c8b317` (#2630).
+
 ## The Main Files
 
 The Spark Connect layer lives mainly in `crates/sail-spark-connect`.
@@ -632,11 +663,14 @@ spec::CommandNode::RegisterFunction(udf.try_into()?)
 
 Then it runs through normal planning and command execution.
 
-`RegisterDataSource` has a more direct session-scoped path. The handler extracts the pickled Python data source class and registers a `PythonTableFormat` in the session's `TableFormatRegistry`:
+`RegisterDataSource` has a more direct session-scoped path. The handler extracts the pickled Python data source class and registers a `PythonDataSourceAdapter` in the session's `DataSourceRegistry`:
 
 ```rust
-let format = Arc::new(PythonTableFormat::with_pickled_class(name.clone(), command));
-registry.register(format)
+let source = Arc::new(PythonDataSourceAdapter::with_pickled_class(
+    name.clone(),
+    command,
+));
+registry.register_data_source(source)?;
 ```
 
 This is a small preview of extension behavior. A client can contribute behavior to a session, but the contribution is still routed through Sail's typed session services and DataFusion planning interfaces.
@@ -669,7 +703,13 @@ Spark Connect receives one logical operation from PySpark, but Sail may execute 
 
 Fifth, Spark Connect itself provides extension hooks.
 
-The protocol defines `Relation.extension`, `Command.extension`, and `Expression.extension`, each typed as `google.protobuf.Any`. These let a client send an opaque payload that Sail can dispatch by `type_url`. Today Sail does not have a general dispatcher for these messages, but chapter 13 proposes them as the natural plan-time extension boundary: protobuf-versioned, language-neutral, and already crossing every query. In that framing the Rust trait surface becomes the execution-time boundary, and Spark Connect dispatch becomes the plan-time one.
+Spark Connect defines `Relation.extension`, `Command.extension`, and
+`Expression.extension`, each carrying `google.protobuf.Any`. In the experimental
+branch, relation messages dispatch through the registered type URL and bounded
+input envelope. Raw command and expression dispatch remain unsupported: scalar
+extensions use ordinary unresolved function calls, and command-shaped operations
+execute relations that emit receipts. Chapter 13 describes the implemented wire
+contract rather than treating every protocol extension point as already usable.
 
 ```mermaid
 flowchart LR

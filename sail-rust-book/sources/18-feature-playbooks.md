@@ -84,11 +84,11 @@ Catalogs answer questions about names, databases, tables, and views.
 Do not stop at metadata tests. A catalog backend is only useful if its `TableStatus`
 leads to the right table provider.
 
-## Adding A Table Format
+## Adding a Data Source
 
 Table formats translate table metadata into read and write behavior.
 
-1. Implement or extend the `TableFormat` contract.
+1. Implement or extend `DataSource`; writes return logical plans.
 2. Register it in `crates/sail-session/src/formats.rs`.
 3. Define source and sink option resolution.
 4. Implement scan creation.
@@ -98,7 +98,8 @@ Table formats translate table metadata into read and write behavior.
 8. Add write-mode tests.
 9. Add catalog integration tests.
 
-For lakehouse formats, also ask:
+For lakehouse formats, expose the optional `LakeSource` capability and test
+its metadata, DDL and row-level contracts separately. Also ask:
 
 - Does this format support row-level operations?
 - Does it need logical expansion rules?
@@ -166,11 +167,56 @@ Ask:
 1. Does the object appear inside an `ExecutionPlan` sent to workers?
 2. Does DataFusion's protobuf codec already support it?
 3. If not, does Sail's codec need a custom representation?
-4. Does the worker session have all function/table-format registrations required
+4. Does the worker session have all function/data-source registrations required
    to decode or re-resolve it?
 5. Are version mismatches possible?
 
 Codec work is often the difference between "works locally" and "works in Sail."
+
+## Adding a Separately Packaged Native Extension
+
+Start from the pinned Sedona scalar package or Nutmeg relation package under
+`examples/extensions/`. Keep the package's Cargo workspace and native wheel
+independent of Sail engine crates. Declare the entry point, manifest versions,
+relation input bounds and placement before adding domain code.
+
+For a scalar contribution, test resolution by ordinary function name and actual
+worker execution after codec reconstruction. For a relation, return a provider
+that describes execution; schema inspection must not stage a graph or run an
+algorithm. For a mutation, return and consume a receipt relation. Do not introduce
+raw command/expression dispatch accidentally through client examples when the
+host does not implement it.
+
+If the operation retains native state, first identify its owner and release path.
+Request an admitted resource lease before expansion and keep it with retained
+buffers. Test cancellation, state drop, retained output, session shutdown and
+subsequent admission. The graph-resource qualifier is a concrete example of
+proving reuse on live workers after a post-initialization refusal.
+
+## Adding a Worker-Native Algorithm
+
+Use Argentea's request/core/adapter/client separation. The core owns the algorithm
+and validates its phase messages. The native adapter binds that core to worker
+scope and Arrow batches. The client composes bounded phases and owns temporary
+views and staging. Sail supplies decoding, scheduling, placement and lifecycle.
+
+Before changing Sail, try to express the operation through ordinary relations.
+Pecan is the control example. If native state is required, document the missing
+host invariant and its existing owner: worker session registration, codec,
+job-group placement, memory domain, task scope or close lifecycle. Reuse the
+existing shuffle path for messages rather than adding graph-specific transport.
+
+Validate an independent answer oracle first, then empty owners, skew, signed-ID
+extrema, duplicates, unreachable vertices, nonconvergence caps and malformed
+messages. Exercise the maximum supported plan and actual algorithm work at that
+bound; a large plan that immediately converges is a different test. Finally,
+validate cancellation, loss and memory refusal before measuring performance.
+
+For performance work, freeze the exact artifacts and workload first. Distinguish
+reference and advanced implementations, including differences in convergence
+and normalization. Record every outcome and the time/memory observation boundary.
+A native local kernel and a distributed relational query are different execution
+classes even when both return the same graph result.
 
 ## Debugging A Compatibility Bug
 

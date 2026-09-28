@@ -867,6 +867,32 @@ That question appears in:
 - shuffle exchanges,
 - and future extension APIs.
 
+## Native Extension Ownership Across FFI
+
+In the experimental branch, native packages export DataFusion objects through
+named FFI capsules. Arrow buffers can outlive the function or algorithm call
+that produced them. A zero-copy handoff therefore transfers or shares an owner;
+it does not make the lifetime or allocation cost disappear.
+
+The host's native resource lease must remain reachable from every retained graph
+state or output buffer that consumes its admitted quota. Closing a session-owned
+registry entry can remove one reference while a consumer still holds a batch.
+The final release path, rather than the moment a query returns, determines when
+that reservation can be returned. Release callbacks must free using the correct
+allocation owner across the library boundary.
+
+The Sedona example also demonstrates why a `Field` matters alongside an array.
+Geometry WKB remains binary at the storage level, while compatible GeoArrow
+metadata gives it logical meaning. Metadata must survive the supported
+expression and shuffle paths without being copied onto incompatible ordinary
+binary or geography values. Correct bytes with an incorrect field are still an
+incorrect result.
+
+Arrow interoperability does not prove resource admission, spillability or a shared
+allocator across wheels. The branch tests native lease ownership separately from
+RSS and records wheel/platform identity. See Chapter 13 for the package boundary
+and Chapter 17 for retained-output and same-worker quota-reuse tests.
+
 ## Takeaways
 
 Apache Arrow is Sail's data plane. The most important concrete type is

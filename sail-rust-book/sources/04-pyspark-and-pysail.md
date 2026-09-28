@@ -519,11 +519,14 @@ Extensions may need hooks before execution starts.
 
 Spark Connect can register Python data sources. Sail handles `RegisterDataSource` in `crates/sail-spark-connect/src/service/plan_executor.rs`.
 
-The handler extracts the pickled Python data source class and registers a session-scoped `PythonTableFormat` in the `TableFormatRegistry`:
+The handler extracts the pickled Python data source class and registers a session-scoped `PythonDataSourceAdapter` in the `DataSourceRegistry`:
 
 ```rust
-let format = Arc::new(PythonTableFormat::with_pickled_class(name.clone(), command));
-registry.register(format)
+let source = Arc::new(PythonDataSourceAdapter::with_pickled_class(
+    name.clone(),
+    command,
+));
+registry.register_data_source(source)?;
 ```
 
 This is parallel to Python UDF registration:
@@ -583,20 +586,22 @@ That is a concrete example of why "Spark compatible" is not a single target. Spa
 
 ## What pysail Means for Extensions
 
-Discussion #2001 proposes Python entry points such as:
+The experimental branch implements opt-in Python entry points such as:
 
 ```toml
 [project.entry-points."pysail.extensions"]
-sedona = "pysail_sedona:register"
+sedona = "sail_sedona:extension"
 ```
 
 This is a natural Python packaging experience:
 
 ```bash
-pip install pysail pysail-sedona
+bash examples/extensions/scripts/build.sh
 ```
 
-Then, when `pysail` starts, it could discover installed extension packages and register them.
+On the experimental branch, `SAIL_EXPERIMENTAL_EXTENSIONS=1` enables discovery
+and manifest validation. Use its source-distribution tutorial and built wheels;
+this is not a promise that the named example packages are published on PyPI.
 
 But this chapter should make the hard parts clear.
 

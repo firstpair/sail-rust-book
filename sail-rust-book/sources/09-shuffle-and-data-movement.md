@@ -23,6 +23,29 @@ shuffle service, but some remote and blocking pieces are intentionally not finis
 This makes the codebase unusually good for learning. You can see the shape of a
 distributed engine without getting lost in years of accumulated production machinery.
 
+## Current transport and ownership map
+
+In the pinned upstream tree, stream code is consolidated under
+`crates/sail-execution/src/stream/`. `TaskStreamFactory` in `accessor.rs` creates
+readers and writers using a task context and the task-runner actor handle. The
+actor receives `TaskRunnerMessage` values; local stream storage lives under
+`stream/local/`, storage-backed streams under `stream/storage/`, and Celeborn
+support under `stream/celeborn/`. These are distinct execution choices, not
+interchangeable names for an in-memory channel.
+
+For blocking outputs, the factory can select `CelebornTaskStreamWriter` when
+Celeborn is configured; otherwise it builds the multi-channel writer. A graph
+extension reusing ordinary shuffles inherits the selected stream machinery. It
+does not need to implement a separate peer-to-peer graph network.
+
+Internal Flight transport is in `stream/service/transport/mod.rs`. Current
+upstream uses Hyper's HTTP/2 client directly so it can control the reset budget
+needed when many shuffle streams terminate early, such as with LIMIT. Transport
+clones share connection establishment and reconnection while dispatching requests
+concurrently. Reconnecting a transport does not establish that a stateful native
+algorithm may safely replay a task. Argentea's whole-job fail-fast policy remains
+a separate scheduling and state-lifetime contract.
+
 ## Code Map
 
 The core shuffle code lives in these files:
@@ -35,12 +58,12 @@ The core shuffle code lives in these files:
 | Round-robin partitioning | `crates/sail-physical-plan/src/repartition.rs` |
 | Task input/output definitions | `crates/sail-execution/src/task/definition.rs` |
 | Scheduler input/output placement | `crates/sail-execution/src/driver/job_scheduler/core.rs` |
-| Runtime shuffle rewrite | `crates/sail-execution/src/task_runner/core.rs` |
+| Runtime shuffle rewrite | `crates/sail-execution/src/task_runner/actor/core.rs` |
 | Stream reader and writer traits | `crates/sail-execution/src/stream/reader.rs`, `crates/sail-execution/src/stream/writer.rs` |
-| Actor bridge to stream manager | `crates/sail-execution/src/stream_accessor/core.rs` |
-| Local stream manager | `crates/sail-execution/src/stream_manager/core.rs` |
-| In-memory stream replicas | `crates/sail-execution/src/stream_manager/local.rs` |
-| Arrow Flight stream service | `crates/sail-execution/src/stream_service/server.rs`, `crates/sail-execution/src/stream_service/client.rs` |
+| Actor bridge to stream manager | `crates/sail-execution/src/stream/accessor.rs` |
+| Local stream manager | `crates/sail-execution/src/stream/local/core.rs` |
+| In-memory stream replicas | `crates/sail-execution/src/stream/local/memory.rs` |
+| Arrow Flight stream service | `crates/sail-execution/src/stream/service/server.rs`, `crates/sail-execution/src/stream/service/client.rs` |
 
 If Chapter 8 was about who runs the work, this chapter is about how the work's bytes
 find the next consumer.
@@ -127,7 +150,7 @@ The job graph knows that one stage depends on another. It does not directly cont
 open streams. Before a worker can execute a task, the driver must turn graph edges
 into concrete task inputs and outputs.
 
-That happens in `JobScheduler::get_task_input()` and `JobScheduler::get_task_output()`
+That happens in `TaskInputBuilder::build()` and `TaskOutputBuilder::build()`
 in `crates/sail-execution/src/driver/job_scheduler/core.rs`.
 
 For task inputs, the scheduler:
@@ -142,8 +165,9 @@ The input locator records where the consumer should fetch streams from:
 
 ```text
 TaskInputLocator::Driver { keys }
-TaskInputLocator::Worker { worker_id, keys }
-TaskInputLocator::Remote { uri, keys }
+TaskInputLocator::Worker { keys }
+TaskInputLocator::Storage { keys }
+TaskInputLocator::ShuffleService { channels }
 ```
 
 For task outputs, the scheduler:
@@ -153,15 +177,11 @@ For task outputs, the scheduler:
 3. Chooses the output locator.
 4. Returns a `TaskOutput`.
 
-Today, pipelined output is local:
-
-```text
-TaskOutputLocator::Local { replicas }
-```
-
-The remote and blocking-output branches are present as design points, but blocking
-output placement still has `todo!()` markers. That is one of the places where the
-extensions proposal can hook into the architecture later.
+Output locators distinguish `Pipelined { replicas }` from `Blocking`.
+For pipelined input, producer placement selects a driver or worker locator.
+Blocking input uses a storage locator for the Storage and Flight backends, or
+a shuffle-service locator for Celeborn. The stream layer implements the selected
+backend; the scheduler does not open its sockets or files.
 
 The result is not an open socket or a live stream. It is a serializable task
 definition: inputs, outputs, partition numbers, attempts, and encoded expressions.
@@ -169,8 +189,8 @@ That definition can be sent to a worker.
 
 ## The Runtime Rewrite
 
-The most important shuffle transition happens inside `TaskRunner::rewrite_shuffle()`
-in `crates/sail-execution/src/task_runner/core.rs`.
+The most important shuffle transition happens inside `TaskPreparation::rewrite_shuffle()`
+in `crates/sail-execution/src/task_runner/preparation.rs`.
 
 The stage-level physical plan contains placeholders:
 
@@ -225,33 +245,16 @@ Its main fields are:
 ```rust
 pub struct ShuffleWriteExec {
     plan: Arc<dyn ExecutionPlan>,
-    shuffle_partitioning: Partitioning,
-    locations: Vec<Vec<TaskWriteLocation>>,
+    partitioning: ShufflePartitioning,
     properties: Arc<PlanProperties>,
     writer: Arc<dyn TaskStreamWriter>,
 }
 ```
 
-Read those fields as a sentence:
-
-"Run this child `plan`, partition its output according to `shuffle_partitioning`, and
-write this task partition's output to the given `locations` using a `TaskStreamWriter`."
-
-The `locations` field is a two-dimensional vector:
-
-```text
-locations[input_partition][channel]
-```
-
-During `rewrite_shuffle()`, Sail creates a vector with one outer entry per output
-partition and fills only the current task partition:
-
-```text
-locations[key.partition].extend(output.locations(key))
-```
-
-That means `ShuffleWriteExec::execute(partition, context)` can look up the exact
-write locations for the partition DataFusion is asking it to execute.
+The operator runs its child, partitions batches according to `partitioning`,
+and passes the resulting channel batches to its writer. It does not retain a
+matrix of physical write locations. `TaskStreamFactory` constructs the writer
+from the task key, output definition and schema during preparation.
 
 ### Partitioning
 
@@ -299,43 +302,20 @@ input partitions are writing at once.
 
 ### Sinks And Side Effects
 
-The heart of shuffle writing is the `shuffle_write()` helper:
+The `shuffle_write()` helper opens one task sink with
+`writer.open(partition)`. It skips empty child batches, partitions each remaining
+batch into a `Vec<Option<RecordBatch>>`, and passes the whole vector to
+`sink.write`. The sink handles its physical channels.
 
-1. Open one sink per write location.
-2. Pull batches from the child plan stream.
-3. Partition each batch into per-channel batches.
-4. Write each per-channel batch to its sink.
-5. Close remaining sinks when input is exhausted.
+Completion has three paths:
 
-A simplified sketch:
+- Exhausted input commits the sink.
+- A `TaskStreamWriteState::Closed` result stops reading and aborts the sink.
+- A read, partition or write error triggers best-effort abort and returns the
+  original error.
 
-```rust
-let mut sinks = locations
-    .into_iter()
-    .map(|location| writer.open(location, schema.clone()))
-    .collect::<FuturesOrdered<_>>();
-
-while let Some(batch) = stream.next().await.transpose()? {
-    let partitions = partitioner.partition(&batch)?;
-    for (sink, maybe_batch) in sinks.iter_mut().zip(partitions) {
-        if let Some(batch) = maybe_batch {
-            sink.write(batch).await?;
-        }
-    }
-}
-
-for sink in sinks {
-    sink.close().await?;
-}
-```
-
-The actual code tracks sink state:
-
-```text
-TaskStreamSinkState::Ok
-TaskStreamSinkState::Error
-TaskStreamSinkState::Closed
-```
+The current code still uses `abort` for successful early termination; it has a
+TODO to model that separately. Do not equate every abort with query failure.
 
 This matters because a downstream consumer may stop early. A `LIMIT` query is the
 classic example: once the driver has enough rows, some readers may close. Sail treats
@@ -356,22 +336,17 @@ into Sail task output.
 
 ```rust
 pub struct ShuffleReadExec {
-    locations: Vec<Vec<TaskReadLocation>>,
     properties: Arc<PlanProperties>,
     reader: Arc<dyn TaskStreamReader>,
 }
 ```
 
-Again, read the fields as a sentence:
-
-"For this output partition, open these task stream locations using this reader, then
-merge the resulting Arrow streams."
-
-`execute(partition, context)`:
-
-1. Looks up `locations[partition]`.
-2. Opens each location with `reader.open(location, schema.clone())`.
-3. Merges all opened streams into one `RecordBatchStream`.
+`execute(partition, context)` opens `reader.open(partition)` and adapts the
+returned `TaskStreamSource` to a DataFusion record-batch stream. The reader owns
+the routing information and merges the producers for that partition. For
+bounded input, the operator then coalesces batches using one
+`LimitedBatchCoalescer` shared across producers. Unbounded input bypasses that
+coalescer so partial batches can be emitted promptly.
 
 The merge is handled by `MergedRecordBatchStream` in
 `crates/sail-execution/src/stream/merge.rs`. Internally, it uses a `SelectAll` over
@@ -389,51 +364,33 @@ flowchart LR
 This is why a consumer task can start processing a pipelined shuffle before every
 producer has finished, as long as its input streams are available.
 
-## Locations Become Streams
+## Stream Readers, Writers and Sinks
 
-`ShuffleReadExec` and `ShuffleWriteExec` do not know whether a stream is in process,
-on another worker, or behind an Arrow Flight endpoint. They depend on two traits:
+The current traits in `stream/reader.rs` and `stream/writer.rs` open one task
+partition. The reader returns a `TaskStreamSource`; the writer returns a sink.
+Schema and locator information are supplied when `TaskStreamFactory` constructs
+the concrete objects, rather than passed into each `open` call.
 
 ```rust
-pub trait TaskStreamReader {
-    async fn open(
-        &self,
-        location: TaskReadLocation,
-        schema: SchemaRef,
-    ) -> Result<TaskStreamSource>;
-}
-
-pub trait TaskStreamWriter {
-    async fn open(
-        &self,
-        location: TaskWriteLocation,
-        schema: SchemaRef,
-    ) -> Result<Box<dyn TaskStreamSink>>;
-}
+async fn open(&self, partition: usize) -> Result<TaskStreamSource>;
 ```
 
-The concrete implementation used by tasks is `StreamAccessor`. It sends actor
-messages to the stream manager:
+The writer's corresponding method returns `Result<Box<dyn TaskStreamSink>>`.
+A task sink handles all output channels. Its `write` accepts
+`Vec<Option<RecordBatch>>`, with at most one batch per channel per call, and
+returns `TaskStreamWriteState`. `commit` and `abort` consume the boxed sink.
+A `TaskStreamChannelSink` instead represents exactly one physical channel.
 
-```text
-ShuffleReadExec
-  -> TaskStreamReader::open
-  -> StreamAccessor
-  -> actor message
-  -> StreamManager
+The multi-channel implementation can write independent channels concurrently,
+while calls preserve order within each channel. It retains sinks so a failed
+write can be followed by abort. Closed channels are distinct from active ones;
+early consumer termination is part of the stream contract, not necessarily a
+query error.
 
-ShuffleWriteExec
-  -> TaskStreamWriter::open
-  -> StreamAccessor
-  -> actor message
-  -> StreamManager
-```
-
-This is a nice example of Rust interface design in Sail:
-
-- The execution plans depend on small async traits.
-- The actor system stays outside the DataFusion operator implementation.
-- Local and remote stream mechanisms can evolve behind the accessor boundary.
+Concrete readers and writers communicate with the task runner through the
+accessor layer. That actor owns local streams and delegates storage or Celeborn
+operations to the configured managers. The DataFusion operators depend on the
+small stream traits, while task definitions determine the actual data movement.
 
 ## Local Memory Streams
 
@@ -450,11 +407,9 @@ has created it. Rather than fail immediately, the manager can register that the 
 is pending and wake the reader when the producer creates it. If creation never happens,
 the pending stream eventually times out.
 
-For in-memory streams, Sail uses replicas. A local output location includes:
-
-```text
-LocalStreamStorage::Memory { replicas }
-```
+For in-memory streams, Sail uses replicas. The task output locator records
+`TaskOutputLocator::Pipelined { replicas }`; the local manager creates the
+corresponding memory stream.
 
 The producer writes each batch to the active replica senders. This supports multiple
 readers for the same produced stream, which is useful for broadcast-like movement and
@@ -469,8 +424,8 @@ the data plane must distinguish "nobody needs this anymore" from "the query is b
 
 ## Arrow Flight As The Remote Shape
 
-Local streams are the implemented fast path, but Sail's stream service shows the
-remote transport shape: Arrow Flight.
+Sail's stream service transports task streams between processes using Arrow
+Flight. This is an implemented path, including the two-host extension tests.
 
 On the server side, `do_get`:
 
@@ -644,60 +599,31 @@ There are also several important runtime behaviors:
 These are small details, but they are the difference between a toy exchange and an
 engine that can tolerate real distributed timing.
 
-## What Is Still Open
+## Extension Use and Qualification Boundaries
 
-Sail's shuffle architecture is intentionally extensible, but several pieces are still
-not complete:
+Argentea uses existing stage dependencies, partition distributions and stream
+transport to exchange graph messages. Its worker-local native state adds an
+ownership constraint: a later phase must reach the worker that owns its graph
+partition. That constraint belongs in placement and lifecycle handling, not a
+second graph transport. Chapter 13 describes the focused host additions.
 
-- Blocking shuffle output placement is not implemented.
-- Remote stream creation and fetch paths are design points rather than complete
-  production paths.
-- Disk-backed local shuffle storage exists in the type model, but memory is the main
-  implemented path.
-- More sophisticated backpressure, spill, and shuffle cleanup policies would be needed
-  for a large production deployment.
+The code includes blocking storage and Celeborn paths; their presence is not
+proof that every extension workload has been qualified on each backend. Record
+the selected backend with each test. The two-host graph evidence establishes
+the configuration actually run, not interchangeable behavior under every
+shuffle service or storage failure.
 
-For the purposes of this book, that is a feature. The code shows the essential shape:
-plans, task definitions, stream keys, local memory streams, and Arrow Flight transport.
-The missing pieces are exactly where extension proposals can become concrete.
-
-## Extension Hooks
-
-Shuffle is one of the most important places for extensions because it sits between
-query semantics and physical deployment.
-
-A Sail extension that wants to influence data movement could attach at several levels:
-
-| Extension goal | Likely hook |
-|---|---|
-| New partitioning strategy | Job graph output distribution and `TaskOutput::partitioning()` |
-| Custom hash expression support | Physical expression serialization and parsing |
-| Alternative shuffle transport | `TaskStreamReader`, `TaskStreamWriter`, and `StreamAccessor` |
-| External shuffle service | `TaskReadLocation::Remote`, `TaskWriteLocation::Remote`, Arrow Flight service |
-| Disk or object-store shuffle | `LocalStreamStorage`, remote locators, blocking output placement |
-| Adaptive repartitioning | Scheduler key construction and stage output metadata |
-| Broadcast optimization | Replica planning and input-key construction |
-
-This gives us a preview of the final chapter. The extensions proposal should not be
-treated as a plugin system floating above the engine. For distributed query processing,
-extensions need to meet Sail at the same boundaries Sail already uses internally:
-
-- plan nodes,
-- physical expressions,
-- task definitions,
-- stream locations,
-- shuffle distributions,
-- catalog and function registries,
-- and execution services.
-
-The cleanest extension architecture will preserve those boundaries rather than bypass
-them.
+Attempt identities distinguish streams from different task attempts. They do
+not reconstruct lost native graph state. The current native graph job therefore
+fails as a whole on worker loss instead of replaying one task against missing
+state. Reusing Sail's transport preserves its data movement contracts while
+leaving this extension-specific recovery limitation explicit.
 
 ## Reading Exercise
 
 Trace one hash-shuffled row through the code:
 
-1. Start in `TaskRunner::rewrite_shuffle()`.
+1. Start in `TaskPreparation::rewrite_shuffle()`.
 2. Find where `TaskOutput::partitioning()` converts task output metadata into
    `Partitioning::Hash`.
 3. Open `ShuffleWriteExec::execute()` and follow the creation of the partitioner.

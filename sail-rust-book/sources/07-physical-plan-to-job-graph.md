@@ -72,7 +72,7 @@ The cluster runner sends the plan to the driver actor:
 
 ```rust
 self.driver
-    .send(DriverEvent::ExecuteJob {
+    .send(DriverMessage::ExecuteJob {
         plan,
         context: ctx.task_ctx(),
         result: tx,
@@ -1044,7 +1044,7 @@ Follow a cluster query:
 
 1. Start in `crates/sail-execution/src/job_runner.rs`.
 2. Find `ClusterJobRunner::execute`.
-3. Follow `DriverEvent::ExecuteJob`.
+3. Follow `DriverMessage::ExecuteJob`.
 4. Open `crates/sail-execution/src/driver/actor/handler.rs`.
 5. Find `handle_execute_job`.
 6. Follow `job_scheduler.accept_job`.
@@ -1053,6 +1053,43 @@ Follow a cluster query:
 9. Follow `build_job_output`.
 
 That is the control path from a physical plan to a client-visible output stream.
+
+## Worker-Native Regions in the Extension Branch
+
+The following additions belong to the pinned experimental branch, not upstream
+main. They reuse job stages and slot-sharing groups rather than adding a graph
+scheduler. `WorkerExtensionExec` transports a bounded descriptor and ordinary
+host child plans. It does not serialize a driver pointer or a process-local plan
+registry identifier.
+
+`WorkerDescriptor` in
+`crates/sail-common-datafusion/src/worker_extension.rs` records package identity,
+relation type URL, an operation label, opaque payload, input names and schemas,
+input routing, output schema and partition count. The host validates descriptor
+bounds, input cardinalities and unique names. Integer-range routing requires an
+Int64 column and strictly increasing split points with one interval per partition.
+The worker's task scope is supplied by Sail; a payload cannot grant itself a
+host job or worker identity.
+
+`crates/sail-execution/src/job_graph/worker_groups.rs` finds native operations in
+stages and assigns their existing `Stage.group` values. It groups by package and
+operation identity and joins groups transitively when operations share a stage.
+The earliest stage supplies a deterministic job-local group name. Ordinary source
+widths must not shift the task-set buckets of stateful stages. This is why grouping
+is more than attaching an arbitrary string to one operator.
+
+The scheduler treats jobs containing these stateful regions as fail-fast.
+A lost acknowledgement cannot prove whether native mutation committed. Retrying
+an upstream ordinary region can also deliver its contribution twice, so the
+boundary covers the whole job rather than only the immediately native stage.
+Recovery would require an additional state/replay protocol; it is not obtained
+from ordinary task retry.
+
+This placement contract is exercised with empty owners, skewed ownership,
+multiple phases, cancellation and worker loss. A functional answer alone is not
+sufficient: qualification checks the complete native stage/partition matrix,
+actual worker assignments and attempt numbers. See Chapter 17 for the distinction
+between process-cluster and physical two-host evidence.
 
 ## Takeaways
 

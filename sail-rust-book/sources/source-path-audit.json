@@ -1,0 +1,1765 @@
+{
+  "recorded_utc": "2026-09-28T08:27:11.060597+00:00",
+  "revisions": {
+    "recorded_utc": "2026-09-28T08:27:10.946663+00:00",
+    "upstream": {
+      "repository": "https://github.com/lakehq/sail",
+      "commit": "b2470ea4b66f8ed9703e2e3b27d958b71c3a1ada",
+      "workspace_version": "0.7.1",
+      "rust_version": "1.97.1",
+      "edition": "2024"
+    },
+    "extension": {
+      "repository": "https://github.com/querygraph/sail",
+      "branch": "work/extensions-traversal-bench",
+      "commit": "dcd44f287b8422a62abd06d2410aaf96e225e136"
+    },
+    "intended_release": "0.7.2 (planned, not published by this work)",
+    "merged_session_factory_commit": "e976c8b317e2b920fca0ed05f9a2efa92a0cff1c",
+    "review_status": "in progress; temporary PDF/EPUB/HTML draft builds verified, canonical artifacts remain the earlier edition"
+  },
+  "checks": [
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-catalog/src/manager/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-common-datafusion/src/datasource.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-common-datafusion/src/streaming/event/schema.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-delta-lake/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-execution/src/job_graph/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-execution/src/job_runner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-execution/src/plan/shuffle_read.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-execution/src/plan/shuffle_write.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-execution/src/proto/codec.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-execution/src/stream/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-execution/src/task_runner/actor/core.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-flight/src/service.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-iceberg/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-logical-plan/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-physical-optimizer/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-plan/src/function/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-plan/src/resolver/expression/function.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-plan/src/streaming/rewriter.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-python-udf/src/stream.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-python-udf/src/udf/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-session/src/formats.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-session/src/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-session/src/session_factory/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-spark-connect/src/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "00-reader-guide.md",
+      "path": "crates/sail-spark-connect/src/service/plan_executor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-execution/src/job_graph/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-execution/src/job_graph/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-execution/src/job_runner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-execution/src/plan/shuffle_read.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-execution/src/plan/shuffle_write.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-execution/src/proto/codec.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-plan/src/function",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-plan/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-python/src/spark/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-session/src/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-session/src/session_factory/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-spark-connect/src/executor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-spark-connect/src/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "crates/sail-spark-connect/src/service/plan_executor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "01-architecture-overview.md",
+      "path": "python/pysail",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-cli/src/main.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-common-datafusion/src/extension.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-common-datafusion/src/session/job.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-common/src/actor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-execution/src/job_runner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-execution/src/worker/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-mimalloc/src/lib.rs",
+      "upstream": true,
+      "extension": false
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-python/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-session/src/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "02-rust-foundations-in-sail.md",
+      "path": "crates/sail-session/src/session_factory/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-session/src/session_manager/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-spark-connect",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-spark-connect/src/entrypoint.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-spark-connect/src/error.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-spark-connect/src/executor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-spark-connect/src/proto/plan.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-spark-connect/src/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-spark-connect/src/service/plan_analyzer.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-spark-connect/src/service/plan_executor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "03-spark-connect.md",
+      "path": "crates/sail-spark-connect/src/session_manager.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "crates/sail-plan/src/resolver/expression/udf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "crates/sail-python-udf/src/cereal/pyspark_udf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "crates/sail-python-udf/src/python/spark.py",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "crates/sail-python-udf/src/python/spark.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "crates/sail-python-udf/src/udf/pyspark_udf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "crates/sail-python/src/globals.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "crates/sail-python/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "crates/sail-python/src/spark/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "crates/sail-spark-connect/src/service/plan_executor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "python/pysail/__main__.py",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "python/pysail/cli.py",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "python/pysail/spark/__init__.py",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "04-pyspark-and-pysail.md",
+      "path": "python/pysail/tests/spark/conftest.py",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-common/src/geoarrow/extension.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-execution/src/plan/shuffle_read.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-execution/src/plan/shuffle_write.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-flight/src/service.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-physical-plan/src/range.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-physical-plan/src/repartition.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-python-udf/src/conversion.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-python-udf/src/udf/pyspark_udf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-spark-connect/src/executor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "05-apache-arrow.md",
+      "path": "crates/sail-spark-connect/src/proto/data_type_arrow.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-common-datafusion/src/extension.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-function/src/scalar/explode.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-function/src/scalar/string/spark_mask.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-logical-plan/src/range.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-logical-plan/src/repartition.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-physical-optimizer/src/explicit_repartition.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-physical-optimizer/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-physical-plan/src/repartition.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-plan/src/function/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-plan/src/function/scalar/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-plan/src/function/scalar/string.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-plan/src/function/table/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-plan/src/function/table/range.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-plan/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-session/src/optimizer.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-session/src/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "06-apache-datafusion.md",
+      "path": "crates/sail-session/src/session_factory/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-common-datafusion/src/worker_extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/driver/actor/handler.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/driver/job_scheduler/core.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/driver/job_scheduler/state.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/driver/job_scheduler/topology.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/driver/output.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/job_graph/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/job_graph/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/job_graph/worker_groups.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/job_runner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/plan/shuffle_write.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/plan/stage_input.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "07-physical-plan-to-job-graph.md",
+      "path": "crates/sail-execution/src/task/definition.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-common/src/actor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/driver/actor",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/driver/actor/handler.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/driver/actor/message.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/driver/job_scheduler/core.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/driver/worker_scaler/core.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/stream/accessor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/stream/local/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/stream/service/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/stream/service/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/task_runner/actor/core.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/task_runner/preparation.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/worker/actor/handler.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "08-drivers-workers-tasks-and-streams.md",
+      "path": "crates/sail-execution/src/worker/actor/message.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/driver/job_scheduler/core.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/plan/shuffle_read.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/plan/shuffle_write.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/stream/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/stream/accessor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/stream/local/core.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/stream/local/memory.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/stream/merge.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/stream/reader.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/stream/service/client.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/stream/service/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/stream/writer.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/task/definition.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/task_runner/actor/core.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-execution/src/task_runner/preparation.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "09-shuffle-and-data-movement.md",
+      "path": "crates/sail-physical-plan/src/repartition.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-common/src/spec/data_type.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-common/src/spec/expression.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-common/src/spec/plan.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/command/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/expression/attribute.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/expression/function.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/expression/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/plan.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/query/extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/query/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/query/read.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/query/repartition.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/query/with_relations.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-plan/src/resolver/state.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-session/src/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-spark-connect",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-spark-connect/src/proto/expression.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-spark-connect/src/proto/plan.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "10-sail-spec-and-plan-resolver.md",
+      "path": "crates/sail-spark-connect/src/service/plan_executor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-catalog/src/manager/function.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-common-datafusion/src/driver_extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-common-datafusion/src/native_scalar.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-common-datafusion/src/udf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-common-datafusion/src/worker_extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-common/src/spec/expression.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-execution/proto/sail/plan/physical.proto",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-execution/src/proto/codec.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-physical-plan/src/map_partitions.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-plan/src/function/aggregate.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-plan/src/function/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-plan/src/function/scalar/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-plan/src/function/table/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-plan/src/resolver/command/function.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-plan/src/resolver/expression/function.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-plan/src/resolver/expression/udf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-plan/src/resolver/query/udtf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-python-udf/src/cereal/pyspark_udf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-python-udf/src/stream.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-python-udf/src/udf/pyspark_udaf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-python-udf/src/udf/pyspark_udf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-python-udf/src/udf/pyspark_udtf.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-session/src/session_factory/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "11-functions-udfs-and-codecs.md",
+      "path": "crates/sail-session/src/session_factory/worker.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-catalog/src/manager/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-common-datafusion/src/datasource.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-common-datafusion/src/lakesource.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-data-source/src/formats/python/adapter.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-data-source/src/listing/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-data-source/src/listing/source.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-data-source/src/listing/write.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-delta-lake/src/lake_source.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-iceberg/src/lake_source.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-logical-plan/src/row_level.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-session/src/catalog.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "12-catalogs-lakehouse-tables-and-file-formats.md",
+      "path": "crates/sail-session/src/formats.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-common-datafusion/src/connect_extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-common-datafusion/src/driver_extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-common-datafusion/src/native_resource.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-common-datafusion/src/worker_extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-execution/src/job_graph/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-native-resource-ffi/src/lib.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-plan/src/resolver/query/extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-session/src/session_factory/worker.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-spark-connect/src/entrypoint.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "crates/sail-spark-connect/src/proto/extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "examples/extensions/TUTORIAL.md",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "examples/extensions/WRITING-AN-EXTENSION.md",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "examples/extensions/argentea/PYTHON.md",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "examples/extensions/argentea/src/",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "examples/extensions/graph-algorithms/src/pyspark_pecan/",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "13-extension-architecture-from-proposal-to-design.md",
+      "path": "examples/extensions/nutmeg/",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "14-arrow-flight-sql.md",
+      "path": "crates/sail-common-datafusion/src/session/job.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "14-arrow-flight-sql.md",
+      "path": "crates/sail-flight/src/metrics.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "14-arrow-flight-sql.md",
+      "path": "crates/sail-flight/src/service.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "14-arrow-flight-sql.md",
+      "path": "crates/sail-flight/src/state.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "14-arrow-flight-sql.md",
+      "path": "crates/sail-plan/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "14-arrow-flight-sql.md",
+      "path": "crates/sail-session/src/session_manager/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "14-arrow-flight-sql.md",
+      "path": "crates/sail-sql-analyzer/src/parser.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "14-arrow-flight-sql.md",
+      "path": "crates/sail-sql-analyzer/src/statement.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "15-custom-nodes-and-optimizers.md",
+      "path": "crates/sail-delta-lake/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "15-custom-nodes-and-optimizers.md",
+      "path": "crates/sail-iceberg/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "15-custom-nodes-and-optimizers.md",
+      "path": "crates/sail-logical-optimizer/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "15-custom-nodes-and-optimizers.md",
+      "path": "crates/sail-logical-plan/src/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "15-custom-nodes-and-optimizers.md",
+      "path": "crates/sail-physical-optimizer/src/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "15-custom-nodes-and-optimizers.md",
+      "path": "crates/sail-physical-optimizer/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "15-custom-nodes-and-optimizers.md",
+      "path": "crates/sail-physical-plan/src/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "15-custom-nodes-and-optimizers.md",
+      "path": "crates/sail-session/src/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "15-custom-nodes-and-optimizers.md",
+      "path": "crates/sail-session/src/session_factory/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-common-datafusion/src/session/job.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-common-datafusion/src/streaming/event/schema.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-common-datafusion/src/streaming/event/stream.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-common-datafusion/src/streaming/source.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-data-source/src/formats/rate/reader.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-data-source/src/formats/socket/reader.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-execution/src/job_runner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-logical-plan/src/streaming/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-physical-plan/src/streaming/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-plan/src/streaming/rewriter.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "16-local-and-streaming-execution.md",
+      "path": "crates/sail-spark-connect/src/streaming.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "17-testing-spark-compatibility.md",
+      "path": "crates/sail-gold-test/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "17-testing-spark-compatibility.md",
+      "path": "examples/extensions/",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "17-testing-spark-compatibility.md",
+      "path": "python/pysail/spark/utils/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "17-testing-spark-compatibility.md",
+      "path": "python/pysail/tests/flight/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "17-testing-spark-compatibility.md",
+      "path": "python/pysail/tests/spark/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "17-testing-spark-compatibility.md",
+      "path": "python/pysail/tests/spark/streaming/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "18-feature-playbooks.md",
+      "path": "crates/sail-function/src/aggregate/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "18-feature-playbooks.md",
+      "path": "crates/sail-function/src/scalar/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "18-feature-playbooks.md",
+      "path": "crates/sail-function/src/window/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "18-feature-playbooks.md",
+      "path": "crates/sail-plan/src/function/scalar/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "18-feature-playbooks.md",
+      "path": "crates/sail-plan/src/function/table/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "18-feature-playbooks.md",
+      "path": "crates/sail-session/src/catalog.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "18-feature-playbooks.md",
+      "path": "crates/sail-session/src/formats.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "18-feature-playbooks.md",
+      "path": "examples/extensions/",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-catalog/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-common-datafusion/src/datasource.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-common-datafusion/src/native_resource.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-common-datafusion/src/session/job.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-common-datafusion/src/worker_extension.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-common/src/spec/plan.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-delta-lake/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-execution/src/driver/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-execution/src/job_graph/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-execution/src/job_graph/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-execution/src/job_graph/worker_groups.rs",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-execution/src/job_runner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-execution/src/proto/codec.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-execution/src/stream/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-iceberg/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-plan",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-plan/src/lib.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-plan/src/resolver/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-plan/src/resolver/plan.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-plan/src/resolver/query/mod.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-python-udf/src/",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-session",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-session/src/catalog.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-session/src/formats.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-session/src/planner.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-session/src/session_factory/server.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-spark-connect/src/entrypoint.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-spark-connect/src/service/plan_executor.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-sql-analyzer/src/statement.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "crates/sail-sql-parser/src/parser.rs",
+      "upstream": true,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "examples/extensions/WRITING-AN-EXTENSION.md",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "examples/extensions/argentea/GRAPH_RESOURCES.md",
+      "upstream": false,
+      "extension": true
+    },
+    {
+      "chapter": "19-roadmap-and-codebase-navigation.md",
+      "path": "examples/extensions/argentea/src/",
+      "upstream": false,
+      "extension": true
+    }
+  ],
+  "missing_count": 0,
+  "boundary": "explicit inline code-path existence only; not excerpt or prose validation"
+}

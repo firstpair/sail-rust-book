@@ -1,6 +1,6 @@
 # Chapter 19: Roadmap And Codebase Navigation
 
-This final chapter is a field guide. It tells you where to start, what is solid,
+This chapter is a field guide. It tells you where to start, what is solid,
 what is evolving, and how to keep your mental model synchronized with the code.
 
 Sail moves quickly, so treat exact capability claims as snapshots. The stable part
@@ -26,7 +26,28 @@ batches move through every layer.
 | Understand catalogs | `crates/sail-catalog/` and `crates/sail-session/src/catalog.rs` |
 | Understand table formats | `crates/sail-common-datafusion/src/datasource.rs` and `crates/sail-session/src/formats.rs` |
 | Understand Delta and Iceberg | `crates/sail-delta-lake/`, `crates/sail-iceberg/`, and `crates/sail-session/src/planner.rs` |
-| Understand extensions | `crates/sail-session`, `crates/sail-plan`, `crates/sail-execution/src/codec.rs` |
+| Understand extensions | `crates/sail-session`, `crates/sail-plan`, `crates/sail-execution/src/proto/codec.rs` |
+
+## Route Extension Work by Ownership
+
+Read the upstream embedding entry point before adding session hooks:
+`crates/sail-spark-connect/src/entrypoint.rs` already exposes factory selection
+through merged #2630. Then use the experimental branch's protocol and native
+contracts as separate examples, rather than assuming they are upstream APIs.
+
+| Task on the experimental branch | Start here |
+|---|---|
+| Encode a relation request | `examples/extensions/WRITING-AN-EXTENSION.md` |
+| Understand worker descriptors and scope | `crates/sail-common-datafusion/src/worker_extension.rs` |
+| Understand stable native stage grouping | `crates/sail-execution/src/job_graph/worker_groups.rs` |
+| Understand admitted native ownership | `crates/sail-common-datafusion/src/native_resource.rs` |
+| Trace a distributed graph algorithm | `examples/extensions/argentea/src/` and its Python qualifier |
+| Reproduce quota release after failure | `examples/extensions/argentea/GRAPH_RESOURCES.md` |
+
+For an ABI question, inspect the package build receipt and compatibility matrix.
+For a distributed correctness question, inspect the complete stage/task and owner
+records. For a performance question, inspect the frozen matrix and all outcomes.
+These artifacts answer different questions; none is a substitute for the others.
 
 ## Start By Symptom
 
@@ -135,7 +156,7 @@ Bookmark these first:
 - `crates/sail-session/src/planner.rs`
 - `crates/sail-execution/src/job_runner.rs`
 - `crates/sail-execution/src/job_graph/planner.rs`
-- `crates/sail-execution/src/codec.rs`
+- `crates/sail-execution/src/proto/codec.rs`
 - `crates/sail-common-datafusion/src/session/job.rs`
 - `crates/sail-common-datafusion/src/datasource.rs`
 

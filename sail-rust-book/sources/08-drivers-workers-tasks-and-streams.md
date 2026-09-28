@@ -21,18 +21,18 @@ If Chapter 7 was the map, Chapter 8 is the traffic system.
 
 | Area | Files | Role |
 |---|---|---|
-| Actor runtime | `crates/sail-server/src/actor.rs` | Small async actor system used by the driver and workers |
+| Actor runtime | `crates/sail-common/src/actor.rs` | Small async actor system used by the driver and workers |
 | Driver actor | `crates/sail-execution/src/driver/actor/*.rs` | Accepts jobs, workers, task updates, stream requests, and shutdown |
-| Driver events | `crates/sail-execution/src/driver/event.rs` | Message protocol for the driver actor |
+| Driver events | `crates/sail-execution/src/driver/actor/message.rs` | Message protocol for the driver actor |
 | Worker actor | `crates/sail-execution/src/worker/actor/*.rs` | Registers with driver, receives tasks, reports status, serves/fetches streams |
-| Worker events | `crates/sail-execution/src/worker/event.rs` | Message protocol for worker actor |
+| Worker events | `crates/sail-execution/src/worker/actor/message.rs` | Message protocol for worker actor |
 | Worker pool | `crates/sail-execution/src/driver/worker_pool/*.rs` | Launches, registers, monitors, and talks to workers |
 | Task assigner | `crates/sail-execution/src/driver/task_assigner/*.rs` | Maps task regions to driver or worker task slots |
 | Job scheduler | `crates/sail-execution/src/driver/job_scheduler/*.rs` | Tracks job state, creates attempts, schedules regions, builds task definitions |
 | Task runner | `crates/sail-execution/src/task_runner/*.rs` | Executes serialized DataFusion physical plans on driver or worker |
-| Stream manager | `crates/sail-execution/src/stream_manager/*.rs` | Owns local task streams and pending stream fetches |
-| Stream accessor | `crates/sail-execution/src/stream_accessor/core.rs` | Implements task stream reader/writer by sending actor messages |
-| Stream service | `crates/sail-execution/src/stream_service/*.rs` | Uses Arrow Flight to fetch task streams across processes |
+| Stream manager | `crates/sail-execution/src/stream/local/` | Owns local task streams and pending stream fetches |
+| Stream accessor | `crates/sail-execution/src/stream/accessor.rs` | Implements task stream reader/writer by sending actor messages |
+| Stream service | `crates/sail-execution/src/stream/service/` | Uses Arrow Flight to fetch task streams across processes |
 | Worker managers | `crates/sail-execution/src/worker_manager/*.rs` | Launches local or Kubernetes workers |
 
 The chapter will follow a single distributed query from the moment the cluster
@@ -41,7 +41,7 @@ runner sends it to the driver until final Arrow batches are returned.
 ## The Actor Runtime
 
 Sail's driver and workers are actors. The actor runtime lives in
-`crates/sail-server/src/actor.rs`.
+`crates/sail-common/src/actor.rs`.
 
 The trait is small:
 
@@ -109,101 +109,35 @@ This is the control-plane style behind Sail's distributed runtime.
 
 `DriverActor` is defined across `crates/sail-execution/src/driver/actor`.
 
-Its `new` method constructs the major driver subsystems:
+Its constructor builds `WorkerPool`, `JobScheduler`, `TaskAssigner` and
+`WorkerScaler`. The task runner starts separately, with local streams and the
+configured storage or Celeborn support assembled during actor startup. The
+current actor does not contain the older monolithic `StreamManager` shown in
+previous editions.
 
-```rust
-let worker_pool = WorkerPool::new(...);
-let job_scheduler = JobScheduler::new(...);
-let task_assigner = TaskAssigner::new(...);
-let stream_manager = StreamManager::new(...);
-```
+These components divide responsibility: the worker pool tracks workers and their
+clients; the job scheduler tracks jobs and attempts; the task assigner manages
+assignment; the scaler manages worker demand. The driver also tracks task-status
+sequence numbers so stale reports do not overwrite newer observations.
 
-The driver owns:
+The driver creates its task-runner child and stream extensions during startup.
+Follow `driver/actor/core.rs` for construction and `driver/actor/handler.rs` for
+message handling. Server/gateway integration is separate from the worker's
+`ServerMonitor`; an old `self.server` field sketch is not the current driver
+constructor.
 
-- `WorkerPool`: worker lifecycle and worker RPC clients,
-- `JobScheduler`: jobs, stages, regions, tasks, attempts,
-- `TaskAssigner`: task slots and stream ownership,
-- `TaskRunner`: local driver task execution,
-- `StreamManager`: local streams owned by the driver,
-- `task_sequences`: latest worker task status sequence numbers,
-- and the driver server monitor.
+## Worker Actor: Lifecycle and Services
 
-The driver starts a gRPC server in `start`:
+`WorkerActor::new` creates its driver clients, metrics sender and server monitor.
+At startup it creates `LocalStreamManager`, optional storage or Celeborn support,
+and a `TaskRunnerActor` child. `TaskRunnerPlacement` distinguishes driver execution
+from worker execution while reusing the task-runner implementation.
 
-```rust
-self.server = server
-    .start(Self::serve(ctx.handle().clone(), addr).in_span(span))
-    .await;
-```
-
-Once the server is ready, it starts the initial workers:
-
-```rust
-for _ in 0..self.options.worker_initial_count {
-    self.worker_pool.start_worker(ctx);
-}
-```
-
-The driver receives events such as:
-
-- `RegisterWorker`
-- `WorkerHeartbeat`
-- `ExecuteJob`
-- `UpdateTask`
-- `CreateLocalStream`
-- `FetchWorkerStream`
-- `CleanUpJob`
-- `Shutdown`
-
-That event list is effectively the driver's public control-plane API.
-
-## Worker Actor: The Executor
-
-`WorkerActor` has a similar shape in `crates/sail-execution/src/worker/actor`.
-
-Its `new` method constructs:
-
-- a driver client set,
-- a peer tracker,
-- a task runner,
-- a stream manager,
-- and a sequence counter for status updates.
-
-When the worker server becomes ready, the worker registers with the driver:
-
-```rust
-client.register_worker(worker_id, host, port).await
-```
-
-Then it starts heartbeats:
-
-```rust
-loop {
-    tokio::time::sleep(interval).await;
-    client.report_worker_heartbeat(worker_id).await;
-}
-```
-
-The worker receives events such as:
-
-- `RunTask`
-- `StopTask`
-- `ReportTaskStatus`
-- `CreateLocalStream`
-- `FetchWorkerStream`
-- `CleanUpJob`
-- `Shutdown`
-
-The most important handler is `handle_run_task`:
-
-```rust
-self.peer_tracker.track(ctx, peers);
-self.task_runner
-    .run_task(ctx, key, definition, self.options.session.task_ctx());
-```
-
-The worker learns about peer workers from the driver, remembers their
-locations, and runs the task with its own `TaskContext`.
+The worker server combines the worker RPC service and an Arrow Flight service.
+Its Flight fetcher sends `TaskRunnerMessage::FetchLocalStream` to the task runner.
+`WorkerMessage::ServerReady` reports the actual listening port and supplies the
+shutdown signal. Heartbeat startup and shutdown are worker lifecycle messages;
+task batches are handled by the task-runner path described below.
 
 ## Worker Launch And Registration
 
@@ -230,8 +164,7 @@ actor system:
 
 ```rust
 let options = WorkerOptions::local(id, options, self.runtime.clone(), self.session.clone());
-let handle = state.system.spawn(options);
-state.workers.insert(id, handle);
+system.spawn::<WorkerActor>(options);
 ```
 
 For Kubernetes mode, the worker manager uses the Kubernetes worker manager
@@ -310,8 +243,9 @@ for key in keys.iter() {
 ```
 
 This is the retry story at the worker level. Worker loss becomes task attempt
-failure. Task attempt failure becomes region rescheduling unless the maximum
-attempt count is exceeded.
+failure. Ordinary retryable jobs may reschedule the region up to their attempt
+limit. Jobs retaining worker-native graph state instead fail as a whole, as
+described below.
 
 ## From Job To Task Regions
 
@@ -404,7 +338,7 @@ Task states are:
 - `Failed`
 - `Canceled`
 
-The driver receives status updates from workers as `DriverEvent::UpdateTask`.
+The driver receives status updates from workers as `DriverMessage::UpdateTask`.
 Those updates include an optional sequence number. The driver ignores stale
 updates:
 
@@ -518,20 +452,23 @@ let required_workers = required_slots
     .min(allowed_workers);
 ```
 
-The driver then starts that many workers:
+The driver passes that demand to a separate `WorkerScaler`:
 
 ```rust
-for _ in 0..self.task_assigner.request_workers() {
-    self.worker_pool.start_worker(ctx);
-}
+self.worker_scaler
+    .reconcile(self.task_assigner.count_worker_demands())
 ```
 
-This is simple elastic scheduling:
+The scaler returns launch requests. The driver starts workers through
+`WorkerPool::start_worker` and binds each worker ID to its demand. Registration
+fulfills the demand; a failed launch can schedule a retry under the configured
+launch retry strategy. The demand identity survives that retry, so reconciliation
+does not repeatedly create fresh demand for the same failed request.
 
-- pending worker tasks imply required slots,
-- active idle worker slots satisfy some of that demand,
-- remaining demand becomes new workers,
-- `worker_max_count` caps the result if configured.
+Initial worker requests count toward the task target. The task assigner accounts
+for vacant slots and the configured worker limit; the scaler manages the
+lifecycle of the resulting launch demands. This separates capacity calculation
+from retry policy. See `crates/sail-execution/src/driver/worker_scaler/core.rs`.
 
 ## Building A Task Definition
 
@@ -556,9 +493,7 @@ The plan is serialized with DataFusion's physical plan protobuf support and
 Sail's extension codec:
 
 ```rust
-let plan =
-    PhysicalPlanNode::try_from_physical_plan(stage.plan.clone(), self.codec.as_ref())?
-        .encode_to_vec();
+let plan = encode_remote_physical_plan(self.codec.as_ref(), stage.plan.clone())?;
 ```
 
 Inputs come from `stage.inputs`, using `InputMode` and current task assignments
@@ -567,9 +502,9 @@ to decide locations.
 For pipelined worker outputs, input keys become:
 
 ```rust
-TaskInputLocator::Worker {
+TaskInput {
     stage: input.stage,
-    keys,
+    locator: Arc::new(TaskInputLocator::Worker { keys }),
 }
 ```
 
@@ -582,31 +517,23 @@ Each key includes:
 The task output includes:
 
 - distribution,
-- local or remote locator,
-- replica count for local pipelined output.
+- pipelined or blocking locator,
+- replica count for pipelined output.
 
 This object is the portable description of one task attempt.
 
 ## Dispatching Tasks
 
-Once the driver has a `TaskDefinition`, it dispatches by placement:
+`DriverActor::run_tasks` first reserves task assignments and tracks their
+streams. It groups work by job, region, stage and worker. Within that scheduling
+snapshot, it constructs one shared definition per job/stage, marks the tasks
+scheduled, and sends their partition/attempt identities as a batch.
 
-```rust
-match assignment.assignment {
-    TaskAssignment::Driver => self.task_runner.run_task(ctx, entry.key, definition, context),
-    TaskAssignment::Worker { worker_id, slot: _ } => {
-        self.worker_pool.run_task(ctx, worker_id, entry.key, definition)
-    }
-}
-```
-
-For worker tasks, `WorkerPool::run_task`:
-
-1. Finds or creates a worker client.
-2. Tracks worker activity.
-3. Sends the task definition over gRPC.
-4. Includes peer worker locations the worker may need for stream fetches.
-5. Reports task failure back to the driver if dispatch fails.
+Worker batches go through `WorkerPool::run_task_batch`; driver batches go to the
+local task runner. The worker-pool path supplies peer locations, sends the batch
+over gRPC and reports dispatch failures for the affected tasks. Reusing a stage
+definition avoids repeating its physical-plan serialization for every partition.
+The batch still preserves task-region and worker boundaries.
 
 The peer list is optimized by remembering known peers:
 
@@ -620,57 +547,59 @@ let peers = running_workers
 Workers report back which peers they now know, so the driver avoids sending the
 same location information repeatedly.
 
-## Running A Task On A Worker
+## Running a Task on a Worker
 
-The worker receives `WorkerEvent::RunTask`, tracks peer locations, and calls
-`TaskRunner::run_task`.
+Current upstream separates the worker lifecycle actor from task execution.
+`WorkerMessage` covers server readiness, heartbeat startup and shutdown; there is
+no `WorkerEvent::RunTask` in this source. Worker RPC services route task work to
+the `TaskRunnerActor`, whose `TaskRunnerMessage::RunTaskBatch` carries the job,
+stage, tasks, definition, task context and peer information.
 
-`TaskRunner::execute_plan` performs the critical preparation:
+`TaskPreparation` in `crates/sail-execution/src/task_runner/preparation.rs`
+reconstructs and prepares the physical plan. The central sequence is:
 
-```rust
-let plan = PhysicalPlanNode::decode(definition.plan.as_ref())?;
-let plan = plan.try_into_physical_plan(&context, self.codec.as_ref())?;
-let plan = self.rewrite_parquet_adapters(plan)?;
-let plan = self.rewrite_shuffle(ctx, key, &definition.inputs, &definition.output, plan, &context)?;
-let stream = plan.execute(key.partition, context)?;
+```text
+proto_to_physical_plan(context, RemoteExecutionCodec, proto)
+  -> rewrite_file_scans
+  -> rewrite_shuffle
+  -> trace_execution_plan
+  -> cancellation check
+  -> execute(task partition, context)
 ```
 
-There are two important rewrites:
+This is a flow summary, not a compilable replacement for the implementation.
+The returned preparation stream has the completion schema of `ShuffleWriteExec`,
+not the schema of the stage's data batches.
 
-1. `rewrite_parquet_adapters` adjusts Parquet scans for Delta expression
-   adapters.
-2. `rewrite_shuffle` turns stage input placeholders into reads, and wraps the
-   task output in writes.
+The file-scan rewrite has an important distributed correctness purpose. A
+DataFusion scan may share a queue among sibling partitions in one process. Sail
+reconstructs a separate plan for each distributed task; recreating that shared
+queue in every task could make every task scan every file. The rewrite sets
+preserve-order on the file configuration to keep each task on its assigned file
+group. For Parquet without an expression adapter, it installs Sail's schema
+evolution adapter.
 
-Then DataFusion executes the task partition.
+Shuffle preparation replaces `StageInputExec` placeholders with concrete readers
+from `TaskStreamFactory`. It validates input indexes against the task definition.
+The writer side connects the task's output to the selected stream backend.
+The task runner owns execution and reporting; the worker lifecycle actor owns
+readiness and shutdown coordination.
 
-```mermaid
-flowchart TB
-    Bytes["Serialized physical plan"]
-    Decode["Decode with RemoteExecutionCodec"]
-    ReadRewrite["StageInputExec -> ShuffleReadExec"]
-    WriteRewrite["Plan -> ShuffleWriteExec"]
-    Execute["plan.execute(task partition)"]
-    Monitor["TaskMonitor drains stream"]
-    Status["Report status"]
-
-    Bytes --> Decode
-    Decode --> ReadRewrite
-    ReadRewrite --> WriteRewrite
-    WriteRewrite --> Execute
-    Execute --> Monitor
-    Monitor --> Status
-```
+On the experimental extension branch, decoding must additionally reconstruct
+worker-native regions using the installed package and host-issued task scope.
+That scope supplies job/owner identity; extension payloads do not authorize their
+own worker identity. Native state cleanup follows the job lifecycle, while
+retained buffers keep their resource owners until final release.
 
 ## Why The Task Monitor Drains The Stream
 
-`TaskRunner::run_task` does not simply call `execute` and report success. It
-spawns a `TaskMonitor`.
+The task runner does not simply obtain a stream and report success. It
+supervises a `TaskMonitor` that polls the stream to completion.
 
 The monitor first reports `Running`:
 
 ```rust
-T::Message::report_task_status(key, TaskStatus::Running, None, None)
+let _ = handle.send(Self::running(key.clone())).await;
 ```
 
 Then it races execution against cancellation:
@@ -700,59 +629,26 @@ task really ran and all shuffle writes were closed.
 
 ## Stream Accessor: Actors As Readers And Writers
 
-`StreamAccessor` bridges physical operators and actor messages.
+`TaskStreamFactory` in `crates/sail-execution/src/stream/accessor.rs`
+constructs readers and writers from the task definition, schema and task-runner
+handle. Its private `TaskStreamAccessor` sends requests to that actor and awaits
+their replies.
 
-It implements `TaskStreamReader`:
+The reader implements `open(partition)` and selects the appropriate fetch method:
 
-```rust
-async fn open(&self, location: &TaskReadLocation, schema: SchemaRef)
-    -> Result<TaskStreamSource>
-```
+| Input locator | Accessor operation |
+|---|---|
+| `Driver` | `fetch_driver_stream` |
+| `Worker` | `fetch_worker_stream` |
+| `Storage` | `fetch_storage_stream` |
+| `ShuffleService` | `fetch_celeborn_stream` |
 
-For each read location, it sends an actor event:
+Writers likewise create local, storage or Celeborn streams. The physical
+operators use `TaskStreamReader` and `TaskStreamWriter`; they do not contain
+actor-message dispatch or construct network clients. Chapter 9 follows the
+multi-channel sink's write, commit and abort lifecycle.
 
-```rust
-TaskReadLocation::Driver { key } =>
-    fetch_driver_stream(key, schema, tx)
-TaskReadLocation::Worker { worker_id, key } =>
-    fetch_worker_stream(worker_id, key, schema, tx)
-TaskReadLocation::Remote { uri, key } =>
-    fetch_remote_stream(uri, key, schema, tx)
-```
-
-It also implements `TaskStreamWriter`:
-
-```rust
-TaskWriteLocation::Local { key, storage } =>
-    create_local_stream(key, storage, schema, tx)
-TaskWriteLocation::Remote { uri, key } =>
-    create_remote_stream(uri, key, schema, tx)
-```
-
-This is how `ShuffleReadExec` and `ShuffleWriteExec` remain actor-agnostic.
-They only know about `TaskStreamReader` and `TaskStreamWriter`. The actual
-driver/worker communication is hidden behind `StreamAccessor`.
-
-## Stream Locations
-
-Read locations are:
-
-```rust
-pub enum TaskReadLocation {
-    Driver { key },
-    Worker { worker_id, key },
-    Remote { uri, key },
-}
-```
-
-Write locations are:
-
-```rust
-pub enum TaskWriteLocation {
-    Local { storage, key },
-    Remote { uri, key },
-}
-```
+## Stream Identity
 
 A `TaskStreamKey` identifies one stream:
 
@@ -773,48 +669,21 @@ The inclusion of `attempt` is especially important. If a task is retried, the
 new attempt writes a different stream key. Consumers can avoid accidentally
 mixing data from failed and replacement attempts.
 
-## Stream Manager
+## Local Stream Ownership
 
-Both driver and worker have a `StreamManager`.
+`LocalStreamManager` is provided to the task runner through its extensions. It
+tracks streams by `TaskStreamKey`, including consumers waiting for a producer.
+Its states distinguish pending, created and failed streams. Creating an already
+created stream is an error; a producer failure is propagated to waiting senders.
 
-The stream manager owns local streams:
+`create_stream` publishes a sink over the appropriate replicas. `fetch_stream`
+resolves a consumer against this tracked state. Pending-stream probes are
+`TaskRunnerMessage` values, so timeout handling returns through the actor that
+owns the stream manager. This is not a separate global stream-manager actor.
 
-```rust
-local_streams: HashMap<TaskStreamKey, LocalStreamState>
-```
-
-A local stream can be:
-
-- pending,
-- created,
-- failed.
-
-The pending state matters because a consumer may ask for a stream before the
-producer has created it. In that case, `fetch_local_stream` creates a receiver
-and stores its sender:
-
-```rust
-entry.insert(LocalStreamState::Pending { senders: vec![tx] });
-ctx.send_with_delay(
-    T::Message::probe_pending_local_stream(key.clone()),
-    self.options.task_stream_creation_timeout,
-);
-```
-
-When the producer later creates the stream, the pending senders are connected to
-the new stream.
-
-If stream creation never happens, the delayed probe fails the pending stream:
-
-```rust
-let message = "local stream is not created within the expected time".to_string();
-let cause = CommonErrorCause::Execution(message);
-Self::fail_senders(senders, &cause);
-*value = LocalStreamState::Failed { cause };
-```
-
-This is how Sail prevents downstream tasks from waiting forever for a missing
-upstream stream.
+Storage and Celeborn streams have their own managers. Local stream removal,
+object-store cleanup and remote shuffle cleanup must be followed through their
+respective paths rather than assuming a dropped local channel deletes all data.
 
 ## Memory Streams And Replicas
 
@@ -857,7 +726,7 @@ merge or broadcast may need multiple readers for the same output stream.
 When a task needs a stream from another process, Sail uses Arrow Flight.
 
 The server is `TaskStreamFlightServer` in
-`crates/sail-execution/src/stream_service/server.rs`. Its important method is
+`crates/sail-execution/src/stream/service/server.rs`. Its important method is
 `do_get`:
 
 1. Decode a `TaskStreamTicket`.
@@ -892,7 +761,7 @@ sequenceDiagram
     participant WorkerA as Worker A
     participant Flight as Arrow Flight
     participant WorkerB as Worker B
-    participant Stream as StreamManager
+    participant Stream as LocalStreamManager
 
     Reader->>Accessor: open Worker stream
     Accessor->>WorkerA: FetchWorkerStream
@@ -905,75 +774,35 @@ sequenceDiagram
 
 ## Peer Tracking
 
-Workers may need to fetch streams from other workers. The driver sends peer
-locations along with task dispatch. The worker tracks them in `PeerTracker`:
+`PeerTracker` stores worker locations received with task dispatch. It ignores an
+empty update and inserts newly observed peers. `get_client_set` lazily constructs
+a `WorkerClientSet` from the stored location and TLS setting, then returns a clone.
+Requesting a client for the worker itself is rejected; local streams should use
+the local path. An unknown worker is also an explicit error.
 
-```rust
-for peer in peers {
-    self.peers
-        .entry(peer.worker_id)
-        .or_insert_with(|| Peer::new(peer.host, peer.port));
-}
-ctx.send(WorkerEvent::ReportKnownPeers { peer_worker_ids });
-```
+This cache supplies connectivity, not graph ownership. In Argentea, the execution
+scope and job placement establish which worker owns a native partition. Knowing
+a peer's address is insufficient evidence that it holds the correct snapshot or
+phase of graph state.
 
-The worker reports known peers back to the driver. The driver stores that set in
-the worker descriptor:
+## Cleanup and Stream Tracking
 
-```rust
-worker.peers.extend(peer_worker_ids);
-```
+In upstream `TaskRunnerActor::handle_close_job`, the runner closes the job's task
+registry, removes its local streams and drops its signals. Stage-specific local
+cleanup calls the same manager with an optional stage selector. Storage cleanup
+uses the storage manager and task context asynchronously; cleanup failures are
+reported rather than silently treated as deletion success.
 
-The next time the driver dispatches a task to that worker, it omits peers the
-worker already knows.
+The experimental branch extends this lifecycle to job-owned native state. Closing
+tasks is not enough if an extension registry still retains graph partitions.
+The host closes the registered native owners; active readers and output buffers
+retain their admitted resources until their final references disappear.
 
-This is an optimization, not a correctness requirement. The worker descriptor
-comment says the peer list may not cover all running workers, but correctness
-does not depend on completeness.
-
-## Cleanup And Stream Tracking
-
-The task assigner tracks local streams because local stream ownership affects
-worker lifetime.
-
-Worker resources include:
-
-```rust
-local_streams: IndexSet<TaskKey>
-```
-
-The comment calls this "shuffle tracking" similar to Spark. A worker may be idle
-from a task-slot perspective but still own active local streams needed by
-downstream tasks. Sail should not stop that worker until its local streams are
-no longer needed.
-
-When consumers finish, the scheduler emits cleanup actions:
-
-```rust
-JobAction::CleanUpJob { job_id, stage: Some(s) }
-```
-
-The driver handles cleanup by untracking stream ownership and asking the
-relevant driver/worker stream managers to remove streams:
-
-```rust
-for x in self.task_assigner.untrack_local_streams(job_id, stage) {
-    match x {
-        TaskStreamAssignment::Driver => {
-            self.stream_manager.remove_local_streams(job_id, stage);
-        }
-        TaskStreamAssignment::Worker { worker_id } => {
-            self.worker_pool.clean_up_job(ctx, worker_id, job_id, stage)
-        }
-    }
-}
-```
-
-This is the other half of shuffle tracking:
-
-- keep workers alive while streams are needed,
-- clean streams up when consumers have succeeded,
-- then workers can become idle and eligible for stopping.
+The branch also repairs scheduler task bookkeeping on failed/canceled jobs:
+nonterminal task records become canceled before unassignment. Success ordering
+and existing terminal states are preserved. Validate the original failed job,
+all task attempts, native close receipts and final staging independently. No
+single observation substitutes for the others.
 
 ## Job Output
 
@@ -1021,7 +850,7 @@ sequenceDiagram
     participant Pool as WorkerPool
     participant Worker as WorkerActor
     participant Task as TaskRunner
-    participant Streams as StreamManager
+    participant Streams as TaskRunner streams
 
     Client->>Runner: execute physical plan
     Runner->>Driver: ExecuteJob
@@ -1065,8 +894,12 @@ from:
 - job output failure,
 - or cleanup/shutdown.
 
-The architecture is intentionally conservative. It avoids mixing task attempts
-and treats region failure as a reason to restart the region.
+For ordinary retryable jobs, region failure can therefore lead to a new attempt.
+The extension branch adds a stricter rule for jobs containing worker-native
+state: failure terminates the whole job, including its ordinary relational
+regions. Retrying a task cannot recover a graph partition lost with its worker.
+This fail-fast boundary is part of Argentea's current contract, not transparent
+recovery of native state.
 
 ## Why This Design Fits Rust
 
@@ -1124,7 +957,7 @@ Trace a task from scheduling to worker execution:
 6. Open `crates/sail-execution/src/worker/actor/handler.rs`.
 7. Find `handle_run_task`.
 8. Follow `task_runner.run_task`.
-9. Open `crates/sail-execution/src/task_runner/core.rs`.
+9. Open `crates/sail-execution/src/task_runner/actor/core.rs`.
 10. Read `execute_plan`.
 
 At the end, you should be able to say how a stage partition becomes
@@ -1134,16 +967,16 @@ At the end, you should be able to say how a stage partition becomes
 
 Trace a downstream task reading an upstream worker stream:
 
-1. Start in `TaskRunner::rewrite_shuffle`.
+1. Start in `TaskPreparation::rewrite_shuffle`.
 2. Find where `StageInputExec<usize>` becomes `ShuffleReadExec`.
 3. Follow `StreamAccessor::new(handle.clone())`.
-4. Open `crates/sail-execution/src/stream_accessor/core.rs`.
+4. Open `crates/sail-execution/src/stream/accessor.rs`.
 5. Read `TaskStreamReader::open`.
 6. Follow `fetch_worker_stream`.
 7. On the worker, open `worker/actor/handler.rs`.
 8. Find `handle_fetch_worker_stream`.
 9. If the stream is remote, follow `TaskStreamFlightClient`.
-10. If the stream is local, follow `StreamManager::fetch_local_stream`.
+10. If the stream is local, follow `LocalStreamManager::fetch_stream`.
 
 This trace connects the control-plane location lookup to the Arrow Flight data
 plane.

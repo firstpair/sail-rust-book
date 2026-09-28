@@ -1,65 +1,43 @@
-# Chapter 20: Current Codebase Edition
+# Chapter 20: The 0.7.2 Preparation Snapshot
 
-This edition updates the book against the local Sail checkout used for this
-build, verified on July 14, 2026. The checkout is `main` at
-commit `1500ebdf`, whose subject is `fix: count_min_sketch param types +
-optimize sketch aggregates (#2190)`. The newest tagged release described in the
-local Sail changelog is `0.6.6`, dated July 7, 2026. The important point for a
-reader is that Sail has moved from an already coherent Spark-compatible Rust
-engine into a broader compatibility and lakehouse implementation surface.
+This edition separates two source trees. Upstream `lakehq/sail` is pinned at
+`b2470ea4b66f8ed9703e2e3b27d958b71c3a1ada`; its workspace declares 0.7.1 and the
+book prepares for the planned 0.7.2 release. The experimental extension tree is
+`querygraph/sail` at `dcd44f287b8422a62abd06d2410aaf96e225e136`. An experimental
+feature's presence in that tree does not make it part of an upstream release.
 
-The earlier chapters still describe the core architecture correctly:
+The architecture remains a sequence of translations:
 
 ```text
-client intent
-  -> Spark Connect, SQL, or Flight SQL
-  -> Sail spec and analyzer state
-  -> DataFusion logical plan with Sail extensions
-  -> physical plan
-  -> local stream or distributed job graph
-  -> Arrow RecordBatch stream
-  -> protocol-specific response
+client intent -> protocol or SQL -> Sail planning representation
+  -> DataFusion logical and physical plans -> local or distributed execution
+  -> Arrow results -> client protocol
 ```
 
-What has changed is the density of the edges. More Spark SQL functions are real.
-More lakehouse paths are real. More catalog backends are real. More distributed
-execution corner cases have been worked through. The book now needs to be read
-less as a sketch of a promising architecture and more as a map of a fast-moving
-production codebase.
+The ownership of those translations has changed since the July edition. The
+current source uses `DataSource` and optional `LakeSource` capabilities, separate
+task-runner actors and stream managers, and codec code under execution's `proto/`
+module. Following an obsolete filename can obscure an API change rather than
+merely delay navigation.
 
-## The July 2026 Surface
+## Changes That Matter for Extension Authors
 
-The 0.6.6 changelog emphasizes nine clusters of work:
+Merged upstream #2630 lets an embedder select the Spark server's session factory.
+The default entry point still selects the ordinary Spark factory. This provides a
+way to compose session setup; it does not by itself deploy native packages to
+workers or serialize their operators.
 
-- distributed query execution and cluster-plan correctness;
-- Delta Lake integration;
-- `SHOW FUNCTIONS` and `DESCRIBE FUNCTION`;
-- Python data-source option recovery from table properties;
-- `PIVOT` improvements;
-- JSON, CSV, time, struct, binary, and sketch-function parity;
-- Spark-compatible overflow and null semantics;
-- error preservation across cluster mode;
-- typed, vectorized function implementation improvements.
+Upstream #2675 adds mimalloc as the Rust global allocator for the CLI and Python
+extension. It does not turn a separately built wheel's allocations into admitted
+query memory. The experimental resource-domain and lease contract remains a
+separate accounting/ownership mechanism. Existing measured artifacts predate
+this allocator change and must keep their original source attribution.
 
-The commits after the 0.6.6 tag continue the same pattern. They add Hive
-Metastore support for Spark data-source tables, migrate catalog OpenAPI clients,
-add an OpenAPI client generator, support `MERGE INTO` with path-based targets and
-DataFrame source references, reject ambiguous UDTF table arguments unless
-explicitly enabled, align aggregate and window ordering semantics, align `to_xml`
-serialization with Spark, move the codebase to Rust 2024, and raise the Rust
-minimum supported compiler.
-
-This is not cosmetic churn. It says where the system is maturing:
-
-- compatibility work has moved from headline protocol support into exact Spark
-  behavior;
-- lakehouse support has moved from simple reads toward commit, merge, and write
-  semantics;
-- catalogs are becoming a family of generated and hand-written providers rather
-  than a single manager path;
-- distributed execution is being hardened at the points where local assumptions
-  leak across driver and worker boundaries;
-- the function layer is increasingly data-driven, tested, and optimized.
+The extension branch tests that boundary with Sedona scalar functions and native
+graph kernels. Pecan provides the relational control path: graph algorithms can
+run as ordinary distributed Sail queries without adding a native graph operator.
+Argentea then isolates what retained worker-native graph state actually needs:
+package decoding, task scope, stable ownership, admission and lifecycle cleanup.
 
 ## The Current Crate Map
 
@@ -68,16 +46,17 @@ architecture suggests. A practical contributor map is:
 
 | Area | Crates |
 |---|---|
-| Protocol front doors | `sail-spark-connect`, `sail-flight`, `sail-server`, `sail-cli` |
+| Protocol front doors | `sail-spark-connect`, `sail-flight`, `sail-cli` |
 | SQL and functions | `sail-sql-parser`, `sail-sql-analyzer`, `sail-sql-macro`, `sail-function` |
 | Spec and planning | `sail-common`, `sail-plan`, `sail-logical-plan`, `sail-logical-optimizer` |
 | Session and DataFusion integration | `sail-session`, `sail-common-datafusion` |
 | Physical execution | `sail-physical-plan`, `sail-physical-optimizer`, `sail-execution` |
-| Python and Arrow interop | `sail-python`, `sail-python-udf`, `sail-pyarrow` |
+| Python and Arrow interop | `sail-python`, `sail-python-udf` |
 | Catalogs | `sail-catalog`, `sail-catalog-memory`, `sail-catalog-system`, `sail-catalog-hms`, `sail-catalog-glue`, `sail-catalog-iceberg`, `sail-catalog-unity`, `sail-catalog-onelake` |
 | Lakehouse formats | `sail-delta-lake`, `sail-iceberg` |
-| Storage and cache | `sail-data-source`, `sail-object-store`, `sail-cache` |
-| Support | `sail-build-scripts`, `sail-gold-test`, `sail-telemetry` |
+| Storage and cache | `sail-data-source`, `sail-object-store`, `sail-cache`, `sail-system-store` |
+| Shuffle service integration | `sail-celeborn` |
+| Support | `sail-build-scripts`, `sail-gold-test`, `sail-telemetry`, `sail-common-hms`, `sail-mimalloc` |
 
 This map is more useful than a dependency graph when you are trying to make a
 change. Start with the area that owns the user's observable behavior, then walk
@@ -92,125 +71,67 @@ inward until you find the semantic boundary:
   shuffle paths;
 - lakehouse writes land in table-format code and driver-side commit rules.
 
-## What The Book Should Teach More Strongly
+## Reading Source and Evidence Together
 
-The review for this edition found ten improvements that matter more than surface
-polish.
+For an implementation claim, begin with the pinned tree and the owning module.
+For a qualification claim, begin with the receipt's host binary, native wheel,
+source revision and command. These are related but different questions. A new
+source commit does not retroactively change which executable an older receipt
+tested.
 
-First, the book needs release-aware text. A reader should know which claims are
-timeless architecture and which are July 2026 capability snapshots.
+The graph qualification records include exact vectors, owner identities, native
+phases, Sail stage/task inventories, cleanup and failed attempts. PageRank and the
+original BFS bound have physical two-host results. The later WCC/SSSP fault and
+memory-reuse checks and expanded BFS bound have ARM process-cluster evidence;
+remaining platform gates stay explicit in the extension integration document.
+Performance comparisons have their own datasets, semantics, resource envelopes,
+profiles and time/memory boundaries.
 
-Second, the short late chapters should be expanded. Flight SQL, custom nodes,
-local and streaming execution, testing, feature playbooks, and navigation should
-be full working chapters because they are exactly where contributors go after
-they understand the core path.
+Source-path validation in this book is intentionally limited. The script
+`sail-rust-book/scripts/audit-source-paths.py` resolves explicit inline code paths
+against both pinned trees. A successful check proves path existence, not that a
+Rust excerpt compiles or that its explanation is correct. Those require source
+review and, for runnable examples, execution against the corresponding artifact.
 
-Third, SQL function coverage should be less abstract. The implementation now has
-enough function metadata, generated code, vectorization work, ANSI behavior, and
-Spark parity fixes to deserve a deeper explanation of how one function becomes
-parser support, analyzer support, resolver behavior, DataFusion execution, tests,
-and remote execution codecs.
+## Build the Ordinary Book Formats
 
-Fourth, lakehouse coverage should move past "Delta and Iceberg exist." The book
-should explain Delta and Iceberg as table-format contracts that interact with
-catalogs, data sources, row-level operations, path-based targets, DataFrame
-source references, and driver-side commits.
-
-Fifth, catalog coverage should make the provider family visible. HMS, Glue,
-Unity, OneLake, Iceberg REST, system, and memory catalogs are not only names in a
-list. They are examples of how Sail isolates namespace, table status,
-authentication, generated OpenAPI clients, and Spark-compatible metadata.
-
-Sixth, distributed execution coverage should name the failure modes: scalar
-subqueries in distributed plans, remote function semantics, data-source work
-stealing, noop sinks, Flight schema mismatches, worker error preservation, and
-lakehouse commits running on the driver.
-
-Seventh, cache and object-store architecture should be first-class. The
-`sail-cache` and `sail-object-store` crates show how Sail is growing the storage
-substrate beneath DataFusion instead of treating object access as a detail.
-
-Eighth, the Rust foundations chapter should be updated for Rust 2024 and the new
-MSRV. Contributors need to know when modern language features are available and
-when Sail's style still favors explicit boundary types.
-
-Ninth, examples should become traceable. A code excerpt should not be a dead
-quotation copied into prose. It should carry a fragment identity, source path,
-line range, and subsystem summary.
-
-Tenth, the book now needs a vault edition.
-
-## The Obsidian Vault Edition
-
-The generated Obsidian vault is an additional format, not a replacement for the
-PDF or EPUB. Its job is to make the book and codebase navigable together.
-
-The vault is generated at:
-
-```text
-sail-rust-book/book/dist-obsidian/Sail Rust Book Vault/
-```
-
-It contains:
-
-- all book chapters as Obsidian notes;
-- every included Sail source file as a code-file note;
-- crate notes;
-- subsystem notes;
-- code-fragment notes for extracted Rust, Python, and Markdown definitions;
-- machine-readable ledgers under `_data/`;
-- a local `sail-code-fragments` plugin.
-
-The plugin is intentionally small. A generated chapter note contains
-`sail-fragment` cards. Clicking one opens the collocated code-file note and asks
-Obsidian to highlight the selected fragment region. This changes the reading
-model. The PDF and EPUB teach the system linearly. The vault lets a reader follow
-a paragraph into the codebase, then follow the codebase back into crates,
-subsystems, and adjacent fragments.
-
-The vault currently excludes generated local environments and data-output
-folders such as `.venvs/`, `target/`, `node_modules/`, and `spark-warehouse/`.
-That keeps the vault focused on the authored codebase instead of generated
-dependency or test-output material.
-
-## How To Build This Edition
-
-From the source book repository:
+The source repository owns the manuscript, diagrams, metadata and source-specific
+preparation hook. `FIRSTPAIR.md` defines the delivery identity and points to the
+shared FirstPair builder. From a checkout with the required FirstPair tooling:
 
 ```sh
-cd "$HOME/src/book-sources/sail-rust-book"
-./sail-rust-book/build.sh
-python3 sail-rust-book/scripts/build-obsidian-vault.py \
-  --sail-root "$HOME/src/sail"
-python3 sail-rust-book/scripts/check-obsidian-vault.py \
-  "sail-rust-book/book/dist-obsidian/Sail Rust Book Vault"
+repo_root="$(git rev-parse --show-toplevel)"
+"$HOME/src/firstpair/publishing/scripts/build-library-book.sh" \
+  --repo-root "$repo_root"
 ```
 
-The first command builds the FirstPair PDF, EPUB, HTML, chapter HTML, and MOBI
-artifacts. The second command builds the Obsidian vault. The third validates
-required notes, data ledgers, fragment targets, plugin files, and internal
-wikilinks.
+`book.build.json` selects the preparation hook and output formats. A local build
+produces the ordinary book artifacts; it does not publish the public library.
+Validate the PDF visually and check EPUB, HTML and links as well as successful
+process exit. A source revision and an existing generated PDF can represent
+different editions until the build and its validation have completed.
 
-Do not confuse this with public publication. Building refreshes local artifacts.
-FirstPair publication is a separate outward-facing action governed by
-`FIRSTPAIR.md` and the central FirstPair repository.
+## The Code-Navigation Vault
 
-## The New Mental Model
+The Obsidian vault is a separate generated product linking chapters, code files,
+fragments and symbols. A vault generated from an older source pin is not a current
+code index merely because the Markdown manuscript has changed. Its source
+identity and fragment targets require their own regeneration and validation.
 
-The previous mental model was a pipeline. Keep it. It is still correct.
+Vault mutation has an additional operational requirement: close it in Obsidian
+and confirm closure before generation, because the application can rewrite index
+and workspace files concurrently. The source contract and shared FirstPair
+workflow define candidate validation and publication. Ordinary manuscript and
+PDF/EPUB work can proceed independently of vault replacement.
 
-The new mental model adds an index:
+## Continue from a Concrete Boundary
 
-```text
-book paragraph
-  -> code fragment
-  -> source file note
-  -> crate note
-  -> subsystem note
-  -> neighboring fragments
-  -> back to the book
-```
+To add a scalar function, follow resolution, field semantics and codec
+reconstruction. To add a source, follow logical reads/writes and any optional lake
+capability. To add native state, follow admission, owner lifetime, task placement
+and failure behavior. Keep domain computation outside the host when an existing
+plan can express it, and add a host hook only for an observed missing contract.
 
-For a codebase book, that loop is the point. The book should not only describe
-Sail. It should give a reader a durable way to move through Sail while the
-project keeps changing.
+This makes the extension experiment useful beyond graphs: it provides executable
+examples of where Sail's existing abstractions suffice and where a focused
+lifecycle or serialization contract is required.

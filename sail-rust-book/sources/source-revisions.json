@@ -1,0 +1,18 @@
+{
+  "recorded_utc": "2026-09-28T08:27:10.946663+00:00",
+  "upstream": {
+    "repository": "https://github.com/lakehq/sail",
+    "commit": "b2470ea4b66f8ed9703e2e3b27d958b71c3a1ada",
+    "workspace_version": "0.7.1",
+    "rust_version": "1.97.1",
+    "edition": "2024"
+  },
+  "extension": {
+    "repository": "https://github.com/querygraph/sail",
+    "branch": "work/extensions-traversal-bench",
+    "commit": "dcd44f287b8422a62abd06d2410aaf96e225e136"
+  },
+  "intended_release": "0.7.2 (planned, not published by this work)",
+  "merged_session_factory_commit": "e976c8b317e2b920fca0ed05f9a2efa92a0cff1c",
+  "review_status": "in progress; temporary PDF/EPUB/HTML draft builds verified, canonical artifacts remain the earlier edition"
+}

@@ -53,7 +53,7 @@ The main files for this chapter are:
 | PySpark UDTF implementation | `crates/sail-python-udf/src/udf/pyspark_udtf.rs` |
 | PySpark payload building | `crates/sail-python-udf/src/cereal/pyspark_udf.rs` |
 | PySpark stream bridge | `crates/sail-python-udf/src/stream.rs` |
-| Remote execution codec | `crates/sail-execution/src/codec.rs` |
+| Remote execution codec | `crates/sail-execution/src/proto/codec.rs` |
 | Codec protobuf schema | `crates/sail-execution/proto/sail/plan/physical.proto` |
 | Server session setup | `crates/sail-session/src/session_factory/server.rs` |
 | Worker session setup | `crates/sail-session/src/session_factory/worker.rs` |
@@ -588,7 +588,7 @@ that appears inside physical expressions.
 That is the job of `RemoteExecutionCodec`:
 
 ```text
-crates/sail-execution/src/codec.rs
+crates/sail-execution/src/proto/codec.rs
 ```
 
 It implements DataFusion's `PhysicalExtensionCodec`.
@@ -707,6 +707,33 @@ Implement custom registry to avoid codec for built-in functions
 This is another bright signpost for discussion #2001. A third-party extension should not
 need to patch a giant match statement in `RemoteExecutionCodec` just to make a custom
 function work on workers.
+
+## Native Package Codecs on the Experimental Branch
+
+The implemented branch adds explicit native codec paths before the builtin
+extended-plan dispatch. `RemoteExecutionCodec::try_decode` recognizes
+`WORKER_CODEC_PREFIX` and invokes `WorkerExtensionExec::decode` with the host
+child plans and task context. It separately recognizes the driver-native prefix.
+The encoder identifies those concrete plan nodes and delegates to their encoders.
+These are distinct placement contracts, not interchangeable process-local handles.
+
+Native scalar functions likewise have a dedicated scalar codec prefix and
+`encode_scalar`/`decode_scalar` helpers in
+`crates/sail-common-datafusion/src/native_scalar.rs`. The worker must have the
+matching package registration and identity. Resolving a coincidentally identical
+function name is not enough to prove it is the same implementation.
+
+The host codec owns validation and reconstruction at the boundary. The package
+owns its domain payload and algorithm. A worker-native descriptor transports
+schemas, routing and operation identity rather than a pointer into the driver's
+address space. Its decoder uses authoritative task scope when binding retained
+worker state.
+
+This is the concrete correction to the earlier proposal's generic registry
+sketch. It supports the tested native scalar and relation contracts; it does not
+establish arbitrary optimizer-rule or aggregate-function plugin compatibility.
+Add a new contribution type only with its own planning, serialization, identity
+and lifecycle evidence.
 
 ## Encoding Aggregate And Window UDFs
 
@@ -1001,85 +1028,66 @@ A distributed extension needs:
 This is the difference between a plugin that works in a notebook and an extension that
 works in a distributed query engine.
 
-Everything in this section concerns what chapter 13 calls the *execution-time
-boundary*: the work that happens once per batch on a worker. A separate
-*plan-time boundary* - how user intent enters Sail in the first place - has its
-own ABI story. Chapter 13 routes plan-time intent through Spark Connect's
-`Relation.extension`, `Command.extension`, and `Expression.extension` messages
-and uses the codec mechanism below only for execution-time concerns. The two
-boundaries can ship independently, and a Pattern A extension (one that
-decomposes to existing DataFusion operators) skips the codec work entirely.
+## Extension Codecs on the Implementation Branch
 
-## A Proposed Extension Codec Registry
+Planning and execution have separate entry points. The branch described in
+chapter 13 accepts extension relations through `Relation.extension`; raw
+`Command.extension` and `Expression.extension` dispatch remain unsupported.
+Native scalar functions enter through registered function calls. Resolving a
+relation may produce existing relational operators or an extension execution
+node. A codec reconstructs executable objects; it does not resolve the original
+Connect request again.
 
-The current codec knows about Sail's built-ins through downcasts and name matches.
-That is fine for core code, but third-party extensions need a more open shape.
+The implemented dispatch is in
+`crates/sail-execution/src/proto/codec.rs`:
 
-One possible design:
+- **Worker extension plan:** `WORKER_CODEC_PREFIX` selects
+  `WorkerExtensionExec::decode`. The implementation is in
+  `crates/sail-common-datafusion/src/worker_extension.rs`.
+- **Driver extension plan:** `DRIVER_CODEC_PREFIX` selects
+  `DriverExtensionExec::decode`. The implementation is in
+  `crates/sail-common-datafusion/src/driver_extension.rs`.
+- **Native scalar UDF:** `SCALAR_CODEC_PREFIX` selects `decode_scalar` in
+  `crates/sail-common-datafusion/src/native_scalar.rs`.
+- **Existing Sail plan or UDF:** the codec retains its existing protobuf and
+  builtin dispatch in `crates/sail-execution/src/proto/codec.rs`.
 
-```rust
-pub trait FunctionCodec: Send + Sync {
-    fn type_url(&self) -> &'static str;
+These are focused additions to the existing physical codec. They are not a
+public `FunctionCodec` or `SailFunctionExtension` trait covering every DataFusion
+extension category. In particular, the native scalar path does not establish a
+corresponding packaged aggregate, window, or stream-UDF ABI.
 
-    fn encode_scalar_udf(&self, udf: &ScalarUDF) -> Option<PlanResult<Vec<u8>>>;
-    fn decode_scalar_udf(&self, name: &str, bytes: &[u8]) -> Option<PlanResult<Arc<ScalarUDF>>>;
+A worker plan carries a descriptor and receives its decoded input plans from the
+physical-plan decoder. The descriptor identifies the extension work to bind in
+the worker's execution context. Native scalar encoding instead records the
+identity needed to retrieve an installed scalar implementation. Neither path
+ships a native library inside a query plan. The matching package must already
+be available in each process that needs it.
 
-    fn encode_aggregate_udf(&self, udf: &AggregateUDF) -> Option<PlanResult<Vec<u8>>>;
-    fn decode_aggregate_udf(&self, name: &str, bytes: &[u8]) -> Option<PlanResult<Arc<AggregateUDF>>>;
+## Registration and Review Boundaries
 
-    fn encode_stream_udf(&self, udf: &dyn StreamUDF) -> Option<PlanResult<Vec<u8>>>;
-    fn decode_stream_udf(&self, bytes: &[u8]) -> Option<PlanResult<Arc<dyn StreamUDF>>>;
-}
-```
+The Python bootstrap discovers opted-in packages through `pysail.extensions`
+entry points. Its manifest and bindings describe relation registrations and
+native objects. Chapter 13 explains the manifest, capsule types, collision
+checks and package compatibility requirements. That package contract is
+separate from Sail's existing builtin function maps and Python UDF payloads.
 
-The actual API could be different, but the design goal is clear:
+For a distributed extension, review three boundaries independently:
 
-```text
-Core codec dispatches to registered extension codecs.
-Extension codecs own their wire format.
-Workers and drivers register the same codecs.
-```
+1. **Resolve:** does the enabled package bind the requested relation or function,
+   with the expected input cardinality and types?
+2. **Reconstruct:** can the receiving process decode the physical object using
+   its installed package, and reject an incompatible identity?
+3. **Execute and release:** does the object produce the declared Arrow schema,
+   honor cancellation and admission, and retain ownership until its final
+   consumer releases the buffers?
 
-The protobuf could use a generic extension envelope:
-
-```text
-message ExtensionFunction {
-  string provider = 1;
-  string name = 2;
-  string version = 3;
-  bytes payload = 4;
-}
-```
-
-Then an extension like a geospatial package could encode its own UDFs without editing
-Sail's central codec every time.
-
-## A Proposed Function Registration Model
-
-The function side also wants a registry that separates names from implementations:
-
-```rust
-pub trait SailFunctionExtension: Send + Sync {
-    fn name(&self) -> &'static str;
-
-    fn register_scalar_functions(&self, registry: &mut ScalarFunctionRegistry) -> PlanResult<()>;
-    fn register_aggregate_functions(&self, registry: &mut AggregateFunctionRegistry) -> PlanResult<()>;
-    fn register_table_functions(&self, registry: &mut TableFunctionRegistry) -> PlanResult<()>;
-    fn register_stream_functions(&self, registry: &mut StreamFunctionRegistry) -> PlanResult<()>;
-    fn register_codecs(&self, registry: &mut CodecRegistry) -> PlanResult<()>;
-}
-```
-
-This lets Sail enforce:
-
-- duplicate-name errors,
-- deterministic registration order,
-- per-session enablement,
-- worker compatibility checks,
-- explain output that names which extension supplied a function.
-
-The key design rule is that registration must happen on both driver and worker
-sessions. Otherwise distributed execution becomes a coin toss.
+A codec round-trip test proves only reconstruction. A local function result
+proves neither worker installation nor distributed cleanup. The qualification
+examples in chapter 17 therefore exercise actual worker processes as well as
+codec and manifest failures. Pure relational expansion can use existing codecs,
+but any custom objects it leaves in the physical plan still need a supported
+reconstruction path.
 
 ## Reading Exercise
 
@@ -1126,8 +1134,9 @@ Functions in Sail are distributed execution contracts:
 - Python UDTFs use Sail's `StreamUDF` abstraction and `MapPartitionsExec`.
 - Arrow arrays and record batches are the runtime boundary between Rust and Python.
 - `RemoteExecutionCodec` makes custom plans and functions executable on workers.
-- Extension proposal #2001 must include codec, registration, and worker compatibility
-  stories, not only a way to add names to a function map.
+- Packaged extensions require registration, physical reconstruction, worker
+  compatibility and runtime ownership checks; adding a function name is only
+  one part of that contract.
 
 The next chapter moves from callable behavior to tables: catalogs, table formats,
 lakehouse scans and writes, and how file and table providers cross the

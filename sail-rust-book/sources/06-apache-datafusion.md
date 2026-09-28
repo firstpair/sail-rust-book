@@ -173,8 +173,8 @@ Sail constructs these deliberately in
 The server session factory creates a `SessionContext` like this:
 
 ```rust
-fn create(&mut self, info: ServerSessionInfo) -> Result<SessionContext> {
-    let state = self.create_session_state(&info)?;
+fn create(&mut self, mut info: ServerSessionInfo) -> Result<SessionContext> {
+    let state = self.create_session_state(&mut info)?;
     let context = SessionContext::new_with_state(state);
     context.state_ref().write().register_udaf(first_value_udaf())?;
     Ok(context)
@@ -191,10 +191,14 @@ The session config contains Sail services as DataFusion extensions:
 SessionConfig::new()
     .with_create_default_catalog_and_schema(false)
     .with_information_schema(false)
-    .with_extension(create_table_format_registry()?)
+    .with_extension(create_data_source_registry()?)
     .with_extension(Arc::new(create_catalog_manager(...)?))
     .with_extension(Arc::new(ActivityTracker::new()))
     .with_extension(Arc::new(JobService::new(job_runner)))
+    .with_extension(Arc::new(RemoteCheckpointRegistry::new(
+        self.config.execution.checkpoint.path.clone(),
+        info.session_id.clone(),
+    )))
     .with_extension(Arc::new(RepartitionBufferConfig::new(...)))
     .with_extension(Arc::new(self.create_system_table_service(info)?))
     .with_extension(Arc::new(DeltaTableCache::default()));
@@ -203,15 +207,24 @@ SessionConfig::new()
 That list is a capsule summary of Sail's architecture:
 
 - Sail manages catalogs itself.
-- Sail manages table formats itself.
+- Sail registers data sources and their optional lake capabilities.
 - Sail tracks session activity.
-- Sail installs a job service.
+- Sail installs a job service and a session-scoped remote checkpoint registry.
 - Sail controls repartition buffering.
 - Sail exposes system tables.
 - Sail caches Delta table state.
 
 DataFusion supplies the typed extension slot. Sail uses it as session-local
 dependency injection.
+
+The experimental branch adds package registration in `create_session_state`,
+after creating the runtime environment and before constructing the state builder.
+The runtime creation also receives the session resource domain. This ordering
+lets extension bindings use the runtime and participate in the session's native
+resource accounting. Upstream's ordinary session factory does not contain that
+package-registration call; merged #2630 provides factory selection at the Spark
+server boundary. Keep those two changes distinct when reviewing adoption.
+
 
 ## Typed Session Extensions
 
@@ -246,7 +259,7 @@ The same pattern works everywhere:
 
 ```rust
 let service = ctx.extension::<JobService>()?;
-let registry = session_state.extension::<TableFormatRegistry>()?;
+let registry = session_state.extension::<DataSourceRegistry>()?;
 let config = task_context.extension::<RepartitionBufferConfig>()?;
 ```
 
@@ -277,54 +290,34 @@ let builder = SessionStateBuilder::new()
 `new_query_planner` returns `ExtensionQueryPlanner` from
 `crates/sail-session/src/planner.rs`.
 
-That planner is small, but strategically important:
+The current `QueryPlanner::create_physical_plan` receives a logical plan and
+`session: &dyn Session`. Its sequence is:
 
-```rust
-impl QueryPlanner for ExtensionQueryPlanner {
-    async fn create_physical_plan(
-        &self,
-        logical_plan: &LogicalPlan,
-        session_state: &SessionState,
-    ) -> Result<Arc<dyn ExecutionPlan>> {
-        let mut extension_planners = new_lakehouse_extension_planners();
-        extension_planners.push(Arc::new(SystemTablePhysicalPlanner));
-        extension_planners.push(Arc::new(ExtensionPhysicalPlanner));
-        let planner = DefaultPhysicalPlanner::with_extension_planners(extension_planners);
-        planner.create_physical_plan(&logical_plan, session_state).await
-    }
-}
-```
+1. Apply the Delta and Iceberg metadata aggregate logical rewriters.
+2. Construct `DefaultPhysicalPlanner` with Delta, Iceberg, system-table,
+   listing, console, noop, Python and Sail extension planners, in that order.
+3. Create the physical plan with DataFusion.
+4. Apply `ensure_scalar_subquery_nullability` to the resulting plan.
 
-This is Sail's physical planning strategy:
-
-1. Use DataFusion's `DefaultPhysicalPlanner`.
-2. Add extension planners for lakehouse tables.
-3. Add an extension planner for system tables.
-4. Add Sail's own catch-all extension planner.
-
-DataFusion still handles normal logical plan nodes: projections, filters,
-aggregates, joins, sorts, limits, scans, and so on. Sail handles custom logical
-extension nodes that DataFusion does not know how to plan.
+DataFusion handles ordinary projections, filters, aggregates, joins, sorts and
+scans. The extension planners translate custom logical nodes that the default
+planner cannot handle. Listing and Python writes are part of this chain, not
+just lakehouse-specific operations.
 
 ```mermaid
 flowchart TB
-    Logical["Optimized LogicalPlan"]
-    Default["DefaultPhysicalPlanner"]
-    Lakehouse["Lakehouse extension planners"]
-    System["SystemTablePhysicalPlanner"]
-    Sail["ExtensionPhysicalPlanner"]
-    Physical["ExecutionPlan"]
-
-    Logical --> Default
-    Lakehouse --> Default
-    System --> Default
-    Sail --> Default
-    Default --> Physical
+    Logical["LogicalPlan"] --> Rewrite["Delta and Iceberg metadata rewrites"]
+    Rewrite --> Default["DefaultPhysicalPlanner"]
+    Extensions["Format, system and Sail extension planners"] --> Default
+    Default --> Fix["Scalar subquery nullability correction"]
+    Fix --> Physical["ExecutionPlan"]
 ```
 
-The extension proposal in discussion #2001 wants to generalize this seam. Today the
-list is hard-coded. A third-party extension API would let packages add their
-own extension planners without editing Sail core.
+This planner list remains explicit host wiring. The packaged extension contract
+in chapter 13 does not expose an arbitrary optimizer/planner registration API.
+Its relation bindings return supported native objects or compose existing
+operators; adding another public hook needs its own use case and compatibility
+contract.
 
 ## Logical Extension Nodes
 
@@ -824,38 +817,24 @@ compatibility at well-defined seams.
 
 ## Extension Implications
 
-The extensions proposal in discussion #2001 is largely about opening the seams this
-chapter has exposed.
+Sail already uses typed session extensions, function maps, logical and physical
+optimizer rules, DataFusion extension planners, custom plan nodes, table
+providers and physical codecs. These internal seams are not all public package
+APIs.
 
-Today, Sail has internal extension points:
+The implemented package boundary in chapter 13 exposes relation bindings and
+native scalar objects, with manifest validation and physical reconstruction.
+Sedona exercises scalar functions and Arrow geometry field semantics. Pecan
+expresses graph computation through existing relational operators; Grenada
+executes DataFusion plans inside the extension; Banda uses native graph kernels;
+Argentea distributes retained native graph partitions through Sail's existing
+execution machinery.
 
-- session config extensions via `with_extension`,
-- typed access via `SessionExtensionAccessor`,
-- built-in function registries,
-- analyzer and optimizer rule lists,
-- physical optimizer rules,
-- `DefaultPhysicalPlanner::with_extension_planners`,
-- `UserDefinedLogicalNodeCore`,
-- custom `ExecutionPlan` nodes,
-- table functions and table providers,
-- physical-plan codecs for distributed workers.
-
-But those points are mostly wired inside Sail. A third-party extension API
-would need to make them explicit and safe.
-
-For example, a Sedona-style spatial extension might need to register:
-
-- scalar functions such as `ST_Area`, `ST_Intersects`, `ST_GeomFromWKB`,
-- aggregate functions such as `ST_Union_Aggr`,
-- logical optimizer rules for spatial predicate rewrites,
-- custom physical planner nodes for spatial joins,
-- Arrow extension type handling for GeoArrow metadata,
-- Python package entry points for PySpark compatibility,
-- distributed codecs so workers can deserialize custom physical nodes,
-- and session config defaults.
-
-DataFusion already has many of the underlying concepts. Sail's challenge is to
-wrap them in an API that respects Spark compatibility and distributed execution.
+Those paths test different requirements. Registering a scalar function does not
+prove support for a packaged aggregate, spatial-join planner or optimizer rule.
+Similarly, a native plan's opaque internals are not automatically visible to
+DataFusion's relational optimizer. Keep each added host contract tied to the
+behavior it enables and test planning, worker decoding and execution separately.
 
 ## Reading Exercise: Trace `range`
 

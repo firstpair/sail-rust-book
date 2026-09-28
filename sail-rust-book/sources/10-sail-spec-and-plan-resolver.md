@@ -437,7 +437,7 @@ For a named table, Sail handles several cases:
    direct data source read.
 2. If the name matches a CTE, use the CTE plan.
 3. Otherwise, ask the `CatalogManager` for a table or view.
-4. For a table, build `SourceInfo` and ask `TableFormatRegistry` to create a source.
+4. For a table, build `SourceInfo` and ask `DataSourceRegistry` to create a source.
 5. For a persistent view, parse the stored SQL definition and resolve it.
 6. For a temporary view, clone and rename the stored logical plan.
 
@@ -446,7 +446,7 @@ The rough flow:
 ```mermaid
 flowchart TB
     A["ReadNamedTable"] --> B{"format.path?"}
-    B -->|yes| C["TableFormatRegistry"]
+    B -->|yes| C["DataSourceRegistry"]
     B -->|no| D{"CTE?"}
     D -->|yes| E["CTE LogicalPlan"]
     D -->|no| F["CatalogManager"]
@@ -459,7 +459,7 @@ flowchart TB
 This is where Sail's session extensions begin to matter:
 
 - `CatalogManager` supplies table and view metadata.
-- `TableFormatRegistry` turns format-specific metadata into table sources.
+- `DataSourceRegistry` turns format-specific metadata into table sources.
 - `PlanService` provides display and formatting helpers elsewhere in resolution.
 
 Those are not global singletons. They are DataFusion session extensions. That design
@@ -953,92 +953,43 @@ and enough metadata to run the UDF in the right execution context.
 
 ## Extension Implications
 
-Discussion #2001 asks for an extension API for third-party DataFusion integrations:
+The experimental branch implements a focused relation dispatch path. In
+`crates/sail-plan/src/resolver/query/mod.rs`, `QueryNode::Extension` routes to
+`resolve_query_extension` in
+`crates/sail-plan/src/resolver/query/extension.rs`.
 
-- UDFs,
-- optimizer rules,
-- planner extensions,
-- probably catalog/session configuration hooks,
-- and Python-discoverable packages such as a hypothetical `pysail-sedona`.
-
-This chapter reveals why the extension story cannot be only a function registry.
-
-Extensions may need to participate in several phases:
-
-| Phase | Why extensions need it |
-|---|---|
-| Spark Connect conversion | To accept custom relation, expression, or command messages. |
-| Sail spec | To represent extension intent in a language-neutral, serializable form. |
-| SQL analysis | To parse extension SQL syntax or functions. |
-| Logical resolution | To bind names, tables, functions, and types. |
-| Logical optimization | To rewrite extension plans before physical planning. |
-| Physical planning | To turn extension logical nodes into execution plans. |
-| Plan encoding | To send physical expressions or nodes to workers. |
-| Worker registration | To ensure workers can execute extension functions and operators. |
-
-The current architecture has useful internal patterns, but most of them are wired into
-Sail itself:
-
-- built-in function registries are static maps,
-- logical extension nodes are known to Sail crates,
-- `ExtensionPhysicalPlanner` has hard-coded downcasts,
-- lakehouse planners are installed through a dedicated helper,
-- PySpark UDFs are special-cased in resolver paths,
-- Spark Connect custom extension handling is not a general plugin registry.
-
-A mature extension design would turn those internal patterns into explicit contracts.
-
-## A Proposed Resolver-Side Extension Shape
-
-One possible architecture is a staged extension trait family rather than one giant
-trait.
-
-For example:
-
-```rust
-pub trait SailPlanExtension: Send + Sync {
-    fn name(&self) -> &'static str;
-    fn register_functions(&self, registry: &mut FunctionRegistry) -> PlanResult<()>;
-    fn register_table_functions(&self, registry: &mut TableFunctionRegistry) -> PlanResult<()>;
-    fn logical_resolvers(&self) -> Vec<Arc<dyn ExtensionLogicalResolver>>;
-    fn logical_optimizer_rules(&self) -> Vec<Arc<dyn LogicalRewriter>>;
-    fn physical_planners(&self) -> Vec<Arc<dyn ExtensionPlanner + Send + Sync>>;
-    fn codecs(&self) -> Vec<Arc<dyn ExtensionCodec>>;
-}
-```
-
-The goal would be to let an extension say:
+The resolver selects the registered handler using payload type URL, envelope
+status and input count. It resolves input plans and restores their field names;
+duplicate input column names are rejected with a request to alias them. The
+resolved physical inputs are wrapped as `HostInputExec` objects before the
+handler plans its provider.
 
 ```text
-I know how to parse or receive this intent.
-I know how to resolve it into a logical node.
-I know how to optimize it.
-I know how to plan it physically.
-I know how to encode it for workers.
+Connect Relation.extension
+  -> validated envelope and Sail QueryNode::Extension
+  -> registered relation handler
+  -> resolved, named input plans
+  -> provider returned by handler.plan
+  -> ordinary Sail/DataFusion planning and execution
 ```
 
-For Spark Connect specifically, extensions also need a protocol story. Spark Connect's
-own extension guidance defines `Relation.extension`, `Command.extension`, and
-`Expression.extension`, each typed as `google.protobuf.Any`. Sail's spec layer can
-mirror that by introducing a `type_url`-indexed dispatcher in the resolver:
+Raw `Expression.extension` and `Command.extension` dispatch are unsupported.
+Native scalar expressions use registered function names instead. Mutating graph
+operations use relations whose execution produces a receipt; merely resolving
+their schema must not perform the mutation.
 
-```text
-Connect Relation/Expression/Command .extension
-  -> SparkConnectExtensionDispatcher::dispatch(type_url, payload)
-  -> extension handler resolves payload
-  -> either:
-       spec::QueryNode built from existing operators (pattern A, plan-time only),
-     or:
-       spec::QueryNode::Extension { ... } for a logical extension node (pattern B)
-  -> normal Sail planning and DataFusion execution
-```
+## Resolver Contract and Package Boundary
 
-Pattern A extensions never need an execution-time integration. Pattern B extensions
-hand off to a logical extension node and the rest of the chapter 13 extension stack.
-This makes the resolver the dispatch point for what chapter 13 calls the *plan-time
-extension boundary*: a stable, protobuf-versioned, language-neutral channel that is
-independent of the Rust/DataFusion-FFI work needed for custom physical operators.
-Chapter 13 develops the full dispatcher design.
+The branch does not provide a public `SailPlanExtension` trait granting packages
+arbitrary SQL grammar, optimizer or physical-planner hooks. Its manifest,
+relation envelope and native bindings form the implemented contract. Chapter 13
+specifies that boundary and the client/runtime versions used in the examples.
+
+An extension that expands into existing relational operators can reuse their
+planning and distributed codecs. An extension retaining a custom physical
+object needs a supported reconstruction path and a compatible package on the
+executing process. These are separate obligations: accepting a payload does not
+prove that its eventual plan can execute remotely.
 
 ## Design Rules For Future Extensions
 
@@ -1050,8 +1001,9 @@ layer should parse and normalize, but not bind names too early.
 Second, keep Spark-facing names separate from engine-facing names. Any extension that
 creates fields should register them through resolver state or an equivalent API.
 
-Third, distinguish query nodes from command nodes. Side-effecting extensions should not
-pretend to be ordinary projections.
+Third, make side effects explicit. The implemented command-shaped relations return
+receipts and perform work only when executed; schema resolution must remain free
+of graph mutations.
 
 Fourth, make worker compatibility explicit. If an extension creates physical operators,
 workers must have the same extension and codec registrations.

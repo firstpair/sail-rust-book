@@ -6,6 +6,21 @@ Chapters 14-20 are definitive-guide companion chapters: they fill protocol,
 optimizer, streaming, testing, contribution, and navigation coverage that readers
 will want after the main pass.
 
+## Source boundaries for the 0.7.2 revision
+
+This revision prepares for Sail 0.7.2 using upstream `main`, whose workspace
+still declares 0.7.1. It does not announce a released 0.7.2. The upstream source
+snapshot is `b2470ea4b66f8ed9703e2e3b27d958b71c3a1ada`; the separate extension
+snapshot is `dcd44f287b8422a62abd06d2410aaf96e225e136` on
+`querygraph/sail`, branch `work/extensions-traversal-bench`.
+
+Upstream includes the session-factory embedding entry point from merged #2630.
+The extension branch adds the experimental protocol, native package integration,
+and distributed graph implementation discussed later. A successful test on that
+branch does not establish availability in upstream Sail or a released wheel.
+Functional process-cluster, physical two-host, and benchmark evidence are
+separate: each claim must identify the executable and native package it tested.
+
 ## Chapter Links
 
 The book is organized into seven reading paths:
@@ -23,10 +38,10 @@ The book is organized into seven reading paths:
 - Spark semantics: Chapters 10, 11, 12, and 15 explain how Spark-compatible
   names, expressions, functions, commands, tables, writes, custom logical nodes,
   and optimizer rules become executable DataFusion objects.
-- Extension design: Chapter 13 turns the previous patterns into a proposed
-  extension architecture for discussion #2001.
+- Extension design: Chapter 13 follows the implemented experimental extension architecture
+  and distinguishes it from upstream embedding capabilities.
 - Practice and navigation: Chapters 17, 18, 19, and 20 cover verification,
-  feature work, codebase navigation, and the July 2026 Sail surface.
+  feature work, codebase navigation, and the pinned upstream and extension surfaces.
 
 ## Concept Progression
 
@@ -58,8 +73,8 @@ uses a list instead of a table so the PDF can break cleanly across pages.
   5 and 15. Chapter 18 uses them for streaming sources that must emit the right
   event schema.
 - Typed session extensions appear first in Chapter 2 and return in Chapters 6,
-  11, 12, 14, and 16. Chapter 13 proposes the extension registry as a session
-  service.
+  11, 12, 14, and 16. Chapter 13 explains implemented extension contracts as session
+  services.
 - Function resolution and codecs appear in Chapter 11 and return in Chapters 17
   and 18. They are the core reason the execution-time extension boundary needs
   worker-side registration and serialization.
@@ -87,7 +102,7 @@ first:
 - How does a physical plan become distributed work? Read
   `crates/sail-execution/src/job_graph/planner.rs` and
   `crates/sail-execution/src/job_runner.rs`.
-- How do tasks run on workers? Read `crates/sail-execution/src/task_runner/core.rs`.
+- How do tasks run on workers? Read `crates/sail-execution/src/task_runner/actor/core.rs`.
 - How does shuffle move Arrow batches? Read
   `crates/sail-execution/src/plan/shuffle_write.rs`,
   `crates/sail-execution/src/plan/shuffle_read.rs`, and
@@ -98,7 +113,7 @@ first:
 - How do Python UDFs execute? Read `crates/sail-python-udf/src/udf/` and
   `crates/sail-python-udf/src/stream.rs`.
 - How do custom functions and plans reach workers? Read
-  `crates/sail-execution/src/codec.rs`.
+  `crates/sail-execution/src/proto/codec.rs`.
 - How do catalogs and file formats plug in? Read
   `crates/sail-catalog/src/manager/mod.rs`,
   `crates/sail-common-datafusion/src/datasource.rs`, and

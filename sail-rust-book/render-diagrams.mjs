@@ -436,7 +436,11 @@ for (const file of files) {
   let content = fs.readFileSync(fullPath, "utf8");
   let localIndex = 0;
   const chapterAnchor = chapterAnchors.get(file);
-  content = content.replace(/^(#\s+[^\n]+)$/m, `$1 {#${chapterAnchor}}`);
+  content = content.replace(/^(#\s+)([^\n]+)$/m, (_match, prefix, title) => {
+    const label = title.replace(/^Chapter \d+:\s*/, "");
+    const numbering = file.startsWith("00-") ? " .unnumbered" : "";
+    return `${prefix}${label} {#${chapterAnchor}${numbering}}`;
+  });
   content = content.replace(/\]\((\d\d-[^)#]+\.md)(#[^)]*)?\)/g, (match, target, fragment) => {
     const targetAnchor = chapterAnchors.get(target);
     if (!targetAnchor) return match;

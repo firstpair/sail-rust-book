@@ -1,0 +1,54 @@
+{
+  "recorded_utc": "2026-09-28T08:29:18.512879+00:00",
+  "status": "draft validation; not final delivery",
+  "source_pins": {
+    "recorded_utc": "2026-09-28T08:27:10.946663+00:00",
+    "upstream": {
+      "repository": "https://github.com/lakehq/sail",
+      "commit": "b2470ea4b66f8ed9703e2e3b27d958b71c3a1ada",
+      "workspace_version": "0.7.1",
+      "rust_version": "1.97.1",
+      "edition": "2024"
+    },
+    "extension": {
+      "repository": "https://github.com/querygraph/sail",
+      "branch": "work/extensions-traversal-bench",
+      "commit": "dcd44f287b8422a62abd06d2410aaf96e225e136"
+    },
+    "intended_release": "0.7.2 (planned, not published by this work)",
+    "merged_session_factory_commit": "e976c8b317e2b920fca0ed05f9a2efa92a0cff1c",
+    "review_status": "in progress; temporary PDF/EPUB/HTML draft builds verified, canonical artifacts remain the earlier edition"
+  },
+  "checks": {
+    "source_paths": {
+      "references": 290,
+      "unresolved": 0,
+      "scope": "explicit inline paths, not excerpt compilation"
+    },
+    "crate_inventory": "exact match to pinned upstream crates directory",
+    "html_navigation": {
+      "pages": 23,
+      "local_links": 3404,
+      "broken_targets": 0
+    },
+    "build": "FirstPair ordinary build completed successfully; PDF/EPUB/HTML/chapters/MOBI",
+    "pdf_pages": 264,
+    "visual_review": [
+      "chapter numbering corrected",
+      "codec overlap corrected in build3",
+      "build4 planner diagram page97 readable",
+      "build4 crate map page262 readable"
+    ],
+    "remaining": [
+      "complete manuscript source review",
+      "version and frozen source commit",
+      "canonical rebuild and final artifact validation",
+      "vault remains unchanged"
+    ]
+  },
+  "artifacts": {
+    "sail-rust-book.pdf": "cef7b6abdbe814f96cf71d52967f425528cef3028b2c002749c06d8123861335",
+    "sail-rust-book.epub": "719a628a4daecc3e2c5f141827cd19b53ad16cd0dfecaf0fe1cbd01be9e0d3f1",
+    "sail-rust-book.html": "cf0084c28f95dc7d94034425ff1efd13cac8c0322952eddf36f6ec1d461b1ba7"
+  }
+}
