@@ -10,7 +10,7 @@ will want after the main pass.
 
 This revision prepares for Sail 0.7.2 using upstream `main`, whose workspace
 still declares 0.7.1. It does not announce a released 0.7.2. The upstream source
-snapshot is `b2470ea4b66f8ed9703e2e3b27d958b71c3a1ada`; the separate extension
+snapshot is `85d06ce08825dfba4e066e9a5f54123e40829d43`; the separate extension
 snapshot is `dcd44f287b8422a62abd06d2410aaf96e225e136` on
 `querygraph/sail`, branch `work/extensions-traversal-bench`.
 

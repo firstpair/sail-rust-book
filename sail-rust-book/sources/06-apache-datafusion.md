@@ -530,26 +530,18 @@ pub fn default_analyzer_rules() -> Vec<Arc<dyn AnalyzerRule + Send + Sync>> {
 
 pub fn default_optimizer_rules() -> Vec<Arc<dyn OptimizerRule + Send + Sync>> {
     let rules = sail_logical_optimizer::default_optimizer_rules();
-    let mut custom = sail_plan_lakehouse::lakehouse_optimizer_rules();
-    custom.extend(
-        rules
-            .into_iter()
-            .filter(|r| r.name() != "push_down_leaf_projections"),
-    );
-    custom
+    rules
+        .into_iter()
+        .filter(|r| r.name() != "push_down_leaf_projections")
+        .collect()
 }
 ```
 
-Two things are happening here:
-
-1. Sail delegates most rule construction to `sail_logical_optimizer`.
-2. Sail prepends lakehouse optimizer rules and filters out one built-in-style
-   rule by name.
-
-The test asserts that `expand_row_level_op` runs first. That is a Spark and
-lakehouse semantic requirement: row-level operations such as MERGE/DELETE/UPDATE
-must be expanded before generic optimizers obscure the structure needed for
-correct planning.
+Sail delegates rule construction to `sail_logical_optimizer`, then removes leaf
+projection pushdown by name. The session-level test checks that exclusion.
+Lakehouse-specific metadata rewrites also appear in the query planner described
+above; they are not supplied here through the earlier edition's
+`sail_plan_lakehouse::lakehouse_optimizer_rules` helper.
 
 This is an important DataFusion lesson: optimizer rule order is part of engine
 semantics. For extensions, "add my optimizer rule" is not sufficient. The API
@@ -561,8 +553,11 @@ or follow.
 Sail also customizes physical optimization in
 `crates/sail-physical-optimizer/src/lib.rs`.
 
-The rule list includes DataFusion's standard physical optimizer rules in the
-same order, then adds Sail-specific rules:
+The rule list preserves the relative order of DataFusion's standard rules and
+inserts Sail-specific behavior at selected points. Optional `JoinReorder` runs
+before `JoinSelection`; upstream #2676 adds `SelectSemiJoinBuildSide` immediately
+after it. The extension snapshot predates that latter rule. Near the end of
+the pipeline, Sail applies:
 
 ```rust
 rules.push(Arc::new(RewriteExplicitRepartition::new()));

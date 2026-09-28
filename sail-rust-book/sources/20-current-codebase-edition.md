@@ -1,7 +1,7 @@
 # Chapter 20: The 0.7.2 Preparation Snapshot
 
 This edition separates two source trees. Upstream `lakehq/sail` is pinned at
-`b2470ea4b66f8ed9703e2e3b27d958b71c3a1ada`; its workspace declares 0.7.1 and the
+`85d06ce08825dfba4e066e9a5f54123e40829d43`; its workspace declares 0.7.1 and the
 book prepares for the planned 0.7.2 release. The experimental extension tree is
 `querygraph/sail` at `dcd44f287b8422a62abd06d2410aaf96e225e136`. An experimental
 feature's presence in that tree does not make it part of an upstream release.
@@ -32,6 +32,16 @@ extension. It does not turn a separately built wheel's allocations into admitted
 query memory. The experimental resource-domain and lease contract remains a
 separate accounting/ownership mechanism. Existing measured artifacts predate
 this allocator change and must keep their original source attribution.
+
+Upstream #2676 adds `SelectSemiJoinBuildSide` after DataFusion's
+`JoinSelection`. For a partitioned, non-null-aware left semi-join with
+inconclusive size statistics, it can build from the right input when that input
+is an aggregate grouped on the join keys. It preserves partitioned execution;
+it does not infer that the aggregate is small enough to broadcast. The rule is
+in `crates/sail-physical-optimizer/src/select_semi_join_build_side.rs`.
+The newer main snapshot also updates npm dependencies and migration guidance.
+These changes do not retroactively apply to the experimental branch or its
+measured binaries.
 
 The extension branch tests that boundary with Sedona scalar functions and native
 graph kernels. Pecan provides the relational control path: graph algorithms can

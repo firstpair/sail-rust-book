@@ -1,8 +1,8 @@
 {
-  "recorded_utc": "2026-09-28T08:27:10.946663+00:00",
+  "recorded_utc": "2026-09-28T08:35:32.418411+00:00",
   "upstream": {
     "repository": "https://github.com/lakehq/sail",
-    "commit": "b2470ea4b66f8ed9703e2e3b27d958b71c3a1ada",
+    "commit": "85d06ce08825dfba4e066e9a5f54123e40829d43",
     "workspace_version": "0.7.1",
     "rust_version": "1.97.1",
     "edition": "2024"
