@@ -279,3 +279,48 @@ python3 sail-rust-book/scripts/check-obsidian-vault.py \
   `sail-rust-book/blog/announcing-sail-rust-book/`.
 - FirstPair remains the publisher/library/deployment system, but Sail Rust Book
   owns its project-specific announcement Markdown, textpack, and image assets.
+
+## Active follow-on: Sail 0.7.2 and the extension implementation
+
+Requested 2026-09-28T02:35:24.084839+00:00. This phase follows the Argentea build and qualification in the
+ongoing Sail extension goal; it does not replace the remaining implementation,
+benchmark, documentation or publication work.
+
+Review and thoroughly update the Sail Rust Book against the then-current
+upstream `lakehq/sail` `main`. The current workspace version is 0.7.1; prepare
+the book for the planned 0.7.2 bump without presenting that release as already
+published. At intake, upstream `main` is
+`4f1bd3439596ed273a7e4acec49e5699fc24cf34`. Refresh and pin the source again
+when this phase begins. Keep upstream behavior, released behavior and the
+experimental `querygraph/sail` extension branch explicitly distinct.
+
+Include merged PR #2630, **let an embedder choose the session factory**,
+verified in upstream `main` at
+`e976c8b317e2b920fca0ed05f9a2efa92a0cff1c`. Explain its session-factory
+injection in `sail-spark-connect` entrypoint/session-manager code, its existing
+`SessionFactory` contract, and how the extension work builds on that upstream
+capability. Do not describe this merged prerequisite as a proposed fork change.
+
+The revision must cover the complete extension work: Sedona; Nutmeg Banda and
+Grenada; Pecan; Argentea; reference and advanced graph methods; Python client
+protocol and protobuf boundary; native package identity/FFI compatibility;
+local and distributed planning; worker-native decoding; partition routing and
+validated ownership; resource admission, retained Arrow lifetimes, cancellation
+and failure behavior; storage and staging; qualification and reproducible
+benchmarks. Describe each host change in the context of the owning crates and
+end-to-end code paths, with the missing capability, reused mechanism, focused
+patch and executable validation. Report limitations and unsuccessful outcomes
+as well as successful experiments.
+
+Update affected chapters throughout the manuscript, diagrams, code excerpts,
+source references, subsystem map, contributor playbooks and runnable tutorials;
+a release appendix alone is insufficient. Recheck build/run instructions against
+frozen sources. Rebuild and validate the book formats through the shared
+FirstPair pipeline, with visual PDF review and EPUB/HTML/link checks, and record
+the exact upstream and extension revisions in the edition metadata.
+
+Follow `FIRSTPAIR.md` and `AGENTS.md`. This request authorizes the book update
+and builds, not a new live FirstPair publication. Do not mutate or regenerate an
+Obsidian vault before the required explicit confirmation that it is closed;
+source review and ordinary book builds can proceed independently. The existing
+July completion entries above describe earlier editions, not this new phase.
